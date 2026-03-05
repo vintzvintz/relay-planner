@@ -1,0 +1,135 @@
+==========================================================================
+  PLANNING  440 km — 88 segments de 5 km
+  Départ : Mercredi 15h00          Arrivée : Vendredi ~15h53
+==========================================================================
+
+  ▶ MERCREDI
+  Mercredi 15h00 → 16h06   0–10 km         10 km   Alexis + Olivier
+  Mercredi 16h06 → 17h46   10–25 km        15 km   Matthieu + Pierre
+  Mercredi 17h46 → 18h53   25–35 km        10 km   Clemence + Nelly
+  Mercredi 18h53 → 21h06   35–55 km        20 km   Guillaume + Ludovic
+  Mercredi 21h06 → 22h46   55–70 km        15 km   Alexandre + Antoine
+  Mercredi 22h46 → 23h53   70–80 km        10 km   Gaelle + Vincent
+  Mercredi 23h53 → 03h13   80–110 km       30 km   Alexis + Olivier  [nuit]
+
+  ▶ JEUDI
+  Jeudi 03h13 → 04h53   110–125 km      15 km   Eric + Yacine  [nuit]
+  Jeudi 04h53 → 06h33   125–140 km      15 km   Ludovic + Matthieu  [nuit]
+  Jeudi 06h33 → 08h46   140–160 km      20 km   Pierre  (seul)
+  Jeudi 08h46 → 11h00   160–180 km      20 km   Guillaume  (seul)
+  Jeudi 11h00 → 12h06   180–190 km      10 km   Gaelle + Nelly
+  Jeudi 12h06 → 13h46   190–205 km      15 km   Alexandre  (seul)
+  Jeudi 13h46 → 14h53   205–215 km      10 km   Alexis + Olivier
+  Jeudi 14h53 → 16h33   215–230 km      15 km   Eric  (seul)
+  Jeudi 16h33 → 17h40   230–240 km      10 km   Vincent  (seul)
+  Jeudi 17h40 → 19h20   240–255 km      15 km   Antoine + Pierre
+  Jeudi 19h20 → 20h26   255–265 km      10 km   Gaelle  (seul)
+  Jeudi 20h26 → 21h33   265–275 km      10 km   Nelly + Yacine
+  Jeudi 21h33 → 23h13   275–290 km      15 km   Ludovic + Matthieu
+  Jeudi 23h13 → 02h33   290–320 km      30 km   Alexis + Olivier  [nuit]
+
+  ▶ VENDREDI
+  Vendredi 02h33 → 04h13   320–335 km      15 km   Antoine + Pierre  [nuit]
+  Vendredi 04h13 → 05h20   335–345 km      10 km   Alexandre + Vincent  [nuit]
+  Vendredi 05h20 → 06h26   345–355 km      10 km   Gaelle + Nelly  [nuit]
+  Vendredi 06h26 → 08h06   355–370 km      15 km   Ludovic  (seul)
+  Vendredi 08h06 → 09h46   370–385 km      15 km   Matthieu  (seul)
+  Vendredi 09h46 → 10h53   385–395 km      10 km   Clemence  (seul)
+  Vendredi 10h53 → 12h33   395–410 km      15 km   Yacine  (seul)
+  Vendredi 12h33 → 13h40   410–420 km      10 km   Alexis + Olivier
+  Vendredi 13h40 → 14h46   420–430 km      10 km   Antoine  (seul)
+  Vendredi 14h46 → 15h53   430–440 km      10 km   Alexandre + Vincent
+
+──────────────────────────────────────────────────────────────────────────
+  RÉCAPITULATIF PAR COUREUR
+──────────────────────────────────────────────────────────────────────────
+
+  Pierre         65 km  4 relais  (1 seul, 1 nuit)
+    Mercredi 16h06 → 17h46  15 km  avec Matthieu
+    Jeudi 06h33 → 08h46  20 km  seul
+    Jeudi 17h40 → 19h20  15 km  avec Antoine
+    Vendredi 02h33 → 04h13  15 km  avec Antoine [nuit]
+
+  Vincent        40 km  4 relais  (1 seul, 1 nuit)
+    Mercredi 22h46 → 23h53  10 km  avec Gaelle
+    Jeudi 16h33 → 17h40  10 km  seul
+    Vendredi 04h13 → 05h20  10 km  avec Alexandre [nuit]
+    Vendredi 14h46 → 15h53  10 km  avec Alexandre
+
+  Matthieu       60 km  4 relais  (1 seul, 1 nuit)
+    Mercredi 16h06 → 17h46  15 km  avec Pierre
+    Jeudi 04h53 → 06h33  15 km  avec Ludovic [nuit]
+    Jeudi 21h33 → 23h13  15 km  avec Ludovic
+    Vendredi 08h06 → 09h46  15 km  seul
+
+  Olivier        90 km  5 relais  (2 nuit)
+    Mercredi 15h00 → 16h06  10 km  avec Alexis
+    Mercredi 23h53 → 03h13  30 km  avec Alexis [nuit]
+    Jeudi 13h46 → 14h53  10 km  avec Alexis
+    Jeudi 23h13 → 02h33  30 km  avec Alexis [nuit]
+    Vendredi 12h33 → 13h40  10 km  avec Alexis
+
+  Alexis         90 km  5 relais  (2 nuit)
+    Mercredi 15h00 → 16h06  10 km  avec Olivier
+    Mercredi 23h53 → 03h13  30 km  avec Olivier [nuit]
+    Jeudi 13h46 → 14h53  10 km  avec Olivier
+    Jeudi 23h13 → 02h33  30 km  avec Olivier [nuit]
+    Vendredi 12h33 → 13h40  10 km  avec Olivier
+
+  Guillaume      40 km  2 relais  (1 seul)
+    Mercredi 18h53 → 21h06  20 km  avec Ludovic
+    Jeudi 08h46 → 11h00  20 km  seul
+
+  Eric           30 km  2 relais  (1 seul, 1 nuit)
+    Jeudi 03h13 → 04h53  15 km  avec Yacine [nuit]
+    Jeudi 14h53 → 16h33  15 km  seul
+
+  Yacine         40 km  3 relais  (1 seul, 1 nuit)
+    Jeudi 03h13 → 04h53  15 km  avec Eric [nuit]
+    Jeudi 20h26 → 21h33  10 km  avec Nelly
+    Vendredi 10h53 → 12h33  15 km  seul
+
+  Alexandre      50 km  4 relais  (1 seul, 1 nuit)
+    Mercredi 21h06 → 22h46  15 km  avec Antoine
+    Jeudi 12h06 → 13h46  15 km  seul
+    Vendredi 04h13 → 05h20  10 km  avec Vincent [nuit]
+    Vendredi 14h46 → 15h53  10 km  avec Vincent
+
+  Antoine        55 km  4 relais  (1 seul, 1 nuit)
+    Mercredi 21h06 → 22h46  15 km  avec Alexandre
+    Jeudi 17h40 → 19h20  15 km  avec Pierre
+    Vendredi 02h33 → 04h13  15 km  avec Pierre [nuit]
+    Vendredi 13h40 → 14h46  10 km  seul
+
+  Ludovic        65 km  4 relais  (1 seul, 1 nuit)
+    Mercredi 18h53 → 21h06  20 km  avec Guillaume
+    Jeudi 04h53 → 06h33  15 km  avec Matthieu [nuit]
+    Jeudi 21h33 → 23h13  15 km  avec Matthieu
+    Vendredi 06h26 → 08h06  15 km  seul
+
+  Nelly          40 km  4 relais  (1 nuit)
+    Mercredi 17h46 → 18h53  10 km  avec Clemence
+    Jeudi 11h00 → 12h06  10 km  avec Gaelle
+    Jeudi 20h26 → 21h33  10 km  avec Yacine
+    Vendredi 05h20 → 06h26  10 km  avec Gaelle [nuit]
+
+  Gaelle         40 km  4 relais  (1 seul, 1 nuit)
+    Mercredi 22h46 → 23h53  10 km  avec Vincent
+    Jeudi 11h00 → 12h06  10 km  avec Nelly
+    Jeudi 19h20 → 20h26  10 km  seul
+    Vendredi 05h20 → 06h26  10 km  avec Nelly [nuit]
+
+  Clemence       20 km  2 relais  (1 seul)
+    Mercredi 17h46 → 18h53  10 km  avec Nelly
+    Vendredi 09h46 → 10h53  10 km  seul
+
+──────────────────────────────────────────────────────────────────────────
+  Binômes : 20   Solos : 11   Total relais : 51
+==========================================================================
+
+--- Vérifications ---
+Couverture : OK
+Repos    : OK
+Nuit ×1  : OK
+Solo ≤ 1 : OK
+Solo≠Nuit : OK
