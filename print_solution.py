@@ -260,7 +260,7 @@ def save_solution(solver, start, same_relay, relais_solo, night_relay):
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     fname = os.path.join(outdir, f"planning_{ts}.txt")
-    with open(fname, "w") as f:
+    with open(fname, "w", encoding="utf-8") as f:
         f.write(output)
     print(f"Planning sauvegardé : {fname}")
 
