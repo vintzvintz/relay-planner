@@ -215,10 +215,37 @@ def print_solution(solver, start, same_relay, relais_solo, night_relay):
     _print_verifications(solver, start, same_relay, relais_solo, night_relay)
 
 
+def _save_csv(relais_list, csv_path):
+    import csv
+
+    rows = []
+    for rel in relais_list:
+        day_name, hh, mm = _fmt(rel["start"])
+        _, hh_e, mm_e = _fmt(rel["end"])
+        rows.append({
+            "jour": day_name,
+            "debut": f"{hh:02d}:{mm:02d}",
+            "fin": f"{hh_e:02d}:{mm_e:02d}",
+            "km_debut": rel["start"] * 5,
+            "km_fin": rel["end"] * 5,
+            "distance_km": rel["km"],
+            "coureur": rel["runner"],
+            "partenaire": rel["partner"] or "",
+            "solo": "oui" if rel["solo"] else "non",
+            "nuit": "oui" if rel["night"] else "non",
+        })
+
+    with open(csv_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def save_solution(solver, start, same_relay, relais_solo, night_relay):
     """Affiche la solution et la sauvegarde dans un fichier horodaté."""
     import io
     import sys
+    import os
     from datetime import datetime
 
     buf = io.StringIO()
@@ -227,10 +254,17 @@ def save_solution(solver, start, same_relay, relais_solo, night_relay):
     sys.stdout = old_stdout
     output = buf.getvalue()
     print(output)
-    import os
+
     outdir = "plannings"
     os.makedirs(outdir, exist_ok=True)
-    fname = os.path.join(outdir, f"planning_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt")
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+    fname = os.path.join(outdir, f"planning_{ts}.txt")
     with open(fname, "w") as f:
         f.write(output)
     print(f"Planning sauvegardé : {fname}")
+
+    relais_list = _parse_relais(solver, start, same_relay, relais_solo, night_relay)
+    csv_fname = os.path.join(outdir, f"planning_{ts}.csv")
+    _save_csv(relais_list, csv_fname)
+    print(f"CSV sauvegardé      : {csv_fname}")

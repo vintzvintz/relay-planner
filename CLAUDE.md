@@ -55,7 +55,7 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 8
 10. Mandatory pairs enforcement
 - **Objective**: maximize number of `same_relay` vars = maximize binômes (paired relays)
 
-**`print_solution.py`** — Display and verification after solving. Imported by `solver.py`. Also lives as a copy in `.vscode/print_solution.py` (used for IDE tooling).
+**`print_solution.py`** — Display and verification after solving. Imported by `solver.py`.
 
 **`debug_faisabilite.py`** — Standalone script that activates constraints one by one to isolate infeasibility.
 
