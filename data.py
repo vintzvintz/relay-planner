@@ -3,6 +3,8 @@ Données du problème : 440 km, 88 segments de 5 km, vitesse 9 km/h
 Départ : mercredi 15h00
 """
 
+import math
+
 # --- Temporel ---
 TOTAL_KM = 440
 SEGMENT_KM = 5
@@ -28,8 +30,8 @@ NIGHT_SEGMENTS = set(s for s in range(N_SEGMENTS) if is_night(s))
 # Repos minimum en nombre de segments
 # 7h / (5/9 h) = 12.6 → 13 segments
 # 9h / (5/9 h) = 16.2 → 17 segments
-REST_NORMAL = 13
-REST_NIGHT = 17
+REST_NORMAL = math.ceil(7 * SPEED_KMH/SEGMENT_KM)
+REST_NIGHT = math.ceil(9 * SPEED_KMH/SEGMENT_KM)
 
 # --- Coureurs ---
 # Format : nom -> liste de relais engagés [(nb_segments, nb_fois), ...]
@@ -82,8 +84,8 @@ UNAVAILABILITY: dict[str, list[tuple[int, int]]] = {
     "Guillaume": [(hour_to_seg(24), N_SEGMENTS)],
     # Eric : indisponible après les premières 26h
     "Eric":      [(hour_to_seg(26), N_SEGMENTS)],
-    # Clémence : 1 relais sur les 8 premieres heures et 1 relais le dernier jour
-    "Clemence":  [(hour_to_seg(10), hour_to_seg(43))],
+    # Clémence : 1 relais sur les 10 premieres heures et 1 relais le dernier jour après 10h
+    "Clemence":  [(hour_to_seg(10), hour_to_seg(9+24+10+1))],
 }
 
 # --- Contraintes spéciales ---

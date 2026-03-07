@@ -42,7 +42,7 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 8
 - `OLIVIER_NIGHT1`, `OLIVIER_NIGHT2`: fixed night windows (0h–2h thu/fri) for Olivier's 30km relays; Alexis forced to same starts
 - Time is measured in **segments** (1 seg = 5 km ≈ 33 min); `segment_start_hour(seg)` converts to hours from midnight Wednesday; `hour_to_seg(h)` converts hours-from-start to segment index
 
-**`solver.py`** — CP-SAT model, broken into private `_add_*` functions:
+**`constraint_model.py`** — CP-SAT model builder, broken into private `_add_*` functions:
 1. Variables: `start[r][k]`, `end[r][k]` (segment index), interval vars
 2. No-overlap intra-runner
 3. `night_relay[r][k]` bool vars + at-most-1-night constraint
@@ -53,9 +53,16 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 8
 8. Inter-runner no-overlap for incompatible pairs
 9. `relais_solo[r][k]` bool + at-most-1-solo constraint
 10. Mandatory pairs enforcement
-- **Objective**: maximize number of `same_relay` vars = maximize binômes (paired relays)
 
-**`print_solution.py`** — Display and verification after solving. Imported by `solver.py`.
+**`solver.py`** — Runs the CP-SAT solver with objective: maximize number of `same_relay` vars (binômes). Imports `constraint_model` and `solution_formatter`.
+
+**`solution_formatter.py`** — Display and verification after solving. Imported by `solver.py` and `enumerate_optimal_solutions.py`.
+
+**`enumerate_optimal_solutions.py`** — Enumerates all optimal solutions in two phases: collect all distinct binôme configurations, then enumerate placements per configuration.
+
+**`analyze_solutions.py`** — Reads CSV solutions from `enumerate_solutions/` and generates per-runner histograms and HTML pages in `explore_solutions/`.
+
+**`upper_bound.py`** — Computes an analytical upper bound on the number of binômes (bipartite matching + coverage constraint).
 
 **`debug_faisabilite.py`** — Standalone script that activates constraints one by one to isolate infeasibility.
 

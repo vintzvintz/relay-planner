@@ -1,7 +1,14 @@
 /venv
-__pycache__
+__pycache__/
+*.pyc
+*.pyo
 
 /plannings
+/enumerate_solutions
+/explore_solutions
+
 *.odt
+*.log
 *.code-workspace
+.vscode/launch.json
 /.claude
