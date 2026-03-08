@@ -24,7 +24,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent))
 from data import (
     RUNNER_RELAYS,
-    UNAVAILABILITY,
+    PARTIAL_AVAILABILITY,
     COMPATIBLE,
     MANDATORY_PAIRS,
     MULTI_NIGHT_ALLOWED,
@@ -111,6 +111,40 @@ def x_labels(segments):
     return labels
 
 
+# ── Calcul des débuts de relais par longueur ─────────────────────────────────
+
+
+def relay_start_coverage(solutions, runner):
+    """
+    Pour chaque segment de départ, retourne un dict {taille_km: np.array(N_SEGMENTS)}
+    comptant le nombre de solutions où le coureur commence un relais de cette longueur
+    à ce segment.
+    """
+    relay_sizes_km = sorted(set(s * SEGMENT_KM for s in RUNNER_RELAYS[runner]))
+    counts = {km: np.zeros(N_SEGMENTS, dtype=int) for km in relay_sizes_km}
+    for relays in solutions:
+        for r in relays:
+            if r["coureur"] == runner:
+                seg_start = r["km_debut"] // SEGMENT_KM
+                relay_km = r["km_fin"] - r["km_debut"]
+                if relay_km in counts:
+                    counts[relay_km][seg_start] += 1
+    return counts
+
+
+# ── Utilitaire : hachuri d'indisponibilité ────────────────────────────────────
+
+
+def _draw_unavailability(ax, runner, seg_min, seg_max):
+    """Superpose un fond hachuré (///) sur les périodes d'indisponibilité du coureur."""
+    for us, ue in unavailable_segments(runner):
+        xs = max(us, seg_min) - 0.5
+        xe = min(ue, seg_max + 1) - 0.5
+        if xs < xe:
+            ax.axvspan(xs, xe, facecolor="none", edgecolor="#c0392b",
+                       hatch="///", alpha=0.35, zorder=1)
+
+
 # ── Génération de l'histogramme PNG ───────────────────────────────────────────
 
 
@@ -135,12 +169,12 @@ def make_histogram(runner, counts_solo, counts_binome, n_solutions, out_path):
         plt.close(fig)
         return
 
-    seg_min, seg_max = int(active[0]), int(active[-1])
+    seg_min, seg_max = 0, N_SEGMENTS - 1
     segs = np.arange(seg_min, seg_max + 1)
     vals_binome = counts_binome[seg_min : seg_max + 1]
     vals_solo = counts_solo[seg_min : seg_max + 1]
 
-    fig_w = max(10, len(segs) * 0.4)
+    fig_w = max(10, N_SEGMENTS * 0.4)
     fig, ax = plt.subplots(figsize=(fig_w, 4))
 
     ax.bar(segs, vals_binome, color="#3498db", edgecolor="white", linewidth=0.5, label="Binôme")
@@ -189,11 +223,101 @@ def make_histogram(runner, counts_solo, counts_binome, n_solutions, out_path):
     # Légende couleurs
     from matplotlib.patches import Patch
 
+    _draw_unavailability(ax, runner, seg_min, seg_max)
+
     legend_elements = [
         Patch(facecolor="#3498db", label="Binôme"),
         Patch(facecolor="#2ecc71", label="Solo"),
         Patch(facecolor="#dddddd", alpha=0.5, label="Période de nuit (0h–6h)"),
     ]
+    if unavailable_segments(runner):
+        legend_elements.append(
+            Patch(facecolor="none", edgecolor="#c0392b", hatch="///", alpha=0.35, label="Indisponible")
+        )
+    ax.legend(handles=legend_elements, fontsize=8, loc="upper right")
+
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=100, bbox_inches="tight")
+    plt.close(fig)
+
+
+# ── Histogramme des débuts de relais par longueur ────────────────────────────
+
+_RELAY_COLORS = {
+    10: "#2ecc71",   # vert
+    15: "#3498db",   # bleu
+    20: "#e74c3c",   # rouge
+    30: "#9b59b6",   # violet
+}
+_RELAY_COLOR_DEFAULT = "#95a5a6"  # gris pour toute autre longueur
+
+
+def make_relay_start_histogram(runner, relay_counts, n_solutions, out_path):
+    """
+    Histogramme empilé : pour chaque segment de départ, nombre de solutions
+    par longueur de relais. Axe X fixe couvrant toute la course.
+    """
+    seg_min, seg_max = 0, N_SEGMENTS - 1
+    segs = np.arange(seg_min, seg_max + 1)
+    relay_sizes = sorted(relay_counts.keys())
+
+    fig_w = max(10, N_SEGMENTS * 0.4)
+    fig, ax = plt.subplots(figsize=(fig_w, 4))
+
+    bottom = np.zeros(len(segs), dtype=float)
+    for km in relay_sizes:
+        vals = relay_counts[km][seg_min: seg_max + 1].astype(float)
+        color = _RELAY_COLORS.get(km, _RELAY_COLOR_DEFAULT)
+        ax.bar(segs, vals, bottom=bottom, color=color, edgecolor="white",
+               linewidth=0.5, label=f"{km} km")
+        bottom += vals
+
+    ax.set_xlim(seg_min - 0.5, seg_max + 0.5)
+    ax.set_ylim(0, n_solutions + 1)
+
+    # Fond gris sur les nuits
+    night_in_range = sorted(s for s in NIGHT_SEGMENTS if seg_min <= s <= seg_max)
+    if night_in_range:
+        groups, start = [], night_in_range[0]
+        for prev, curr in zip(night_in_range, night_in_range[1:]):
+            if curr != prev + 1:
+                groups.append((start, prev))
+                start = curr
+        groups.append((start, night_in_range[-1]))
+        for gs, ge in groups:
+            ax.axvspan(gs - 0.5, ge + 0.5, color="#dddddd", alpha=0.5, zorder=0)
+
+    ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+    ax.axhline(n_solutions, color="#e74c3c", linewidth=1, linestyle="--",
+               label=f"Total solutions ({n_solutions})")
+
+    km_step = 10
+    seg_step = km_step // SEGMENT_KM
+    tick_segs = np.arange(
+        (seg_min // seg_step) * seg_step,
+        seg_max + seg_step,
+        seg_step,
+        dtype=int,
+    )
+    tick_segs = tick_segs[(tick_segs >= seg_min) & (tick_segs <= seg_max)]
+    ax.set_xticks(tick_segs)
+    ax.set_xticklabels(x_labels(tick_segs), fontsize=7)
+
+    ax.set_xlabel("Position (km / heure de départ)", fontsize=9)
+    ax.set_ylabel("Nombre de solutions", fontsize=9)
+    ax.set_title(f"{runner} — début de relais par longueur", fontsize=11)
+
+    from matplotlib.patches import Patch
+    legend_elements = [
+        Patch(facecolor=_RELAY_COLORS.get(km, _RELAY_COLOR_DEFAULT), label=f"{km} km")
+        for km in relay_sizes
+    ]
+    legend_elements.append(Patch(facecolor="#dddddd", alpha=0.5, label="Période de nuit (0h–6h)"))
+    _draw_unavailability(ax, runner, seg_min, seg_max)
+    if unavailable_segments(runner):
+        legend_elements.append(
+            Patch(facecolor="none", edgecolor="#c0392b", hatch="///", alpha=0.35, label="Indisponible")
+        )
     ax.legend(handles=legend_elements, fontsize=8, loc="upper right")
 
     fig.tight_layout()
@@ -431,11 +555,32 @@ def make_solo_binome_page(counts_solo, counts_binome, n_solutions, img_name, out
 # ── Infos contraintes d'un coureur ────────────────────────────────────────────
 
 
+def unavailable_segments(runner):
+    """
+    Retourne la liste de plages (start, end) où le coureur est indisponible,
+    calculée comme le complément des fenêtres PARTIAL_AVAILABILITY sur [0, N_SEGMENTS].
+    Si le coureur est absent de PARTIAL_AVAILABILITY, il est disponible partout → [].
+    """
+    if runner not in PARTIAL_AVAILABILITY:
+        return []
+    avail = sorted(PARTIAL_AVAILABILITY[runner])
+    unavail = []
+    cursor = 0
+    for a_start, a_end in avail:
+        if cursor < a_start:
+            unavail.append((cursor, a_start))
+        cursor = max(cursor, a_end)
+    if cursor < N_SEGMENTS:
+        unavail.append((cursor, N_SEGMENTS))
+    return unavail
+
+
 def format_unavailability(runner):
-    if runner not in UNAVAILABILITY:
+    periods = unavailable_segments(runner)
+    if not periods:
         return "Disponible sur toute la course"
     lines = []
-    for s, e in UNAVAILABILITY[runner]:
+    for s, e in periods:
         h_s = segment_start_hour(s)
         if e >= N_SEGMENTS:
             lines.append(
@@ -503,7 +648,7 @@ nav { margin-bottom: 1.5em; }
 """
 
 
-def make_runner_page(runner, counts_solo, counts_binome, n_solutions, img_name, out_html):
+def make_runner_page(runner, counts_solo, counts_binome, n_solutions, img_name, img_relay_name, out_html):
     constraints_html = runner_constraints_html(runner)
     counts = counts_solo + counts_binome
 
@@ -539,6 +684,11 @@ def make_runner_page(runner, counts_solo, counts_binome, n_solutions, img_name, 
   {stats_html}
   <div class="histogram">
     <img src="{img_name}" alt="Histogramme {runner}">
+  </div>
+
+  <h2>Début de relais par longueur ({n_solutions} solutions)</h2>
+  <div class="histogram">
+    <img src="{img_relay_name}" alt="Débuts de relais {runner}">
   </div>
 </body>
 </html>
@@ -668,11 +818,17 @@ def main():
         counts_solo, counts_binome = segment_coverage(solutions, runner)
         img_name = f"{runner.lower()}_histogram.png"
         img_path = OUT_DIR / img_name
+        img_relay_name = f"{runner.lower()}_relay_starts.png"
+        img_relay_path = OUT_DIR / img_relay_name
         html_name = f"{runner.lower()}.html"
         html_path = OUT_DIR / html_name
 
         make_histogram(runner, counts_solo, counts_binome, n, img_path)
-        make_runner_page(runner, counts_solo, counts_binome, n, img_name, html_path)
+
+        relay_counts = relay_start_coverage(solutions, runner)
+        make_relay_start_histogram(runner, relay_counts, n, img_relay_path)
+
+        make_runner_page(runner, counts_solo, counts_binome, n, img_name, img_relay_name, html_path)
         runners_info.append((runner, counts_solo, counts_binome, html_name))
 
     print("  Génération de la page de diversité…")
