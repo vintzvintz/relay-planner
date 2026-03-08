@@ -10,16 +10,19 @@ from ortools.sat.python import cp_model
 from data import (
     N_SEGMENTS,
     RUNNER_RELAYS,
-    UNAVAILABILITY,
+    PARTIAL_AVAILABILITY,
     REST_NORMAL,
     REST_NIGHT,
     NIGHT_SEGMENTS,
-    OLIVIER_NIGHT1,
-    OLIVIER_NIGHT2,
+    PINNED_BINOMES,
+    PINNED_RUNNERS,
     COMPATIBLE,
     MANDATORY_PAIRS,
     MULTI_NIGHT_ALLOWED,
+    check_compatible_symmetric,
 )
+
+check_compatible_symmetric()
 
 RUNNERS = list(RUNNER_RELAYS.keys())
 N_RUNNERS = len(RUNNERS)
@@ -87,51 +90,76 @@ def _add_night_relay(model, start):
 def _add_rest_constraints(model, start, end, night_relay):
     """Repos minimum entre toute paire de relais d'un même coureur."""
     for r in RUNNERS:
-        n = len(RUNNER_RELAYS[r])
-        if n < 2:
+        n_relays = len(RUNNER_RELAYS[r])
+        if n_relays < 2:
             continue
-        for k in range(n):
-            for kp in range(k + 1, n):
-                b = model.new_bool_var(f"bef_{r}_{k}_{kp}")
-                bkd = model.new_bool_var(f"bkd_{r}_{k}_{kp}")
-                bkn = model.new_bool_var(f"bkn_{r}_{k}_{kp}")
-                model.add_bool_and([b, ~night_relay[r][k]]).only_enforce_if(bkd)
-                model.add_bool_or([~b, night_relay[r][k]]).only_enforce_if(~bkd)
-                model.add_bool_and([b, night_relay[r][k]]).only_enforce_if(bkn)
-                model.add_bool_or([~b, ~night_relay[r][k]]).only_enforce_if(~bkn)
-                model.add(end[r][k] + REST_NORMAL <= start[r][kp]).only_enforce_if(bkd)
-                model.add(end[r][k] + REST_NIGHT <= start[r][kp]).only_enforce_if(bkn)
-                bkpd = model.new_bool_var(f"bkpd_{r}_{k}_{kp}")
-                bkpn = model.new_bool_var(f"bkpn_{r}_{k}_{kp}")
-                model.add_bool_and([~b, ~night_relay[r][kp]]).only_enforce_if(bkpd)
-                model.add_bool_or([b, night_relay[r][kp]]).only_enforce_if(~bkpd)
-                model.add_bool_and([~b, night_relay[r][kp]]).only_enforce_if(bkpn)
-                model.add_bool_or([b, ~night_relay[r][kp]]).only_enforce_if(~bkpn)
-                model.add(end[r][kp] + REST_NORMAL <= start[r][k]).only_enforce_if(bkpd)
-                model.add(end[r][kp] + REST_NIGHT <= start[r][k]).only_enforce_if(bkpn)
+        for k in range(n_relays):
+            for kp in range(k + 1, n_relays):
+                k_before_kp = model.new_bool_var(f"bef_{r}_{k}_{kp}")
+                k_day_then_kp = model.new_bool_var(f"bkd_{r}_{k}_{kp}")
+                k_night_then_kp = model.new_bool_var(f"bkn_{r}_{k}_{kp}")
+                model.add_bool_and([k_before_kp, ~night_relay[r][k]]).only_enforce_if(k_day_then_kp)
+                model.add_bool_or([~k_before_kp, night_relay[r][k]]).only_enforce_if(~k_day_then_kp)
+                model.add_bool_and([k_before_kp, night_relay[r][k]]).only_enforce_if(k_night_then_kp)
+                model.add_bool_or([~k_before_kp, ~night_relay[r][k]]).only_enforce_if(~k_night_then_kp)
+                model.add(end[r][k] + REST_NORMAL <= start[r][kp]).only_enforce_if(k_day_then_kp)
+                model.add(end[r][k] + REST_NIGHT <= start[r][kp]).only_enforce_if(k_night_then_kp)
+                kp_day_then_k = model.new_bool_var(f"bkpd_{r}_{k}_{kp}")
+                kp_night_then_k = model.new_bool_var(f"bkpn_{r}_{k}_{kp}")
+                model.add_bool_and([~k_before_kp, ~night_relay[r][kp]]).only_enforce_if(kp_day_then_k)
+                model.add_bool_or([k_before_kp, night_relay[r][kp]]).only_enforce_if(~kp_day_then_k)
+                model.add_bool_and([~k_before_kp, night_relay[r][kp]]).only_enforce_if(kp_night_then_k)
+                model.add_bool_or([k_before_kp, ~night_relay[r][kp]]).only_enforce_if(~kp_night_then_k)
+                model.add(end[r][kp] + REST_NORMAL <= start[r][k]).only_enforce_if(kp_day_then_k)
+                model.add(end[r][kp] + REST_NIGHT <= start[r][k]).only_enforce_if(kp_night_then_k)
 
 
 def _add_availability(model, start, end):
-    """Applique les indisponibilités et affectations fixes (Olivier/Alexis)."""
-    for r, windows in UNAVAILABILITY.items():
-        for (unavail_start, unavail_end) in windows:
-            for k in range(len(RUNNER_RELAYS[r])):
-                before = model.new_bool_var(f"unavail_before_{r}_{k}")
-                model.add(end[r][k] <= unavail_start).only_enforce_if(before)
-                model.add(start[r][k] >= unavail_end).only_enforce_if(~before)
+    """Applique les disponibilités partielles et affectations fixes (Olivier/Alexis)."""
+    for r, windows in PARTIAL_AVAILABILITY.items():
+        n_relays = len(RUNNER_RELAYS[r])
+        for k in range(n_relays):
+            # start[r][k] must fall within one of the availability windows
+            window_bools = []
+            for i, (avail_start, avail_end) in enumerate(windows):
+                b = model.new_bool_var(f"avail_{r}_{k}_{i}")
+                model.add(start[r][k] >= avail_start).only_enforce_if(b)
+                model.add(end[r][k] <= avail_end).only_enforce_if(b)
+                window_bools.append(b)
+            model.add_bool_or(window_bools)
 
-    if "Clemence" in UNAVAILABILITY and UNAVAILABILITY["Clemence"]:
-        unavail_start, unavail_end = UNAVAILABILITY["Clemence"][0]
-        model.add(end["Clemence"][0] <= unavail_start)
-        model.add(start["Clemence"][1] >= unavail_end)
+    # Pinned binômes: force a pair to share a relay covering the window.
+    pair_relay_counters = {}
+    for (r1, r2), window in PINNED_BINOMES:
+        pair_key = (r1, r2)
+        idx = pair_relay_counters.get(pair_key, 0)
+        window_start, window_end = window[0], window[1]
+        min_relay_size = window_end - window_start
 
-    o30 = [k for k, sz in enumerate(RUNNER_RELAYS["Olivier"]) if sz == 6][:2]
-    a30 = [k for k, sz in enumerate(RUNNER_RELAYS["Alexis"]) if sz == 6][:2]
-    for ok, ak, nw in zip(o30, a30, [OLIVIER_NIGHT1, OLIVIER_NIGHT2]):
-        ns = nw[0]
-        model.add(start["Olivier"][ok] >= max(0, ns - 2))
-        model.add(start["Olivier"][ok] <= ns)
-        model.add(start["Alexis"][ak] == start["Olivier"][ok])
+        r1_relays = [k for k, sz in enumerate(RUNNER_RELAYS[r1]) if sz >= min_relay_size]
+        r2_relays = [k for k, sz in enumerate(RUNNER_RELAYS[r2]) if sz >= min_relay_size]
+        if idx < len(r1_relays) and idx < len(r2_relays):
+            k1, k2 = r1_relays[idx], r2_relays[idx]
+            sz1 = RUNNER_RELAYS[r1][k1]
+            model.add(start[r1][k1] <= window_start)
+            model.add(start[r1][k1] >= window_end - sz1)
+            model.add(start[r2][k2] == start[r1][k1])
+        pair_relay_counters[pair_key] = idx + 1
+
+    # Pinned runners: force a single runner to have a relay covering the window.
+    runner_relay_counters = {}
+    for r, window in PINNED_RUNNERS:
+        idx = runner_relay_counters.get(r, 0)
+        window_start, window_end = window[0], window[1]
+        min_relay_size = window_end - window_start
+
+        r_relays = [k for k, sz in enumerate(RUNNER_RELAYS[r]) if sz >= min_relay_size]
+        if idx < len(r_relays):
+            k = r_relays[idx]
+            sz = RUNNER_RELAYS[r][k]
+            model.add(start[r][k] <= window_start)
+            model.add(start[r][k] >= window_end - sz)
+        runner_relay_counters[r] = idx + 1
 
 
 def _add_same_relay(model, start):

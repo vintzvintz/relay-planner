@@ -10,7 +10,7 @@ from constraint_model import build_model
 from solution_formatter import save_solution
 
 # Paramètres solveur
-SOLVER_TIME_LIMIT = 60.0  # secondes
+SOLVER_TIME_LIMIT = 180.0  # secondes
 SOLVER_NUM_WORKERS = 12
 
 

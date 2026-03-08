@@ -124,10 +124,12 @@ def _print_recap_coureurs(relais_list, W):
 
 def _print_stats(relais_list, W):
     n_binomes = sum(1 for x in relais_list if x["partner"]) // 2
-    n_solos = sum(1 for x in relais_list if x["solo"])
+    solos = [x for x in relais_list if x["solo"]]
+    n_solos = len(solos)
+    km_solos = sum(x["km"] for x in solos)
     print(f"\n{'─' * W}")
     print(
-        f"  Binômes : {n_binomes}   Solos : {n_solos}   "
+        f"  Binômes : {n_binomes}   Solos : {n_solos} ({km_solos} km)   "
         f"Total relais : {len(relais_list)}"
     )
     print("=" * W)

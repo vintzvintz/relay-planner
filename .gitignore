@@ -10,5 +10,5 @@ __pycache__/
 *.odt
 *.log
 *.code-workspace
-.vscode/launch.json
+*.zip
 /.claude
