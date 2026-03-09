@@ -9,6 +9,8 @@ from data import (
     TOTAL_KM,
     SEGMENT_KM,
     START_HOUR,
+    NIGHT_SEGMENTS,
+    PARTIAL_AVAILABILITY,
     segment_start_hour,
 )
 
@@ -243,6 +245,198 @@ def _save_csv(relais_list, csv_path):
         writer.writerows(rows)
 
 
+def formatte_html(solver, start, same_relay, relais_solo, night_relay):
+    relais_list = _parse_relais(solver, start, same_relay, relais_solo, night_relay)
+
+    by_runner = {r: {} for r in RUNNERS}
+    for rel in relais_list:
+        by_runner[rel["runner"]][rel["start"]] = rel
+
+    def unavail_segs(runner):
+        if runner not in PARTIAL_AVAILABILITY:
+            return set()
+        avail = set()
+        for s, e in PARTIAL_AVAILABILITY[runner]:
+            avail.update(range(s, e))
+        return set(range(N_SEGMENTS)) - avail
+
+    # Segments les plus proches des heures marquées (0h, 6h, 12h, 18h)
+    # On casse les spans à ces frontières pour pouvoir y placer un border-left
+    SEG_WIDTH_PX = 10
+    mark_segs = set()
+    for day in range(4):
+        for hh_mark in (0, 6, 12, 18):
+            target_h = day * 24 + hh_mark
+            best = min(range(N_SEGMENTS + 1), key=lambda s: abs(segment_start_hour(s) - target_h))
+            if 0 < best <= N_SEGMENTS:
+                mark_segs.add(best)
+
+    def split_spans(spans):
+        """Coupe les spans aux frontières mark_segs."""
+        result = []
+        for s, e, typ, label in spans:
+            cuts = sorted(m for m in mark_segs if s < m < e)
+            boundaries = [s] + cuts + [e]
+            for i in range(len(boundaries) - 1):
+                result.append((boundaries[i], boundaries[i + 1], typ, label if i == 0 else ""))
+        return result
+
+    rows_html = []
+    for r in sorted(RUNNERS):
+        unavail = unavail_segs(r)
+        relais_by_start = by_runner[r]
+        sorted_relais = sorted(relais_by_start.values(), key=lambda x: x["start"])
+
+        # Segments de repos-post-nuit : [fin_relais_nuit, fin_relais_nuit + REST_NIGHT)
+        post_night_segs = set()
+        for rel in sorted_relais:
+            if rel["night"]:
+                post_night_segs.update(range(rel["end"], rel["end"] + REST_NIGHT))
+
+        spans = []
+        seg = 0
+        while seg < N_SEGMENTS:
+            if seg in relais_by_start:
+                rel = relais_by_start[seg]
+                relay_typ = "relay_solo" if rel["solo"] else ("relay_binome" if rel["partner"] else "relay_solo")
+                spans.append((seg, rel["end"], relay_typ, ""))
+                seg = rel["end"]
+            elif seg in unavail:
+                end = seg + 1
+                while end < N_SEGMENTS and end in unavail and end not in relais_by_start:
+                    end += 1
+                spans.append((seg, end, "unavail", ""))
+                seg = end
+            else:
+                next_event = N_SEGMENTS
+                for rs in sorted_relais:
+                    if rs["start"] > seg:
+                        next_event = min(next_event, rs["start"])
+                        break
+                for us in sorted(unavail):
+                    if us > seg:
+                        next_event = min(next_event, us)
+                        break
+                end = next_event
+                n_segs = end - seg
+                h = n_segs * (SEGMENT_KM / 9)
+                hh, mm = int(h), int((h % 1) * 60)
+                label = f"{hh}h{mm:02d}" if n_segs > 0 else ""
+                spans.append((seg, end, "free", label))
+                seg = end
+
+        spans = split_spans(spans)
+
+        tds = []
+        for s, e, typ, label in spans:
+            colspan = e - s
+            if colspan == 0:
+                continue
+            bl = "border-left:2px solid #000;" if s in mark_segs else ""
+            if typ == "free":
+                is_night = all(seg_i in NIGHT_SEGMENTS for seg_i in range(s, e))
+                is_post_night = any(seg_i in post_night_segs for seg_i in range(s, e))
+                bg = "#d0d0d0" if (is_night or is_post_night) else "#ffffff"
+                style = f"background:{bg};color:#555;font-size:10px;text-align:center;border:1px solid #ccc;{bl}"
+            elif typ == "relay_binome":
+                style = f"background:#4caf50;color:#000;font-size:10px;text-align:center;font-weight:bold;border:1px solid #2e7d32;{bl}"
+            elif typ == "relay_solo":
+                style = f"background:#f48fb1;color:#000;font-size:10px;text-align:center;font-weight:bold;border:1px solid #c2185b;{bl}"
+            elif typ == "unavail":
+                style = f"background:#8b00ff;border:1px solid #6a00cc;{bl}"
+            else:
+                style = f"background:#fff;border:1px solid #ccc;{bl}"
+            tds.append(f'<td colspan="{colspan}" style="{style}">{label}</td>')
+
+        row = (
+            f'<tr><th style="text-align:left;padding:2px 6px;white-space:nowrap;'
+            f'font-size:12px;">{r}</th>{"".join(tds)}</tr>'
+        )
+        rows_html.append(row)
+
+    header_tds = ['<th style="padding:1px;font-size:9px;width:20px;min-width:20px;"></th>']
+    prev_day = -1
+    for seg in range(N_SEGMENTS):
+        h = segment_start_hour(seg)
+        day = int(h // 24)
+        hh = int(h) % 24
+        mm = int((h % 1) * 60)
+        is_mark = seg in mark_segs
+        # Heure cible la plus proche pour ce mark_seg
+        if is_mark:
+            h_mod = h % 24
+            closest_hh = min((0, 6, 12, 18), key=lambda hm: min(abs(h_mod - hm), 24 - abs(h_mod - hm)))
+            label = f"{closest_hh:02d}h"
+        else:
+            label = ""
+        bg = "#333" if day != prev_day else "#555"
+        prev_day = day
+        bl = "border-left:2px solid #fff;" if is_mark else ""
+        header_tds.append(
+            f'<th style="background:{bg};color:#fff;font-size:8px;padding:1px;'
+            f'text-align:center;width:{SEG_WIDTH_PX}px;min-width:{SEG_WIDTH_PX}px;{bl}">{label}</th>'
+        )
+    header_row = f'<tr>{"".join(header_tds)}</tr>'
+
+    h_end = segment_start_hour(N_SEGMENTS)
+    day_end = DAY_NAMES[min(int(h_end // 24), 2)]
+    hh_end, mm_end = int(h_end) % 24, int((h_end % 1) * 60)
+
+    html = f"""<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Planning {TOTAL_KM} km</title>
+<style>
+  body {{ font-family: sans-serif; font-size: 12px; margin: 16px; }}
+  table {{ border-collapse: collapse; table-layout: fixed; }}
+  th, td {{ padding: 2px; }}
+</style>
+</head>
+<body>
+<h2>Planning {TOTAL_KM} km — {N_SEGMENTS} segments de {SEGMENT_KM} km</h2>
+<p>Départ : {DAY_NAMES[0]} {START_HOUR:02d}h00 &nbsp;|&nbsp; Arrivée : {day_end} ~{hh_end:02d}h{mm_end:02d}</p>
+<p>
+  <span style="background:#4caf50;padding:2px 8px;border:1px solid #2e7d32;">Relais binôme</span>&nbsp;
+  <span style="background:#f48fb1;padding:2px 8px;border:1px solid #c2185b;">Relais solo</span>&nbsp;
+  <span style="background:#ffffff;border:1px solid #ccc;padding:2px 8px;">Repos (jour)</span>&nbsp;
+  <span style="background:#d0d0d0;border:1px solid #ccc;padding:2px 8px;">Repos (nuit)</span>&nbsp;
+  <span style="background:#8b00ff;padding:2px 8px;border:1px solid #6a00cc;">&nbsp;&nbsp;&nbsp;</span> Indisponible
+</p>
+<div style="overflow-x:auto;">
+<table>
+{header_row}
+{"".join(rows_html)}
+</table>
+</div>
+{_html_text_sections(relais_list)}
+</body>
+</html>"""
+    return html
+
+
+def _html_text_sections(relais_list):
+    import io
+    import sys
+
+    W = 74
+    buf = io.StringIO()
+    old_stdout, sys.stdout = sys.stdout, buf
+    _print_planning_chrono(relais_list, W)
+    _print_recap_coureurs(relais_list, W)
+    sys.stdout = old_stdout
+    text = buf.getvalue()
+
+    return (
+        '<h3 style="margin-top:2em;">Planning détaillé</h3>'
+        '<pre style="font-family:monospace;font-size:12px;'
+        'background:#f8f8f8;border:1px solid #ddd;padding:12px;'
+        'overflow-x:auto;white-space:pre;">'
+        + text
+        + "</pre>"
+    )
+
+
 def save_solution(solver, start, same_relay, relais_solo, night_relay):
     """Affiche la solution et la sauvegarde dans un fichier horodaté."""
     import io
@@ -270,3 +464,8 @@ def save_solution(solver, start, same_relay, relais_solo, night_relay):
     csv_fname = os.path.join(outdir, f"planning_{ts}.csv")
     _save_csv(relais_list, csv_fname)
     print(f"CSV sauvegardé      : {csv_fname}")
+
+    html_fname = os.path.join(outdir, f"planning_{ts}.html")
+    with open(html_fname, "w", encoding="utf-8") as f:
+        f.write(formatte_html(solver, start, same_relay, relais_solo, night_relay))
+    print(f"HTML sauvegardé     : {html_fname}")
