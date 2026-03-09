@@ -19,9 +19,10 @@ pip install -r requirements.txt
 ## Scripts
 
 ### `data.py`
-Toutes les constantes et données du problème : coureurs, relais engagés, indisponibilités,
-compatibilités binômes, fenêtres de nuit. Peut être exécuté directement pour vérifier la
-cohérence des données.
+Toutes les constantes et données du problème : coureurs, relais engagés, disponibilités
+partielles (`PARTIAL_AVAILABILITY`), binômes et coureurs épinglés sur des fenêtres horaires
+(`PINNED_BINOMES`, `PINNED_RUNNERS`), compatibilités binômes. Peut être exécuté directement
+pour vérifier la cohérence des données (symétrie de `COMPATIBLE`, totaux km, etc.).
 
 ```bash
 python data.py
@@ -32,7 +33,8 @@ Construction du modèle CP-SAT (variables, contraintes). Importé par les autres
 pas destiné à être exécuté directement.
 
 ### `solver.py`
-Résout le problème une fois, maximise les binômes, écrit le planning dans `plannings/`.
+Résout le problème une fois (limite 180 s), maximise les binômes, écrit le planning dans
+`plannings/` (`.txt`, `.csv` et `.html`).
 
 ```bash
 python solver.py
@@ -48,7 +50,9 @@ python upper_bound.py
 
 ### `solution_formatter.py`
 Affichage et sauvegarde d'une solution (planning chronologique, récapitulatif par coureur,
-vérifications). Importé par `solver.py` et `enumerate_optimal_solutions.py`.
+vérifications). Génère également un fichier HTML avec une grille Gantt visuelle par coureur
+(couleurs : binôme / solo / repos / indisponible, repères toutes les 6h).
+Importé par `solver.py` et `enumerate_optimal_solutions.py`.
 
 ### `enumerate_optimal_solutions.py`
 Énumère toutes les solutions optimales en deux étapes :
@@ -77,7 +81,7 @@ python analyze_solutions.py
 
 | Dossier / fichier            | Contenu                                          |
 |------------------------------|--------------------------------------------------|
-| `plannings/`                 | Plannings `.txt` et `.csv` produits par `solver.py` |
+| `plannings/`                 | Plannings `.txt`, `.csv` et `.html` produits par `solver.py` |
 | `enumerate_solutions/`       | Solutions énumérées (`.txt` + `.csv`)            |
 | `explore_solutions/`         | Pages HTML et histogrammes d'analyse             |
 | `planning_exemple.txt`       | Exemple de planning formaté                      |
