@@ -48,7 +48,7 @@ OUT_DIR = Path("explore_solutions")
 
 def load_solutions(folder="enumerate_solutions"):
     solutions = []
-    for path in sorted(Path(folder).glob("config_*.csv")):
+    for path in sorted(Path(folder).glob("run_*_config_*.csv")):
         relays = []
         with open(path, newline="") as f:
             reader = csv.DictReader(f)
@@ -345,6 +345,8 @@ def segment_runner_diversity(solutions):
 
 def make_diversity_histogram(diversity, out_path):
     active = np.where(diversity > 0)[0]
+    if len(active) == 0:
+        return
     seg_min, seg_max = int(active[0]), int(active[-1])
     segs = np.arange(seg_min, seg_max + 1)
     vals = diversity[seg_min : seg_max + 1]

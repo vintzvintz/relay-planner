@@ -7,12 +7,10 @@
   et cherche jusqu'à MAX_PER_CONFIG placements.
 
 Chaque solution est sauvegardée dans enumerate_solutions/ sous forme de fichier
-texte et CSV. Arrêt manuel possible avec Ctrl+C.
+CSV. Arrêt manuel possible avec Ctrl+C.
 """
 
-import io
 import os
-import sys
 from datetime import datetime
 
 from ortools.sat.python import cp_model
@@ -23,35 +21,26 @@ import analyze_solutions
 
 OUTDIR = "enumerate_solutions"
 OPTIMAL_BINOMES_NUM = 20  # None = recherche automatique, int = valeur connue
-TIME_LIMIT_FIRST = 120.0  # secondes pour trouver le score optimal (si OPTIMAL_BINOMES_NUM is None)
-TIME_LIMIT_ENUM = 60.0    # secondes par itération d'énumération
-MAX_PER_CONFIG = 25       # placements max par configuration de binômes
-MAX_CONFIGS = 20          # configs max en phase 1 (None ou 0 = pas de limite)
+TIME_LIMIT_FIRST = 180.0  # secondes pour trouver le score optimal (si OPTIMAL_BINOMES_NUM is None)
+TIME_LIMIT_ENUM = 120.0    # secondes par itération d'énumération
+MAX_PER_CONFIG = 10       # placements max par configuration de binômes
+MAX_CONFIGS = 50          # configs max en phase 1 (None ou 0 = pas de limite)
 SOLVER_NUM_WORKERS = 12
 
 
-def _save_one(solver, start, same_relay, relais_solo, night_relay, config_idx, place_idx):
+def _save_one(solver, start, same_relay, relais_solo, night_relay, run_ts, config_idx, place_idx):
     os.makedirs(OUTDIR, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    base = os.path.join(OUTDIR, f"config_{config_idx:03d}_place_{place_idx:02d}_{ts}")
+    base = os.path.join(OUTDIR, f"run_{run_ts}_config_{config_idx:03d}_place_{place_idx:02d}")
 
-    buf = io.StringIO()
-    old_stdout, sys.stdout = sys.stdout, buf
-    print_solution(solver, start, same_relay, relais_solo, night_relay)
-    sys.stdout = old_stdout
-    output = buf.getvalue()
-    print(output)
-
-    with open(base + ".txt", "w", encoding="utf-8") as f:
-        f.write(output)
+    #print_solution(solver, start, same_relay, relais_solo, night_relay)
 
     relais_list = _parse_relais(solver, start, same_relay, relais_solo, night_relay)
     _save_csv(relais_list, base + ".csv")
 
-    print(f"  → {base}.txt / .csv")
+    print(f"  → {base}.csv")
 
 
-def _collect_configs(model, start, same_relay, relais_solo, night_relay, solver, optimal_score):
+def _collect_configs(model, start, same_relay, relais_solo, night_relay, solver, optimal_score, run_ts):
     """Étape 1 : énumère toutes les configurations de binômes, sauvegarde place_00 et retourne la liste."""
     model.add(sum(same_relay.values()) == optimal_score)
     solver.parameters.max_time_in_seconds = TIME_LIMIT_ENUM
@@ -70,7 +59,7 @@ def _collect_configs(model, start, same_relay, relais_solo, night_relay, solver,
             configs.append(active_keys)
             print(f"  Config {config_idx} trouvée ({len(active_keys)} binômes actifs)")
 
-            _save_one(solver, start, same_relay, relais_solo, night_relay, config_idx, 0)
+            _save_one(solver, start, same_relay, relais_solo, night_relay, run_ts, config_idx, 0)
 
             if MAX_CONFIGS and len(configs) >= MAX_CONFIGS:
                 print(f"\nLimite de {MAX_CONFIGS} configurations atteinte.")
@@ -110,9 +99,12 @@ def enumerate_solutions():
         print(f"Score optimal : {optimal_score} binômes\n")
         model.clear_objective()
 
+    run_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    print(f"Run timestamp : {run_ts}")
+
     print("Étape 1 : collecte des configurations de binômes...")
     print("  Ctrl-C (1 fois) pour stopper la phase 1 et passer à la phase 2")
-    configs = _collect_configs(model, start, same_relay, relais_solo, night_relay, solver, optimal_score)
+    configs = _collect_configs(model, start, same_relay, relais_solo, night_relay, solver, optimal_score, run_ts)
     print(f"\n{len(configs)} configuration(s) de binômes collectée(s).\n")
 
     if not configs:
@@ -142,31 +134,33 @@ def enumerate_solutions():
                 continue
 
             n_total += 1
-            _save_one(solver_f, start_f, same_relay_f, relais_solo_f, night_relay_f, config_idx, 1)
-            cur_start_vals = {r: [solver_f.value(start_f[r][k]) for k in range(len(RUNNER_RELAYS[r]))]
-                              for r in RUNNERS}
+            _save_one(solver_f, start_f, same_relay_f, relais_solo_f, night_relay_f, run_ts, config_idx, 1)
 
-            n_places = 1
-            for place_idx in range(2, MAX_PER_CONFIG + 1):
+            def _add_cut(model_f, start_f, place_idx):
+                """Ajoute une contrainte excluant le placement courant du solveur."""
+                start_vals = {r: [solver_f.value(start_f[r][k]) for k in range(len(RUNNER_RELAYS[r]))]
+                              for r in RUNNERS}
                 cut_lits = []
                 for r in RUNNERS:
                     for k in range(len(RUNNER_RELAYS[r])):
-                        val = cur_start_vals[r][k]
+                        val = start_vals[r][k]
                         b = model_f.new_bool_var(f"cut_{place_idx}_{r}_{k}")
                         model_f.add(start_f[r][k] != val).only_enforce_if(b)
                         model_f.add(start_f[r][k] == val).only_enforce_if(~b)
                         cut_lits.append(b)
                 model_f.add_bool_or(cut_lits)
 
+            _add_cut(model_f, start_f, 1)
+            n_places = 1
+            for place_idx in range(2, MAX_PER_CONFIG + 1):
                 status = solver_f.solve(model_f)
                 if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
                     break
 
                 n_total += 1
                 n_places += 1
-                _save_one(solver_f, start_f, same_relay_f, relais_solo_f, night_relay_f, config_idx, place_idx)
-                cur_start_vals = {r: [solver_f.value(start_f[r][k]) for k in range(len(RUNNER_RELAYS[r]))]
-                                  for r in RUNNERS}
+                _save_one(solver_f, start_f, same_relay_f, relais_solo_f, night_relay_f, run_ts, config_idx, place_idx)
+                _add_cut(model_f, start_f, place_idx)
 
             print(f"  {n_places} placement(s) pour la configuration {config_idx}.")
 
