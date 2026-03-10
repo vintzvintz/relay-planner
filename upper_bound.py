@@ -12,7 +12,7 @@ Objectif : maximiser Σ b[r1,r2,s]
 """
 
 from collections import defaultdict
-from data import RUNNER_RELAYS, COMPATIBLE, N_SEGMENTS
+from data import RUNNERS_DATA, N_SEGMENTS
 
 
 def count_by_size(relays: list[int]) -> dict[int, int]:
@@ -25,14 +25,14 @@ def count_by_size(relays: list[int]) -> dict[int, int]:
 def compute_upper_bound() -> int:
     from ortools.linear_solver import pywraplp
 
-    total_segs_engaged = sum(sum(r) for r in RUNNER_RELAYS.values())
+    total_segs_engaged = sum(sum(c.relais) for c in RUNNERS_DATA.values())
     surplus = total_segs_engaged - N_SEGMENTS
 
     solver = pywraplp.Solver.CreateSolver("GLOP")
 
-    counts = {r: count_by_size(relays) for r, relays in RUNNER_RELAYS.items()}
-    runners = list(RUNNER_RELAYS.keys())
-    all_sizes = sorted({s for relays in RUNNER_RELAYS.values() for s in relays})
+    counts = {r: count_by_size(c.relais) for r, c in RUNNERS_DATA.items()}
+    runners = list(RUNNERS_DATA.keys())
+    all_sizes = sorted({s for c in RUNNERS_DATA.values() for s in c.relais})
 
     # Variables b[r1, r2, s] avec r1 < r2 (ordre de la liste runners)
     b = {}
@@ -43,7 +43,7 @@ def compute_upper_bound() -> int:
             for r2 in runners[i + 1:]:
                 if counts[r2].get(s, 0) == 0:
                     continue
-                if r2 not in COMPATIBLE.get(r1, set()):
+                if r2 not in RUNNERS_DATA[r1].compatible:
                     continue
                 ub = min(counts[r1][s], counts[r2][s])
                 b[(r1, r2, s)] = solver.NumVar(0.0, ub, f"b_{r1}_{r2}_{s}")

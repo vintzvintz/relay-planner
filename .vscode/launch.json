@@ -9,7 +9,6 @@
             "type": "debugpy",
             "request": "launch",
             "program": "data.py",
-            "python": "${workspaceFolder}/venv/bin/python",
             "console": "integratedTerminal"
         },
         {
@@ -17,7 +16,6 @@
             "type": "debugpy",
             "request": "launch",
             "program": "upper_bound.py",
-            "python": "${workspaceFolder}/venv/bin/python",
             "console": "integratedTerminal"
         },
         {
@@ -25,7 +23,6 @@
             "type": "debugpy",
             "request": "launch",
             "program": "solver.py",
-            "python": "${workspaceFolder}/venv/bin/python",
             "console": "integratedTerminal"
         },
         {
@@ -33,7 +30,6 @@
             "type": "debugpy",
             "request": "launch",
             "program": "enumerate_optimal_solutions.py",
-            "python": "${workspaceFolder}/venv/bin/python",
             "console": "integratedTerminal"
         },
         {
@@ -41,7 +37,6 @@
             "type": "debugpy",
             "request": "launch",
             "program": "analyze_solutions.py",
-            "python": "${workspaceFolder}/venv/bin/python",
             "console": "integratedTerminal"
         },
     ]

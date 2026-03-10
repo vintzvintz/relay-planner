@@ -3,25 +3,23 @@ from data import (
     N_SEGMENTS,
     REST_NORMAL,
     REST_NIGHT,
-    RUNNER_RELAYS,
-    MANDATORY_PAIRS,
-    MULTI_NIGHT_ALLOWED,
+    RUNNERS_DATA,
+    MATCHING_CONSTRAINTS,
     TOTAL_KM,
     SEGMENT_KM,
     START_HOUR,
     NIGHT_SEGMENTS,
-    PARTIAL_AVAILABILITY,
     segment_start_hour,
 )
 
-RUNNERS = list(RUNNER_RELAYS.keys())
+RUNNERS = list(RUNNERS_DATA.keys())
 DAY_NAMES = ["Mercredi", "Jeudi", "Vendredi"]
 
 
 def _parse_relais(solver, start, same_relay, relais_solo, night_relay):
     relais_list = []
     for r in RUNNERS:
-        for k, sz in enumerate(RUNNER_RELAYS[r]):
+        for k, sz in enumerate(RUNNERS_DATA[r].relais):
             s = solver.value(start[r][k])
             partner = None
             for key, bv in same_relay.items():
@@ -113,7 +111,7 @@ def _print_recap_coureurs(relais_list, W):
             f"\n  {r:<12}  {total:>3} km  {len(r_rels)} relais"
             + (f"  ({', '.join(flags)})" if flags else "")
         )
-        for rel in r_rels:
+        for i, rel in enumerate(r_rels):
             day_name, hh, mm = _fmt(rel["start"])
             _, hh_e, mm_e = _fmt(rel["end"])
             p = f"avec {rel['partner']}" if rel["partner"] else "seul"
@@ -122,6 +120,10 @@ def _print_recap_coureurs(relais_list, W):
                 f"    {day_name} {hh:02d}h{mm:02d} → {hh_e:02d}h{mm_e:02d}"
                 f"  {rel['km']:>2} km  {p}{nuit}"
             )
+            if i < len(r_rels) - 1:
+                rest_h = segment_start_hour(r_rels[i + 1]["start"]) - segment_start_hour(rel["end"])
+                rh, rm = int(rest_h), int((rest_h % 1) * 60)
+                print(f"    Repos {rh}h{rm:02d}")
 
 
 def _print_stats(relais_list, W):
@@ -142,7 +144,7 @@ def _print_verifications(solver, start, same_relay, relais_solo, night_relay):
 
     coverage = [0] * N_SEGMENTS
     for r in RUNNERS:
-        for k, sz in enumerate(RUNNER_RELAYS[r]):
+        for k, sz in enumerate(RUNNERS_DATA[r].relais):
             for seg in range(solver.value(start[r][k]), solver.value(start[r][k]) + sz):
                 coverage[seg] += 1
     gaps = [s for s in range(N_SEGMENTS) if coverage[s] == 0]
@@ -159,7 +161,7 @@ def _print_verifications(solver, start, same_relay, relais_solo, night_relay):
                 solver.value(start[r][k]) + sz,
                 solver.value(night_relay[r][k]),
             )
-            for k, sz in enumerate(RUNNER_RELAYS[r])
+            for k, sz in enumerate(RUNNERS_DATA[r].relais)
         )
         for i in range(len(vals) - 1):
             _, e_prev, night_prev = vals[i]
@@ -173,9 +175,9 @@ def _print_verifications(solver, start, same_relay, relais_solo, night_relay):
 
     nuit_ok = True
     for r in RUNNERS:
-        if r in MULTI_NIGHT_ALLOWED:
+        if RUNNERS_DATA[r].nuit_max > 1:
             continue
-        n = sum(solver.value(night_relay[r][k]) for k in range(len(RUNNER_RELAYS[r])))
+        n = sum(solver.value(night_relay[r][k]) for k in range(len(RUNNERS_DATA[r].relais)))
         if n > 1:
             print(f"  NUIT x{n} : {r}")
             nuit_ok = False
@@ -184,7 +186,7 @@ def _print_verifications(solver, start, same_relay, relais_solo, night_relay):
 
     solo_ok = True
     for r in RUNNERS:
-        n = sum(solver.value(relais_solo[r][k]) for k in range(len(RUNNER_RELAYS[r])))
+        n = sum(solver.value(relais_solo[r][k]) for k in range(len(RUNNERS_DATA[r].relais)))
         if n > 1:
             print(f"  SOLO x{n} : {r}")
             solo_ok = False
@@ -193,14 +195,14 @@ def _print_verifications(solver, start, same_relay, relais_solo, night_relay):
 
     solo_night_ok = True
     for r in RUNNERS:
-        for k in range(len(RUNNER_RELAYS[r])):
+        for k in range(len(RUNNERS_DATA[r].relais)):
             if solver.value(relais_solo[r][k]) and solver.value(night_relay[r][k]):
                 print(f"  SOLO+NUIT : {r} relais {k}")
                 solo_night_ok = False
     if solo_night_ok:
         print("Solo≠Nuit : OK")
 
-    for r1, r2 in MANDATORY_PAIRS:
+    for r1, r2 in MATCHING_CONSTRAINTS["pair_at_least_once"]:
         found = any(
             solver.value(bv) == 1
             for key, bv in same_relay.items()
@@ -208,6 +210,15 @@ def _print_verifications(solver, start, same_relay, relais_solo, night_relay):
         )
         if not found:
             print(f"  BINÔME OBLIGATOIRE MANQUANT: {r1}-{r2}")
+
+    for r1, r2 in MATCHING_CONSTRAINTS["pair_at_most_once"]:
+        count = sum(
+            solver.value(bv)
+            for key, bv in same_relay.items()
+            if (key[0] == r1 and key[2] == r2) or (key[0] == r2 and key[2] == r1)
+        )
+        if count > 1:
+            print(f"  BINÔME EN TROP: {r1}-{r2} ({count} relais ensemble)")
 
 
 def print_solution(solver, start, same_relay, relais_solo, night_relay):
@@ -253,10 +264,10 @@ def formatte_html(solver, start, same_relay, relais_solo, night_relay):
         by_runner[rel["runner"]][rel["start"]] = rel
 
     def unavail_segs(runner):
-        if runner not in PARTIAL_AVAILABILITY:
+        if not RUNNERS_DATA[runner].dispo:
             return set()
         avail = set()
-        for s, e in PARTIAL_AVAILABILITY[runner]:
+        for s, e in RUNNERS_DATA[runner].dispo:
             avail.update(range(s, e))
         return set(range(N_SEGMENTS)) - avail
 
@@ -437,35 +448,51 @@ def _html_text_sections(relais_list):
     )
 
 
+_save_lock = __import__("threading").Lock()
+_save_counter = 0
+
+
 def save_solution(solver, start, same_relay, relais_solo, night_relay):
-    """Affiche la solution et la sauvegarde dans un fichier horodaté."""
+    """Affiche la solution et la sauvegarde dans un fichier horodaté.
+
+    Thread-safe : protège la redirection de sys.stdout par un verrou global
+    et utilise un compteur atomique pour éviter les collisions de noms de fichiers
+    quand plusieurs solutions arrivent dans la même seconde.
+    """
     import io
     import sys
     import os
     from datetime import datetime
 
-    buf = io.StringIO()
-    old_stdout, sys.stdout = sys.stdout, buf
-    print_solution(solver, start, same_relay, relais_solo, night_relay)
-    sys.stdout = old_stdout
-    output = buf.getvalue()
-    print(output)
+    global _save_counter
 
-    outdir = "plannings"
-    os.makedirs(outdir, exist_ok=True)
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    with _save_lock:
+        _save_counter += 1
+        seq = _save_counter
 
-    fname = os.path.join(outdir, f"planning_{ts}.txt")
-    with open(fname, "w", encoding="utf-8") as f:
-        f.write(output)
-    print(f"Planning sauvegardé : {fname}")
+        buf = io.StringIO()
+        old_stdout, sys.stdout = sys.stdout, buf
+        print_solution(solver, start, same_relay, relais_solo, night_relay)
+        sys.stdout = old_stdout
+        output = buf.getvalue()
+        print(output)
 
-    relais_list = _parse_relais(solver, start, same_relay, relais_solo, night_relay)
-    csv_fname = os.path.join(outdir, f"planning_{ts}.csv")
-    _save_csv(relais_list, csv_fname)
-    print(f"CSV sauvegardé      : {csv_fname}")
+        outdir = "plannings"
+        os.makedirs(outdir, exist_ok=True)
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        suffix = f"{ts}_{seq:03d}"
 
-    html_fname = os.path.join(outdir, f"planning_{ts}.html")
-    with open(html_fname, "w", encoding="utf-8") as f:
-        f.write(formatte_html(solver, start, same_relay, relais_solo, night_relay))
-    print(f"HTML sauvegardé     : {html_fname}")
+        fname = os.path.join(outdir, f"planning_{suffix}.txt")
+        with open(fname, "w", encoding="utf-8") as f:
+            f.write(output)
+        print(f"Planning sauvegardé : {fname}")
+
+        relais_list = _parse_relais(solver, start, same_relay, relais_solo, night_relay)
+        csv_fname = os.path.join(outdir, f"planning_{suffix}.csv")
+        _save_csv(relais_list, csv_fname)
+        print(f"CSV sauvegardé      : {csv_fname}")
+
+        html_fname = os.path.join(outdir, f"planning_{suffix}.html")
+        with open(html_fname, "w", encoding="utf-8") as f:
+            f.write(formatte_html(solver, start, same_relay, relais_solo, night_relay))
+        print(f"HTML sauvegardé     : {html_fname}")

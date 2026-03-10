@@ -23,11 +23,8 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).parent))
 from data import (
-    RUNNER_RELAYS,
-    PARTIAL_AVAILABILITY,
-    COMPATIBLE,
-    MANDATORY_PAIRS,
-    MULTI_NIGHT_ALLOWED,
+    RUNNERS_DATA,
+    MATCHING_CONSTRAINTS,
     TOTAL_KM,
     N_SEGMENTS,
     SEGMENT_KM,
@@ -120,7 +117,7 @@ def relay_start_coverage(solutions, runner):
     comptant le nombre de solutions où le coureur commence un relais de cette longueur
     à ce segment.
     """
-    relay_sizes_km = sorted(set(s * SEGMENT_KM for s in RUNNER_RELAYS[runner]))
+    relay_sizes_km = sorted(set(s * SEGMENT_KM for s in RUNNERS_DATA[runner].relais))
     counts = {km: np.zeros(N_SEGMENTS, dtype=int) for km in relay_sizes_km}
     for relays in solutions:
         for r in relays:
@@ -560,12 +557,12 @@ def make_solo_binome_page(counts_solo, counts_binome, n_solutions, img_name, out
 def unavailable_segments(runner):
     """
     Retourne la liste de plages (start, end) où le coureur est indisponible,
-    calculée comme le complément des fenêtres PARTIAL_AVAILABILITY sur [0, N_SEGMENTS].
-    Si le coureur est absent de PARTIAL_AVAILABILITY, il est disponible partout → [].
+    calculée comme le complément des fenêtres de dispo (RUNNERS_DATA[runner].dispo) sur [0, N_SEGMENTS].
+    Si le coureur n'a pas de fenêtre de dispo, il est disponible partout → [].
     """
-    if runner not in PARTIAL_AVAILABILITY:
+    if not RUNNERS_DATA[runner].dispo:
         return []
-    avail = sorted(PARTIAL_AVAILABILITY[runner])
+    avail = sorted(RUNNERS_DATA[runner].dispo)
     unavail = []
     cursor = 0
     for a_start, a_end in avail:
@@ -597,11 +594,11 @@ def format_unavailability(runner):
 
 
 def runner_constraints_html(runner):
-    relays_seg = RUNNER_RELAYS[runner]
+    relays_seg = RUNNERS_DATA[runner].relais
     relays_km = [s * SEGMENT_KM for s in relays_seg]
-    compatible = sorted(COMPATIBLE.get(runner, set()))
-    mandatory = [f"{a}+{b}" for a, b in MANDATORY_PAIRS if runner in (a, b)]
-    multi_night = runner in MULTI_NIGHT_ALLOWED
+    compatible = sorted(RUNNERS_DATA[runner].compatible)
+    mandatory = [f"{a}+{b}" for a, b in MATCHING_CONSTRAINTS["pair_at_least_once"] if runner in (a, b)]
+    multi_night = RUNNERS_DATA[runner].nuit_max > 1
 
     rows = []
 
@@ -715,8 +712,8 @@ def _params_html():
     rest_normal_h = REST_NORMAL * SEGMENT_DURATION_H
     rest_night_h = REST_NIGHT * SEGMENT_DURATION_H
 
-    total_km_engaged = sum(sum(r) * SEGMENT_KM for r in RUNNER_RELAYS.values())
-    n_runners = len(RUNNER_RELAYS)
+    total_km_engaged = sum(sum(c.relais) * SEGMENT_KM for c in RUNNERS_DATA.values())
+    n_runners = len(RUNNERS_DATA)
 
     params = [
         ("Parcours", f"Lyon → Fessenheim, {TOTAL_KM} km"),
@@ -812,7 +809,7 @@ def main():
     n = len(solutions)
     print(f"  {n} solutions chargées.")
 
-    runners = list(RUNNER_RELAYS.keys())
+    runners = list(RUNNERS_DATA.keys())
     runners_info = []
 
     for runner in runners:

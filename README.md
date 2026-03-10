@@ -19,10 +19,10 @@ pip install -r requirements.txt
 ## Scripts
 
 ### `data.py`
-Toutes les constantes et données du problème : coureurs, relais engagés, disponibilités
-partielles (`PARTIAL_AVAILABILITY`), binômes et coureurs épinglés sur des fenêtres horaires
-(`PINNED_BINOMES`, `PINNED_RUNNERS`), compatibilités binômes. Peut être exécuté directement
-pour vérifier la cohérence des données (symétrie de `COMPATIBLE`, totaux km, etc.).
+Toutes les constantes et données du problème : coureurs (`RUNNERS_DATA`, dataclass `Coureur`),
+contraintes de matching (`MATCHING_CONSTRAINTS`), disponibilités partielles, compatibilités
+binômes, repos personnalisés, flexibilité des relais. Peut être exécuté directement pour
+afficher un résumé complet des données d'entrée (`print_summary()`).
 
 ```bash
 python data.py
@@ -59,7 +59,8 @@ Importé par `solver.py` et `enumerate_optimal_solutions.py`.
 1. Collecte jusqu'à `MAX_CONFIGS` configurations de binômes distinctes (Ctrl+C pour passer à l'étape 2 avant la limite).
 2. Pour chaque configuration, énumère jusqu'à `MAX_PER_CONFIG` placements (Ctrl+C pour terminer).
 
-Chaque solution est sauvegardée dans `enumerate_solutions/` (`.txt` + `.csv`).
+Chaque solution est sauvegardée dans `enumerate_solutions/` (`.csv` uniquement, nommé
+`run_<timestamp>_config_NNN_place_NN.csv`).
 À la fin de l'étape 2, `analyze_solutions.py` est lancé automatiquement.
 
 ```bash
@@ -75,6 +76,14 @@ Peut aussi être lancé manuellement.
 ```bash
 python analyze_solutions.py
 # Puis ouvrir : explore_solutions/index.html
+```
+
+### `find_duplicate_solutions.py`
+Détecte les solutions CSV identiques dans `enumerate_solutions/` à l'aide d'un hash SHA-256
+canonique (insensible à l'ordre des lignes, paires de binômes normalisées).
+
+```bash
+python find_duplicate_solutions.py
 ```
 
 ## Sorties

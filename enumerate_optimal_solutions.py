@@ -14,18 +14,18 @@ import os
 from datetime import datetime
 
 from ortools.sat.python import cp_model
-from solution_formatter import _parse_relais, _save_csv, print_solution
+from solution_formatter import _parse_relais, _save_csv
 from constraint_model import build_model, build_model_fixed_config, RUNNERS
-from data import RUNNER_RELAYS
+from data import RUNNERS_DATA
 import analyze_solutions
 
 OUTDIR = "enumerate_solutions"
-OPTIMAL_BINOMES_NUM = 20  # None = recherche automatique, int = valeur connue
-TIME_LIMIT_FIRST = 180.0  # secondes pour trouver le score optimal (si OPTIMAL_BINOMES_NUM is None)
-TIME_LIMIT_ENUM = 120.0    # secondes par itération d'énumération
+OPTIMAL_BINOMES_NUM = 19  # None = recherche automatique, int = valeur connue
+TIME_LIMIT_FIRST = 300.0  # secondes pour trouver le score optimal (si OPTIMAL_BINOMES_NUM is None)
+TIME_LIMIT_ENUM = 300.0    # secondes par itération d'énumération
 MAX_PER_CONFIG = 10       # placements max par configuration de binômes
-MAX_CONFIGS = 50          # configs max en phase 1 (None ou 0 = pas de limite)
-SOLVER_NUM_WORKERS = 12
+MAX_CONFIGS = 15         # configs max en phase 1 (None ou 0 = pas de limite)
+SOLVER_NUM_WORKERS = 8
 
 
 def _save_one(solver, start, same_relay, relais_solo, night_relay, run_ts, config_idx, place_idx):
@@ -138,11 +138,11 @@ def enumerate_solutions():
 
             def _add_cut(model_f, start_f, place_idx):
                 """Ajoute une contrainte excluant le placement courant du solveur."""
-                start_vals = {r: [solver_f.value(start_f[r][k]) for k in range(len(RUNNER_RELAYS[r]))]
+                start_vals = {r: [solver_f.value(start_f[r][k]) for k in range(len(RUNNERS_DATA[r].relais))]
                               for r in RUNNERS}
                 cut_lits = []
                 for r in RUNNERS:
-                    for k in range(len(RUNNER_RELAYS[r])):
+                    for k in range(len(RUNNERS_DATA[r].relais)):
                         val = start_vals[r][k]
                         b = model_f.new_bool_var(f"cut_{place_idx}_{r}_{k}")
                         model_f.add(start_f[r][k] != val).only_enforce_if(b)
