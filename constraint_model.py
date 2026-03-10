@@ -399,7 +399,7 @@ def _add_pair_at_most_once(model, same_relay):
 def build_model():
     """Construit le modèle CP-SAT avec toutes les contraintes (sans objectif).
 
-    Retourne (model, start, same_relay, relais_solo, night_relay).
+    Retourne (model, start, size, same_relay, relais_solo, night_relay).
     """
     model = cp_model.CpModel()
     start, end, size, intervals_all = _add_variables(model)
@@ -414,7 +414,7 @@ def build_model():
     _add_no_solo_night(model, relais_solo, night_relay)
     _add_pair_at_least_once(model, same_relay)
     _add_pair_at_most_once(model, same_relay)
-    return model, start, same_relay, relais_solo, night_relay
+    return model, start, size, same_relay, relais_solo, night_relay
 
 
 def build_model_fixed_config(active_keys, optimal_score):
@@ -423,7 +423,7 @@ def build_model_fixed_config(active_keys, optimal_score):
     active_keys : frozenset de clés same_relay devant valoir 1.
     optimal_score : valeur cible de la somme des same_relay.
     """
-    model, start, same_relay, relais_solo, night_relay = build_model()
+    model, start, size, same_relay, relais_solo, night_relay = build_model()
 
     for key, bv in same_relay.items():
         if key in active_keys:
@@ -432,4 +432,4 @@ def build_model_fixed_config(active_keys, optimal_score):
             model.add(bv == 0)
 
     model.add(sum(same_relay.values()) == optimal_score)
-    return model, start, same_relay, relais_solo, night_relay
+    return model, start, size, same_relay, relais_solo, night_relay

@@ -28,19 +28,17 @@ MAX_CONFIGS = 15         # configs max en phase 1 (None ou 0 = pas de limite)
 SOLVER_NUM_WORKERS = 8
 
 
-def _save_one(solver, start, same_relay, relais_solo, night_relay, run_ts, config_idx, place_idx):
+def _save_one(solver, start, size, same_relay, relais_solo, night_relay, run_ts, config_idx, place_idx):
     os.makedirs(OUTDIR, exist_ok=True)
     base = os.path.join(OUTDIR, f"run_{run_ts}_config_{config_idx:03d}_place_{place_idx:02d}")
 
-    #print_solution(solver, start, same_relay, relais_solo, night_relay)
-
-    relais_list = _parse_relais(solver, start, same_relay, relais_solo, night_relay)
+    relais_list = _parse_relais(solver, start, size, same_relay, relais_solo, night_relay)
     _save_csv(relais_list, base + ".csv")
 
     print(f"  → {base}.csv")
 
 
-def _collect_configs(model, start, same_relay, relais_solo, night_relay, solver, optimal_score, run_ts):
+def _collect_configs(model, start, size, same_relay, relais_solo, night_relay, solver, optimal_score, run_ts):
     """Étape 1 : énumère toutes les configurations de binômes, sauvegarde place_00 et retourne la liste."""
     model.add(sum(same_relay.values()) == optimal_score)
     solver.parameters.max_time_in_seconds = TIME_LIMIT_ENUM
@@ -59,7 +57,7 @@ def _collect_configs(model, start, same_relay, relais_solo, night_relay, solver,
             configs.append(active_keys)
             print(f"  Config {config_idx} trouvée ({len(active_keys)} binômes actifs)")
 
-            _save_one(solver, start, same_relay, relais_solo, night_relay, run_ts, config_idx, 0)
+            _save_one(solver, start, size, same_relay, relais_solo, night_relay, run_ts, config_idx, 0)
 
             if MAX_CONFIGS and len(configs) >= MAX_CONFIGS:
                 print(f"\nLimite de {MAX_CONFIGS} configurations atteinte.")
@@ -82,7 +80,7 @@ def enumerate_solutions():
 
     # --- Étape 1 : trouver le score optimal puis collecter les configurations de binômes ---
     print("Construction du modèle de référence...")
-    model, start, same_relay, relais_solo, night_relay = build_model()
+    model, start, size, same_relay, relais_solo, night_relay = build_model()
 
     if OPTIMAL_BINOMES_NUM is not None:
         optimal_score = OPTIMAL_BINOMES_NUM
@@ -104,7 +102,7 @@ def enumerate_solutions():
 
     print("Étape 1 : collecte des configurations de binômes...")
     print("  Ctrl-C (1 fois) pour stopper la phase 1 et passer à la phase 2")
-    configs = _collect_configs(model, start, same_relay, relais_solo, night_relay, solver, optimal_score, run_ts)
+    configs = _collect_configs(model, start, size, same_relay, relais_solo, night_relay, solver, optimal_score, run_ts)
     print(f"\n{len(configs)} configuration(s) de binômes collectée(s).\n")
 
     if not configs:
@@ -120,7 +118,7 @@ def enumerate_solutions():
         for config_idx, active_keys in enumerate(configs, start=1):
             print(f"\nConfiguration {config_idx}/{len(configs)} ({len(active_keys)} binômes actifs) :")
 
-            model_f, start_f, same_relay_f, relais_solo_f, night_relay_f = build_model_fixed_config(
+            model_f, start_f, size_f, same_relay_f, relais_solo_f, night_relay_f = build_model_fixed_config(
                 active_keys, optimal_score
             )
             solver_f = cp_model.CpSolver()
@@ -134,7 +132,7 @@ def enumerate_solutions():
                 continue
 
             n_total += 1
-            _save_one(solver_f, start_f, same_relay_f, relais_solo_f, night_relay_f, run_ts, config_idx, 1)
+            _save_one(solver_f, start_f, size_f, same_relay_f, relais_solo_f, night_relay_f, run_ts, config_idx, 1)
 
             def _add_cut(model_f, start_f, place_idx):
                 """Ajoute une contrainte excluant le placement courant du solveur."""
@@ -159,7 +157,7 @@ def enumerate_solutions():
 
                 n_total += 1
                 n_places += 1
-                _save_one(solver_f, start_f, same_relay_f, relais_solo_f, night_relay_f, run_ts, config_idx, place_idx)
+                _save_one(solver_f, start_f, size_f, same_relay_f, relais_solo_f, night_relay_f, run_ts, config_idx, place_idx)
                 _add_cut(model_f, start_f, place_idx)
 
             print(f"  {n_places} placement(s) pour la configuration {config_idx}.")

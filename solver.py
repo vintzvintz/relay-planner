@@ -19,16 +19,17 @@ ACCEPTABLE_BINOME_COUNT = None  # arrête la recherche dès qu'une solution atte
 class _BinomeTargetCallback(cp_model.CpSolverSolutionCallback):
     """Sauvegarde chaque solution trouvée et stoppe dès ACCEPTABLE_BINOME_COUNT binômes."""
 
-    def __init__(self, target, start, same_relay, relais_solo, night_relay):
+    def __init__(self, target, start, size, same_relay, relais_solo, night_relay):
         super().__init__()
         self._target = target
         self._start = start
+        self._size = size
         self._same_relay = same_relay
         self._relais_solo = relais_solo
         self._night_relay = night_relay
 
     def on_solution_callback(self):
-        save_solution(self, self._start, self._same_relay, self._relais_solo, self._night_relay)
+        save_solution(self, self._start, self._size, self._same_relay, self._relais_solo, self._night_relay)
         if self._target and (self.objective_value >= self._target):
             self.stop_search()
 
@@ -38,7 +39,7 @@ def build_and_solve():
 
     Retourne (solver, status) après résolution.
     """
-    model, start, same_relay, relais_solo, night_relay = build_model()
+    model, start, size, same_relay, relais_solo, night_relay = build_model()
     model.maximize(sum(same_relay.values()))
 
     solver = cp_model.CpSolver()
@@ -48,7 +49,7 @@ def build_and_solve():
 
     print("Résolution en cours...", flush=True)
     callback = _BinomeTargetCallback(
-        ACCEPTABLE_BINOME_COUNT, start, same_relay, relais_solo, night_relay
+        ACCEPTABLE_BINOME_COUNT, start, size, same_relay, relais_solo, night_relay
     )
     status = solver.solve(model, callback)
 
