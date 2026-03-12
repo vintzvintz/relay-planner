@@ -23,8 +23,8 @@ OUTDIR = "enumerate_solutions"
 OPTIMAL_BINOMES_NUM = 19  # None = recherche automatique, int = valeur connue
 TIME_LIMIT_FIRST = 300.0  # secondes pour trouver le score optimal (si OPTIMAL_BINOMES_NUM is None)
 TIME_LIMIT_ENUM = 300.0    # secondes par itération d'énumération
-MAX_PER_CONFIG = 10       # placements max par configuration de binômes
-MAX_CONFIGS = 15         # configs max en phase 1 (None ou 0 = pas de limite)
+MAX_PER_CONFIG = 5       # placements max par configuration de binômes
+MAX_CONFIGS = 2         # configs max en phase 1 (None ou 0 = pas de limite)
 SOLVER_NUM_WORKERS = 8
 
 
@@ -40,7 +40,7 @@ def _save_one(solver, start, size, same_relay, relais_solo, night_relay, run_ts,
 
 def _collect_configs(model, start, size, same_relay, relais_solo, night_relay, solver, optimal_score, run_ts):
     """Étape 1 : énumère toutes les configurations de binômes, sauvegarde place_00 et retourne la liste."""
-    model.add(sum(same_relay.values()) == optimal_score)
+    model.add(sum(same_relay.values()) >= optimal_score)
     solver.parameters.max_time_in_seconds = TIME_LIMIT_ENUM
 
     configs = []  # liste de active_keys

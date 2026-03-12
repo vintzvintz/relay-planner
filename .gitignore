@@ -4,7 +4,7 @@ __pycache__/
 *.pyo
 
 /plannings
-/enumerate_solutions
+/enumerate_solutions*
 /explore_solutions
 
 *.odt

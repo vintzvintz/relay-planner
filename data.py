@@ -85,28 +85,28 @@ RUNNERS_DATA: dict[str, Coureur] = {
     ),
     "Olivier": Coureur(
         relais=[2, 2, 2, 6, 6],
-        compatible={"Alexis"},
+        compatible={"Alexis", "Alexandre", "Antoine", "Eric", "Ludovic", "Pierre",  "Vincent", "Yacine", "Matthieu", "Gaelle", "Clemence" },
         nuit_max=5,  # autorisé plusieurs nuits
     ),
     "Alexis": Coureur(
         relais=[2, 2, 2, 6, 6],
-        compatible={"Olivier"},
+        compatible={"Olivier", "Alexandre", "Antoine", "Eric", "Ludovic", "Pierre",  "Vincent", "Yacine", "Matthieu", "Gaelle" },
         nuit_max=5,  # autorisé plusieurs nuits
     ),
     "Guillaume": Coureur(
         relais=[4, 4],
-        compatible={"Pierre", "Ludovic"},
+        compatible={"Pierre", "Ludovic", "Vincent", "Matthieu", "Eric", "Yacine", "Antoine", "Ludovic", "Nelly", "Gaelle", "Alexis", "Olivier"},
         dispo=[(0, hour_to_seg(24))],
     ),
     "Eric": Coureur(
         relais=[3, 3],
-        compatible={"Pierre", "Vincent", "Matthieu", "Yacine", "Alexandre", "Antoine", "Ludovic"},  # fmt: skip
+        compatible={"Pierre", "Vincent", "Matthieu", "Yacine", "Alexandre", "Antoine", "Ludovic", "Alexis", "Olivier"},  # fmt: skip
         dispo=[(0, hour_to_seg(26))],
         flexible=True,
     ),
     "Yacine": Coureur(
         relais=[2, 3, 3],
-        compatible={"Pierre", "Vincent", "Matthieu", "Eric", "Alexandre", "Antoine", "Ludovic", "Nelly", "Gaelle"},  # fmt: skip
+        compatible={"Pierre", "Vincent", "Matthieu", "Eric", "Alexandre", "Antoine", "Ludovic", "Nelly", "Gaelle", "Alexis", "Olivier"},  # fmt: skip
         dispo=[(0, hour_to_seg(26))],
         repos_jour=math.ceil(5 * SPEED_KMH / SEGMENT_KM),
         repos_nuit=math.ceil(8 * SPEED_KMH / SEGMENT_KM),
@@ -114,17 +114,17 @@ RUNNERS_DATA: dict[str, Coureur] = {
     ),
     "Alexandre": Coureur(
         relais=[2, 2, 3, 3],
-        compatible={"Pierre", "Vincent", "Matthieu", "Eric", "Yacine", "Antoine", "Ludovic", "Nelly", "Gaelle"},  # fmt: skip
+        compatible={"Pierre", "Vincent", "Matthieu", "Eric", "Yacine", "Antoine", "Ludovic", "Nelly", "Gaelle", "Alexis", "Olivier"},  # fmt: skip
         flexible=True,
     ),
     "Antoine": Coureur(
         relais=[3, 3, 3, 2],
-        compatible={"Pierre", "Vincent", "Matthieu", "Eric", "Yacine", "Alexandre", "Ludovic", "Nelly", "Gaelle"},  # fmt: skip
+        compatible={"Pierre", "Vincent", "Matthieu", "Eric", "Yacine", "Alexandre", "Ludovic", "Nelly", "Gaelle", "Alexis", "Olivier"},  # fmt: skip
         flexible=True,
     ),
     "Ludovic": Coureur(
         relais=[4, 3, 3, 3],
-        compatible={"Pierre", "Guillaume", "Vincent", "Matthieu", "Eric", "Yacine", "Alexandre", "Antoine"},  # fmt: skip
+        compatible={"Pierre", "Guillaume", "Vincent", "Matthieu", "Eric", "Yacine", "Alexandre", "Antoine", "Alexis", "Olivier"},  # fmt: skip
         flexible=True,
     ),
     "Nelly": Coureur(
@@ -133,11 +133,11 @@ RUNNERS_DATA: dict[str, Coureur] = {
     ),
     "Gaelle": Coureur(
         relais=[2, 2, 2, 2],
-        compatible={"Nelly", "Vincent", "Yacine", "Alexandre", "Antoine"},
+        compatible={"Nelly", "Vincent", "Yacine", "Alexandre", "Antoine", "Alexis", "Olivier"},
     ),
     "Clemence": Coureur(
         relais=[2, 2],
-        compatible={"Nelly"},
+        compatible={"Nelly","Gaelle", "Olivier", "Alexis", "Vincent"},
         # solo_max=0,
         dispo=[(0, hour_to_seg(8)), (hour_to_seg(9 + 24 + 10 + 1), N_SEGMENTS)],
     ),
