@@ -6,6 +6,8 @@ Départ : mercredi 15h00
 import math
 from dataclasses import dataclass, field
 
+from compat import is_compatible, COMPAT_MATRIX
+
 # --- Temporel ---
 TOTAL_KM = 440
 SEGMENT_KM = 5
@@ -21,9 +23,6 @@ START_HOUR = 15  # mercredi 15h00
 # 9h / (5/9 h) = 16.2 → 17 segments
 REST_NORMAL = math.ceil(7 * SPEED_KMH / SEGMENT_KM)
 REST_NIGHT = math.ceil(9 * SPEED_KMH / SEGMENT_KM)
-
-# --- Feature flags ---
-ENABLE_FLEXIBILITY = True  # active la réduction de taille des relais pour former des binômes
 
 # Limites par défaut
 SOLO_MAX_DEFAULT = 1  # au plus 1 relais solo par coureur
@@ -56,7 +55,6 @@ NIGHT_SEGMENTS = set(s for s in range(N_SEGMENTS) if is_night(s))
 @dataclass
 class Coureur:
     relais: list[int]
-    compatible: set[str] = field(default_factory=set)
     dispo: list[tuple[int, int]] = field(default_factory=list)  # vide = toujours disponible
     pinned_segments: list[list[int]] = field(default_factory=list)  # liste de [start_seg, end_seg]
     repos_jour: int = REST_NORMAL  # repos après un relais de jour (13 segs = 7h)
@@ -69,44 +67,36 @@ class Coureur:
 RUNNERS_DATA: dict[str, Coureur] = {
     "Pierre": Coureur(
         relais=[4, 3, 3, 3],
-        compatible={"Guillaume", "Ludovic", "Alexis", "Olivier", "Vincent", "Matthieu", "Eric", "Yacine", "Alexandre", "Antoine"},  # fmt: skip
         flexible=True,
     ),
     "Vincent": Coureur(
         relais=[2, 2, 2, 2],
-        compatible={"Pierre", "Matthieu", "Olivier", "Alexis", "Eric", "Yacine", "Alexandre", "Antoine", "Ludovic", "Nelly", "Gaelle"},  # fmt: skip
         repos_jour=math.ceil(5.5 * SPEED_KMH / SEGMENT_KM),
         repos_nuit=math.ceil(8 * SPEED_KMH / SEGMENT_KM),
     ),
     "Matthieu": Coureur(
         relais=[3, 3, 3, 3],
-        compatible={"Pierre", "Vincent", "Olivier", "Alexis", "Eric", "Yacine", "Alexandre", "Antoine", "Ludovic"},  # fmt: skip
         flexible=True,
     ),
     "Olivier": Coureur(
         relais=[2, 2, 2, 6, 6],
-        compatible={"Alexis", "Alexandre", "Antoine", "Eric", "Ludovic", "Pierre",  "Vincent", "Yacine", "Matthieu", "Gaelle", "Clemence" },
         nuit_max=5,  # autorisé plusieurs nuits
     ),
     "Alexis": Coureur(
         relais=[2, 2, 2, 6, 6],
-        compatible={"Olivier", "Alexandre", "Antoine", "Eric", "Ludovic", "Pierre",  "Vincent", "Yacine", "Matthieu", "Gaelle" },
         nuit_max=5,  # autorisé plusieurs nuits
     ),
     "Guillaume": Coureur(
         relais=[4, 4],
-        compatible={"Pierre", "Ludovic", "Vincent", "Matthieu", "Eric", "Yacine", "Antoine", "Ludovic", "Nelly", "Gaelle", "Alexis", "Olivier"},
         dispo=[(0, hour_to_seg(24))],
     ),
     "Eric": Coureur(
         relais=[3, 3],
-        compatible={"Pierre", "Vincent", "Matthieu", "Yacine", "Alexandre", "Antoine", "Ludovic", "Alexis", "Olivier"},  # fmt: skip
         dispo=[(0, hour_to_seg(26))],
         flexible=True,
     ),
     "Yacine": Coureur(
         relais=[2, 3, 3],
-        compatible={"Pierre", "Vincent", "Matthieu", "Eric", "Alexandre", "Antoine", "Ludovic", "Nelly", "Gaelle", "Alexis", "Olivier"},  # fmt: skip
         dispo=[(0, hour_to_seg(26))],
         repos_jour=math.ceil(5 * SPEED_KMH / SEGMENT_KM),
         repos_nuit=math.ceil(8 * SPEED_KMH / SEGMENT_KM),
@@ -114,30 +104,24 @@ RUNNERS_DATA: dict[str, Coureur] = {
     ),
     "Alexandre": Coureur(
         relais=[2, 2, 3, 3],
-        compatible={"Pierre", "Vincent", "Matthieu", "Eric", "Yacine", "Antoine", "Ludovic", "Nelly", "Gaelle", "Alexis", "Olivier"},  # fmt: skip
         flexible=True,
     ),
     "Antoine": Coureur(
         relais=[3, 3, 3, 2],
-        compatible={"Pierre", "Vincent", "Matthieu", "Eric", "Yacine", "Alexandre", "Ludovic", "Nelly", "Gaelle", "Alexis", "Olivier"},  # fmt: skip
         flexible=True,
     ),
     "Ludovic": Coureur(
         relais=[4, 3, 3, 3],
-        compatible={"Pierre", "Guillaume", "Vincent", "Matthieu", "Eric", "Yacine", "Alexandre", "Antoine", "Alexis", "Olivier"},  # fmt: skip
         flexible=True,
     ),
     "Nelly": Coureur(
         relais=[2, 2, 2, 2],
-        compatible={"Gaelle", "Clemence", "Vincent", "Alexandre", "Yacine", "Antoine"},
     ),
     "Gaelle": Coureur(
         relais=[2, 2, 2, 2],
-        compatible={"Nelly", "Vincent", "Yacine", "Alexandre", "Antoine", "Alexis", "Olivier"},
     ),
     "Clemence": Coureur(
         relais=[2, 2],
-        compatible={"Nelly","Gaelle", "Olivier", "Alexis", "Vincent"},
         # solo_max=0,
         dispo=[(0, hour_to_seg(8)), (hour_to_seg(9 + 24 + 10 + 1), N_SEGMENTS)],
     ),
@@ -164,12 +148,10 @@ MATCHING_CONSTRAINTS: dict = {
 
 
 def check_compatible_symmetric():
-    """Vérifie que les champs 'compatible' sont symétriques et affiche les asymétries éventuelles."""
-    asymmetries = []
-    for a, coureur in RUNNERS_DATA.items():
-        for b in coureur.compatible:
-            if b not in RUNNERS_DATA or a not in RUNNERS_DATA[b].compatible:
-                asymmetries.append((a, b))
+    """Vérifie que la matrice de compatibilité est symétrique."""
+    asymmetries = [
+        (a, b) for (a, b), v in COMPAT_MATRIX.items() if v and not is_compatible(b, a)
+    ]
     if asymmetries:
         print("AVERTISSEMENT : compatible n'est pas symétrique :")
         for a, b in asymmetries:
@@ -223,8 +205,10 @@ def print_summary(with_upper_bound: bool = True) -> None:
     print()
     print("COMPATIBILITÉS (binômes possibles)")
     print("-" * 60)
-    for name, coureur in RUNNERS_DATA.items():
-        compat_str = ", ".join(sorted(coureur.compatible)) if coureur.compatible else "— aucune"
+    runners = list(RUNNERS_DATA.keys())
+    for name in runners:
+        partners = sorted(r for r in runners if r != name and is_compatible(name, r))
+        compat_str = ", ".join(partners) if partners else "— aucune"
         print(f"  {name:12s} : {compat_str}")
     check_compatible_symmetric()
 
@@ -276,6 +260,35 @@ def print_summary(with_upper_bound: bool = True) -> None:
         compute_upper_bound()
 
     print("=" * 60)
+
+
+@dataclass
+class RelayConstraints:
+    """Snapshot des données du problème, passé au modèle CP-SAT."""
+    runners_data: dict
+    matching_constraints: dict
+    n_segments: int
+    min_relay_size: int
+    solo_max_default: int
+    nuit_max_default: int
+    rest_normal: int
+    rest_night: int
+    night_segments: set
+
+
+def build_constraints() -> RelayConstraints:
+    """Construit et retourne un RelayConstraints à partir des données module-level."""
+    return RelayConstraints(
+        runners_data=RUNNERS_DATA,
+        matching_constraints=MATCHING_CONSTRAINTS,
+        n_segments=N_SEGMENTS,
+        min_relay_size=MIN_RELAY_SIZE,
+        solo_max_default=SOLO_MAX_DEFAULT,
+        nuit_max_default=NUIT_MAX_DEFAULT,
+        rest_normal=REST_NORMAL,
+        rest_night=REST_NIGHT,
+        night_segments=NIGHT_SEGMENTS,
+    )
 
 
 if __name__ == "__main__":

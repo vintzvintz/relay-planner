@@ -13,6 +13,7 @@ Objectif : maximiser Σ b[r1,r2,s]
 
 from collections import defaultdict
 from data import RUNNERS_DATA, N_SEGMENTS
+from compat import is_compatible
 
 
 def count_by_size(relays: list[int]) -> dict[int, int]:
@@ -43,7 +44,7 @@ def compute_upper_bound() -> int:
             for r2 in runners[i + 1:]:
                 if counts[r2].get(s, 0) == 0:
                     continue
-                if r2 not in RUNNERS_DATA[r1].compatible:
+                if not is_compatible(r1, r2):
                     continue
                 ub = min(counts[r1][s], counts[r2][s])
                 b[(r1, r2, s)] = solver.NumVar(0.0, ub, f"b_{r1}_{r2}_{s}")

@@ -36,6 +36,7 @@ from data import (
     segment_start_hour,
     NIGHT_SEGMENTS,
 )
+from compat import is_compatible
 
 OUT_DIR = Path("explore_solutions")
 
@@ -596,7 +597,7 @@ def format_unavailability(runner):
 def runner_constraints_html(runner):
     relays_seg = RUNNERS_DATA[runner].relais
     relays_km = [s * SEGMENT_KM for s in relays_seg]
-    compatible = sorted(RUNNERS_DATA[runner].compatible)
+    compatible = sorted(r for r in RUNNERS_DATA if r != runner and is_compatible(runner, r))
     mandatory = [f"{a}+{b}" for a, b in MATCHING_CONSTRAINTS["pair_at_least_once"] if runner in (a, b)]
     multi_night = RUNNERS_DATA[runner].nuit_max > 1
 

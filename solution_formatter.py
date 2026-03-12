@@ -1,10 +1,19 @@
+"""
+Formatage des solutions CP-SAT.
+
+Fonctions publiques utilisées par enumerate_optimal_solutions.py :
+  _save_csv(relais_list, csv_path)
+
+Fonctions internes utilisées par RelayModel :
+  _print_solution_impl(relay_model)
+  _formatte_html_impl(relay_model) -> str
+  _save_solution_impl(relay_model)
+"""
 
 from data import (
     N_SEGMENTS,
     REST_NORMAL,
     REST_NIGHT,
-    RUNNERS_DATA,
-    MATCHING_CONSTRAINTS,
     TOTAL_KM,
     SEGMENT_KM,
     START_HOUR,
@@ -12,40 +21,8 @@ from data import (
     segment_start_hour,
 )
 
-RUNNERS = list(RUNNERS_DATA.keys())
 DAY_NAMES = ["Mercredi", "Jeudi", "Vendredi"]
 
-
-def _parse_relais(solver, start, size, same_relay, relais_solo, night_relay):
-    relais_list = []
-    for r in RUNNERS:
-        for k in range(len(RUNNERS_DATA[r].relais)):
-            s = solver.value(start[r][k])
-            sz_declared = RUNNERS_DATA[r].relais[k]
-            sz = solver.value(size[r][k]) if not isinstance(size[r][k], int) else size[r][k]
-            partner = None
-            for key, bv in same_relay.items():
-                if solver.value(bv) == 1:
-                    if key[0] == r and key[1] == k:
-                        partner = key[2]
-                    elif key[2] == r and key[3] == k:
-                        partner = key[0]
-            relais_list.append(
-                {
-                    "runner": r,
-                    "k": k,
-                    "start": s,
-                    "end": s + sz,
-                    "size": sz,
-                    "km": sz * 5,
-                    "flex": sz < sz_declared,
-                    "solo": bool(solver.value(relais_solo[r][k])),
-                    "night": bool(solver.value(night_relay[r][k])),
-                    "partner": partner,
-                }
-            )
-    relais_list.sort(key=lambda x: (x["start"], x["runner"]))
-    return relais_list
 
 
 def _fmt(seg):
@@ -94,11 +71,11 @@ def _print_planning_chrono(relais_list, W):
         print(f"  {debut} → {fin}   {dist:<14}  {rel['km']:>2} km   {coureurs}{nuit}")
 
 
-def _print_recap_coureurs(relais_list, W):
+def _print_recap_coureurs(relais_list, W, runners):
     print(f"\n{'─' * W}")
     print("  RÉCAPITULATIF PAR COUREUR")
     print(f"{'─' * W}")
-    for r in RUNNERS:
+    for r in runners:
         r_rels = sorted(
             [x for x in relais_list if x["runner"] == r], key=lambda x: x["start"]
         )
@@ -143,30 +120,32 @@ def _print_stats(relais_list, W):
     print("=" * W)
 
 
-def _print_verifications(solver, start, size, same_relay, relais_solo, night_relay):
+def _print_verifications(relay_model, solver):
     print("\n--- Vérifications ---")
+    c = relay_model.constraints
+    runners = relay_model.runners
 
-    coverage = [0] * N_SEGMENTS
-    for r in RUNNERS:
-        for k in range(len(RUNNERS_DATA[r].relais)):
-            sz = solver.value(size[r][k]) if not isinstance(size[r][k], int) else size[r][k]
-            for seg in range(solver.value(start[r][k]), solver.value(start[r][k]) + sz):
+    coverage = [0] * c.n_segments
+    for r in runners:
+        for k in range(len(c.runners_data[r].relais)):
+            sz = solver.value(relay_model.size[r][k])
+            for seg in range(solver.value(relay_model.start[r][k]), solver.value(relay_model.start[r][k]) + sz):
                 coverage[seg] += 1
-    gaps = [s for s in range(N_SEGMENTS) if coverage[s] == 0]
-    over = [s for s in range(N_SEGMENTS) if coverage[s] > 2]
+    gaps = [s for s in range(c.n_segments) if coverage[s] == 0]
+    over = [s for s in range(c.n_segments) if coverage[s] > 2]
     print(
         f"Couverture : {'OK' if not gaps and not over else f'ERREUR gaps={gaps} over={over}'}"
     )
 
     repos_ok = True
-    for r in RUNNERS:
+    for r in runners:
         vals = sorted(
             (
-                solver.value(start[r][k]),
-                solver.value(start[r][k]) + (solver.value(size[r][k]) if not isinstance(size[r][k], int) else size[r][k]),
-                solver.value(night_relay[r][k]),
+                solver.value(relay_model.start[r][k]),
+                solver.value(relay_model.start[r][k]) + solver.value(relay_model.size[r][k]),
+                solver.value(relay_model.night_relay[r][k]),
             )
-            for k in range(len(RUNNERS_DATA[r].relais))
+            for k in range(len(c.runners_data[r].relais))
         )
         for i in range(len(vals) - 1):
             _, e_prev, night_prev = vals[i]
@@ -179,10 +158,10 @@ def _print_verifications(solver, start, size, same_relay, relais_solo, night_rel
         print("Repos    : OK")
 
     nuit_ok = True
-    for r in RUNNERS:
-        if RUNNERS_DATA[r].nuit_max > 1:
+    for r in runners:
+        if c.runners_data[r].nuit_max > 1:
             continue
-        n = sum(solver.value(night_relay[r][k]) for k in range(len(RUNNERS_DATA[r].relais)))
+        n = sum(solver.value(relay_model.night_relay[r][k]) for k in range(len(c.runners_data[r].relais)))
         if n > 1:
             print(f"  NUIT x{n} : {r}")
             nuit_ok = False
@@ -190,8 +169,8 @@ def _print_verifications(solver, start, size, same_relay, relais_solo, night_rel
         print("Nuit ×1  : OK")
 
     solo_ok = True
-    for r in RUNNERS:
-        n = sum(solver.value(relais_solo[r][k]) for k in range(len(RUNNERS_DATA[r].relais)))
+    for r in runners:
+        n = sum(solver.value(relay_model.relais_solo[r][k]) for k in range(len(c.runners_data[r].relais)))
         if n > 1:
             print(f"  SOLO x{n} : {r}")
             solo_ok = False
@@ -199,40 +178,40 @@ def _print_verifications(solver, start, size, same_relay, relais_solo, night_rel
         print("Solo ≤ 1 : OK")
 
     solo_night_ok = True
-    for r in RUNNERS:
-        for k in range(len(RUNNERS_DATA[r].relais)):
-            if solver.value(relais_solo[r][k]) and solver.value(night_relay[r][k]):
+    for r in runners:
+        for k in range(len(c.runners_data[r].relais)):
+            if solver.value(relay_model.relais_solo[r][k]) and solver.value(relay_model.night_relay[r][k]):
                 print(f"  SOLO+NUIT : {r} relais {k}")
                 solo_night_ok = False
     if solo_night_ok:
         print("Solo≠Nuit : OK")
 
-    for r1, r2 in MATCHING_CONSTRAINTS["pair_at_least_once"]:
+    for r1, r2 in c.matching_constraints["pair_at_least_once"]:
         found = any(
             solver.value(bv) == 1
-            for key, bv in same_relay.items()
+            for key, bv in relay_model.same_relay.items()
             if (key[0] == r1 and key[2] == r2) or (key[0] == r2 and key[2] == r1)
         )
         if not found:
             print(f"  BINÔME OBLIGATOIRE MANQUANT: {r1}-{r2}")
 
-    for r1, r2 in MATCHING_CONSTRAINTS["pair_at_most_once"]:
+    for r1, r2 in c.matching_constraints["pair_at_most_once"]:
         count = sum(
             solver.value(bv)
-            for key, bv in same_relay.items()
+            for key, bv in relay_model.same_relay.items()
             if (key[0] == r1 and key[2] == r2) or (key[0] == r2 and key[2] == r1)
         )
         if count > 1:
             print(f"  BINÔME EN TROP: {r1}-{r2} ({count} relais ensemble)")
 
 
-def print_solution(solver, start, size, same_relay, relais_solo, night_relay):
-    relais_list = _parse_relais(solver, start, size, same_relay, relais_solo, night_relay)
+def _print_solution_impl(relay_model):
+    relais_list = relay_model.parse_relais()
     W = 74
     _print_planning_chrono(relais_list, W)
-    _print_recap_coureurs(relais_list, W)
+    _print_recap_coureurs(relais_list, W, relay_model.runners)
     _print_stats(relais_list, W)
-    _print_verifications(solver, start, size, same_relay, relais_solo, night_relay)
+    _print_verifications(relay_model, relay_model.solver)
 
 
 def _save_csv(relais_list, csv_path):
@@ -261,34 +240,33 @@ def _save_csv(relais_list, csv_path):
         writer.writerows(rows)
 
 
-def formatte_html(solver, start, size, same_relay, relais_solo, night_relay):
-    relais_list = _parse_relais(solver, start, size, same_relay, relais_solo, night_relay)
+def _formatte_html_impl(relay_model):
+    relais_list = relay_model.parse_relais()
+    c = relay_model.constraints
+    runners = relay_model.runners
 
-    by_runner = {r: {} for r in RUNNERS}
+    by_runner = {r: {} for r in runners}
     for rel in relais_list:
         by_runner[rel["runner"]][rel["start"]] = rel
 
     def unavail_segs(runner):
-        if not RUNNERS_DATA[runner].dispo:
+        if not c.runners_data[runner].dispo:
             return set()
         avail = set()
-        for s, e in RUNNERS_DATA[runner].dispo:
+        for s, e in c.runners_data[runner].dispo:
             avail.update(range(s, e))
-        return set(range(N_SEGMENTS)) - avail
+        return set(range(c.n_segments)) - avail
 
-    # Segments les plus proches des heures marquées (0h, 6h, 12h, 18h)
-    # On casse les spans à ces frontières pour pouvoir y placer un border-left
     SEG_WIDTH_PX = 10
     mark_segs = set()
     for day in range(4):
         for hh_mark in (0, 6, 12, 18):
             target_h = day * 24 + hh_mark
-            best = min(range(N_SEGMENTS + 1), key=lambda s: abs(segment_start_hour(s) - target_h))
-            if 0 < best <= N_SEGMENTS:
+            best = min(range(c.n_segments + 1), key=lambda s: abs(segment_start_hour(s) - target_h))
+            if 0 < best <= c.n_segments:
                 mark_segs.add(best)
 
     def split_spans(spans):
-        """Coupe les spans aux frontières mark_segs."""
         result = []
         for s, e, typ, label in spans:
             cuts = sorted(m for m in mark_segs if s < m < e)
@@ -298,12 +276,11 @@ def formatte_html(solver, start, size, same_relay, relais_solo, night_relay):
         return result
 
     rows_html = []
-    for r in sorted(RUNNERS):
+    for r in sorted(runners):
         unavail = unavail_segs(r)
         relais_by_start = by_runner[r]
         sorted_relais = sorted(relais_by_start.values(), key=lambda x: x["start"])
 
-        # Segments de repos-post-nuit : [fin_relais_nuit, fin_relais_nuit + REST_NIGHT)
         post_night_segs = set()
         for rel in sorted_relais:
             if rel["night"]:
@@ -311,7 +288,7 @@ def formatte_html(solver, start, size, same_relay, relais_solo, night_relay):
 
         spans = []
         seg = 0
-        while seg < N_SEGMENTS:
+        while seg < c.n_segments:
             if seg in relais_by_start:
                 rel = relais_by_start[seg]
                 relay_typ = "relay_solo" if rel["solo"] else ("relay_binome" if rel["partner"] else "relay_solo")
@@ -319,12 +296,12 @@ def formatte_html(solver, start, size, same_relay, relais_solo, night_relay):
                 seg = rel["end"]
             elif seg in unavail:
                 end = seg + 1
-                while end < N_SEGMENTS and end in unavail and end not in relais_by_start:
+                while end < c.n_segments and end in unavail and end not in relais_by_start:
                     end += 1
                 spans.append((seg, end, "unavail", ""))
                 seg = end
             else:
-                next_event = N_SEGMENTS
+                next_event = c.n_segments
                 for rs in sorted_relais:
                     if rs["start"] > seg:
                         next_event = min(next_event, rs["start"])
@@ -350,9 +327,9 @@ def formatte_html(solver, start, size, same_relay, relais_solo, night_relay):
                 continue
             bl = "border-left:2px solid #000;" if s in mark_segs else ""
             if typ == "free":
-                is_night = all(seg_i in NIGHT_SEGMENTS for seg_i in range(s, e))
+                is_night_span = all(seg_i in NIGHT_SEGMENTS for seg_i in range(s, e))
                 is_post_night = any(seg_i in post_night_segs for seg_i in range(s, e))
-                bg = "#d0d0d0" if (is_night or is_post_night) else "#ffffff"
+                bg = "#d0d0d0" if (is_night_span or is_post_night) else "#ffffff"
                 style = f"background:{bg};color:#555;font-size:10px;text-align:center;border:1px solid #ccc;{bl}"
             elif typ == "relay_binome":
                 style = f"background:#4caf50;color:#000;font-size:10px;text-align:center;font-weight:bold;border:1px solid #2e7d32;{bl}"
@@ -372,13 +349,10 @@ def formatte_html(solver, start, size, same_relay, relais_solo, night_relay):
 
     header_tds = ['<th style="padding:1px;font-size:9px;width:20px;min-width:20px;"></th>']
     prev_day = -1
-    for seg in range(N_SEGMENTS):
+    for seg in range(c.n_segments):
         h = segment_start_hour(seg)
         day = int(h // 24)
-        hh = int(h) % 24
-        mm = int((h % 1) * 60)
         is_mark = seg in mark_segs
-        # Heure cible la plus proche pour ce mark_seg
         if is_mark:
             h_mod = h % 24
             closest_hh = min((0, 6, 12, 18), key=lambda hm: min(abs(h_mod - hm), 24 - abs(h_mod - hm)))
@@ -394,7 +368,7 @@ def formatte_html(solver, start, size, same_relay, relais_solo, night_relay):
         )
     header_row = f'<tr>{"".join(header_tds)}</tr>'
 
-    h_end = segment_start_hour(N_SEGMENTS)
+    h_end = segment_start_hour(c.n_segments)
     day_end = DAY_NAMES[min(int(h_end // 24), 2)]
     hh_end, mm_end = int(h_end) % 24, int((h_end % 1) * 60)
 
@@ -410,7 +384,7 @@ def formatte_html(solver, start, size, same_relay, relais_solo, night_relay):
 </style>
 </head>
 <body>
-<h2>Planning {TOTAL_KM} km — {N_SEGMENTS} segments de {SEGMENT_KM} km</h2>
+<h2>Planning {TOTAL_KM} km — {c.n_segments} segments de {SEGMENT_KM} km</h2>
 <p>Départ : {DAY_NAMES[0]} {START_HOUR:02d}h00 &nbsp;|&nbsp; Arrivée : {day_end} ~{hh_end:02d}h{mm_end:02d}</p>
 <p>
   <span style="background:#4caf50;padding:2px 8px;border:1px solid #2e7d32;">Relais binôme</span>&nbsp;
@@ -425,13 +399,13 @@ def formatte_html(solver, start, size, same_relay, relais_solo, night_relay):
 {"".join(rows_html)}
 </table>
 </div>
-{_html_text_sections(relais_list)}
+{_html_text_sections(relais_list, relay_model.runners)}
 </body>
 </html>"""
     return html
 
 
-def _html_text_sections(relais_list):
+def _html_text_sections(relais_list, runners):
     import io
     import sys
 
@@ -439,7 +413,7 @@ def _html_text_sections(relais_list):
     buf = io.StringIO()
     old_stdout, sys.stdout = sys.stdout, buf
     _print_planning_chrono(relais_list, W)
-    _print_recap_coureurs(relais_list, W)
+    _print_recap_coureurs(relais_list, W, runners)
     sys.stdout = old_stdout
     text = buf.getvalue()
 
@@ -457,13 +431,8 @@ _save_lock = __import__("threading").Lock()
 _save_counter = 0
 
 
-def save_solution(solver, start, size, same_relay, relais_solo, night_relay):
-    """Affiche la solution et la sauvegarde dans un fichier horodaté.
-
-    Thread-safe : protège la redirection de sys.stdout par un verrou global
-    et utilise un compteur atomique pour éviter les collisions de noms de fichiers
-    quand plusieurs solutions arrivent dans la même seconde.
-    """
+def _save_solution_impl(relay_model):
+    """Affiche la solution et la sauvegarde dans des fichiers horodatés."""
     import io
     import sys
     import os
@@ -477,7 +446,7 @@ def save_solution(solver, start, size, same_relay, relais_solo, night_relay):
 
         buf = io.StringIO()
         old_stdout, sys.stdout = sys.stdout, buf
-        print_solution(solver, start, size, same_relay, relais_solo, night_relay)
+        _print_solution_impl(relay_model)
         sys.stdout = old_stdout
         output = buf.getvalue()
         print(output)
@@ -492,12 +461,12 @@ def save_solution(solver, start, size, same_relay, relais_solo, night_relay):
             f.write(output)
         print(f"Planning sauvegardé : {fname}")
 
-        relais_list = _parse_relais(solver, start, size, same_relay, relais_solo, night_relay)
+        relais_list = relay_model.parse_relais()
         csv_fname = os.path.join(outdir, f"planning_{suffix}.csv")
         _save_csv(relais_list, csv_fname)
         print(f"CSV sauvegardé      : {csv_fname}")
 
         html_fname = os.path.join(outdir, f"planning_{suffix}.html")
         with open(html_fname, "w", encoding="utf-8") as f:
-            f.write(formatte_html(solver, start, size, same_relay, relais_solo, night_relay))
+            f.write(_formatte_html_impl(relay_model))
         print(f"HTML sauvegardé     : {html_fname}")
