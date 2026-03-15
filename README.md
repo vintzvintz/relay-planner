@@ -2,7 +2,7 @@
 
 Planificateur de course en relais par contraintes (CP-SAT).
 
-Problème : Lyon → Fessenheim, 440 km, 88 segments de 5 km, vitesse ~9 km/h, départ mercredi 15h00.
+Problème : Lyon → Fessenheim, 440 km, 82 segments, vitesse ~9 km/h, départ mercredi 15h00.
 14 coureurs doivent couvrir chaque segment (1 ou 2 coureurs par segment).
 L'objectif est de maximiser le nombre de relais courus en binôme.
 
@@ -16,70 +16,85 @@ source venv/bin/activate   # Windows : venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Scripts
+## Scripts principaux
 
 ### `data.py`
-Toutes les constantes et données du problème : coureurs (`RUNNERS_DATA`, dataclass `Coureur`),
-contraintes de matching (`MATCHING_CONSTRAINTS`), disponibilités partielles, compatibilités
-binômes, repos personnalisés, flexibilité des relais. Peut être exécuté directement pour
-afficher un résumé complet des données d'entrée (`print_summary()`).
+Constantes du problème, données coureurs (`RUNNERS_DATA`, dataclass `Coureur`),
+listes de binômes épinglés/obligatoires/limités (`BINOMES_PINNED`, `BINOMES_ONCE_MIN`,
+`BINOMES_ONCE_MAX`). `build_constraints()` assemble un objet `RelayConstraints`.
+Exécuter directement pour afficher un résumé complet.
 
 ```bash
 python data.py
 ```
 
-### `constraint_model.py`
-Construction du modèle CP-SAT (variables, contraintes). Importé par les autres scripts,
-pas destiné à être exécuté directement.
+### `constraints.py`
+Dataclass `RelayConstraints` : snapshot des données du problème passé au modèle.
+Contient les propriétés dérivées (segments nuit, borne supérieure LP, etc.) et
+`print_summary()`. Pas destiné à être exécuté directement.
+
+### `compat.py`
+`COMPAT_MATRIX` : scores de compatibilité (0, 1 ou 2) pour chaque paire de coureurs.
+Généré automatiquement depuis `compat_coureurs.xlsx` par `refresh_compat.py`.
+
+### `model.py`
+Construction du modèle CP-SAT (`RelayModel`). Variables : `start/end/size` par relais,
+`same_relay` (binômes), `relais_solo`, `relais_nuit`. Expose `build_model(constraints)`,
+`build_model_fixed_config(active_keys, constraints)` et des méthodes publiques pour
+l'énumération (`add_min_score`, `fix_binome_config`, `add_config_exclusion_cut`,
+`add_schedule_exclusion_cut`). Pas destiné à être exécuté directement.
 
 ### `solver.py`
-Résout le problème une fois (limite 180 s), maximise les binômes, écrit le planning dans
-`plannings/` (`.txt`, `.csv` et `.html`).
+`RelaySolver` : itérateur streaming sur les solutions CP-SAT (thread séparé).
+Objectif : maximiser la somme pondérée des `same_relay` (poids = score de compatibilité).
+Écrit le planning dans `plannings/` (`.txt`, `.csv`, `.json` et `.html`).
 
 ```bash
 python solver.py
 ```
 
-### `upper_bound.py`
-Calcule un majorant analytique du nombre de binômes atteignables (matching biparti +
-contrainte de couverture), sans lancer de solveur CP-SAT.
+### `solution.py`
+`RelaySolution` : encapsule une solution avec vérification automatique et formatage.
+API : `to_text()`, `to_csv()`, `to_json()`, `to_html()`, `save(verbose=)`, `stats()`.
+Le HTML inclut une grille Gantt par coureur (vert = binôme, rose = solo, violet = indisponible)
+avec repères toutes les 6h.
+
+### `enumerate.py`
+Énumère toutes les solutions optimales en trois phases :
+1. Recherche du meilleur score réalisable (ignoré si `SCORE_MINIMAL` est fixé).
+2. Collecte jusqu'à `MAX_CONFIGS` configurations de binômes distinctes.
+3. Pour chaque configuration, énumère jusqu'à `MAX_PER_CONFIG` placements distincts.
+
+Chaque solution est sauvegardée dans `enumerate_solutions/` (`.csv`, `.json` et `.html`,
+nommés `run_<timestamp>_config_NNN_place_NN`).
+À la fin, `analyze_solutions.py` est lancé automatiquement. Ctrl+C arrête proprement.
 
 ```bash
-python upper_bound.py
-```
-
-### `solution_formatter.py`
-Affichage et sauvegarde d'une solution (planning chronologique, récapitulatif par coureur,
-vérifications). Génère également un fichier HTML avec une grille Gantt visuelle par coureur
-(couleurs : binôme / solo / repos / indisponible, repères toutes les 6h).
-Importé par `solver.py` et `enumerate_optimal_solutions.py`.
-
-### `enumerate_optimal_solutions.py`
-Énumère toutes les solutions optimales en deux étapes :
-1. Collecte jusqu'à `MAX_CONFIGS` configurations de binômes distinctes (Ctrl+C pour passer à l'étape 2 avant la limite).
-2. Pour chaque configuration, énumère jusqu'à `MAX_PER_CONFIG` placements (Ctrl+C pour terminer).
-
-Chaque solution est sauvegardée dans `enumerate_solutions/` (`.csv` uniquement, nommé
-`run_<timestamp>_config_NNN_place_NN.csv`).
-À la fin de l'étape 2, `analyze_solutions.py` est lancé automatiquement.
-
-```bash
-python enumerate_optimal_solutions.py
+python enumerate.py
 ```
 
 ### `analyze_solutions.py`
-Analyse les solutions CSV produits par `enumerate_optimal_solutions.py`.
+Analyse les solutions JSON produites par `enumerate.py`.
 Génère pour chaque coureur un histogramme PNG et une page HTML, ainsi qu'une page de
 synthèse et des pages de diversité / solo-binôme. Sorties dans `explore_solutions/`.
-Peut aussi être lancé manuellement.
 
 ```bash
 python analyze_solutions.py
 # Puis ouvrir : explore_solutions/index.html
 ```
 
+### `check_configs_unique.py`
+Vérifie que toutes les configurations de binômes (phase 2) dans `enumerate_solutions/`
+sont distinctes en comparant les empreintes des fichiers `place_00.json`.
+Accepte un argument optionnel `run_ts` pour filtrer un run spécifique.
+
+```bash
+python check_configs_unique.py
+python check_configs_unique.py 20260315_204953
+```
+
 ### `find_duplicate_solutions.py`
-Détecte les solutions CSV identiques dans `enumerate_solutions/` à l'aide d'un hash SHA-256
+Détecte les solutions JSON identiques dans `enumerate_solutions/` à l'aide d'un hash SHA-256
 canonique (insensible à l'ordre des lignes, paires de binômes normalisées).
 
 ```bash
@@ -88,12 +103,11 @@ python find_duplicate_solutions.py
 
 ## Sorties
 
-| Dossier / fichier            | Contenu                                          |
-|------------------------------|--------------------------------------------------|
-| `plannings/`                 | Plannings `.txt`, `.csv` et `.html` produits par `solver.py` |
-| `enumerate_solutions/`       | Solutions énumérées (`.txt` + `.csv`)            |
-| `explore_solutions/`         | Pages HTML et histogrammes d'analyse             |
-| `planning_exemple.txt`       | Exemple de planning formaté                      |
+| Dossier / fichier       | Contenu                                                              |
+|-------------------------|----------------------------------------------------------------------|
+| `plannings/`            | Plannings `.txt`, `.csv`, `.json` et `.html` produits par `solver.py` |
+| `enumerate_solutions/`  | Solutions énumérées (`.csv`, `.json` et `.html`)                     |
+| `explore_solutions/`    | Pages HTML et histogrammes d'analyse                                 |
 
 ## Licence
 

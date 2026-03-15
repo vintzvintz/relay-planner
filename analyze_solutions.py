@@ -8,9 +8,7 @@ Page HTML de synthèse avec liens vers chaque coureur.
 Sorties dans : explore_solutions/
 """
 
-import csv
-
-import sys
+import json
 
 from pathlib import Path
 
@@ -21,73 +19,42 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).parent))
-from data import (
-    RUNNERS_DATA,
-    MATCHING_CONSTRAINTS,
-    TOTAL_KM,
-    N_SEGMENTS,
-    SEGMENT_KM,
-    SPEED_KMH,
-    SEGMENT_DURATION_H,
-    START_HOUR,
-    REST_NORMAL,
-    REST_NIGHT,
-    segment_start_hour,
-    NIGHT_SEGMENTS,
-)
-from compat import is_compatible
+from constraints import RelayConstraints
 
 OUT_DIR = Path("explore_solutions")
 
+# ticks tous les 2 segments
+SEGMENT_STEP  = 2
 
 # ── Chargement des solutions ──────────────────────────────────────────────────
 
 
 def load_solutions(folder="enumerate_solutions"):
     solutions = []
-    for path in sorted(Path(folder).glob("run_*_config_*.csv")):
-        relays = []
-        with open(path, newline="") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                relays.append(
-                    {
-                        "coureur": row["coureur"],
-                        "partenaire": row["partenaire"],
-                        "km_debut": int(row["km_debut"]),
-                        "km_fin": int(row["km_fin"]),
-                        "jour": row["jour"],
-                        "debut": row["debut"],
-                        "fin": row["fin"],
-                        "solo": row["solo"],
-                        "nuit": row["nuit"],
-                    }
-                )
-        solutions.append(relays)
+    for path in sorted(Path(folder).glob("run_*_config_*.json")):
+        with open(path) as f:
+            solutions.append(json.load(f))
     return solutions
 
 
 # ── Calcul de la couverture par segment et par coureur ────────────────────────
 
 
-def segment_coverage(solutions, runner):
+def segment_coverage(solutions, runner, constraints: RelayConstraints):
     """
-    Pour chaque segment élémentaire (0..N_SEGMENTS-1),
+    Pour chaque segment élémentaire (0..nb_segments-1),
     retourne deux tableaux : nombre de solutions où le coureur court ce segment
     en solo, et en binôme.
     """
-    counts_solo = np.zeros(N_SEGMENTS, dtype=int)
-    counts_binome = np.zeros(N_SEGMENTS, dtype=int)
+    counts_solo = np.zeros(constraints.nb_segments, dtype=int)
+    counts_binome = np.zeros(constraints.nb_segments, dtype=int)
     for relays in solutions:
         for r in relays:
             if r["coureur"] == runner:
-                seg_start = r["km_debut"] // SEGMENT_KM
-                seg_end = r["km_fin"] // SEGMENT_KM
-                if r["solo"] == "oui":
-                    counts_solo[seg_start:seg_end] += 1
+                if r["solo"]:
+                    counts_solo[r["debut_seg"]:r["fin_seg"]] += 1
                 else:
-                    counts_binome[seg_start:seg_end] += 1
+                    counts_binome[r["debut_seg"]:r["fin_seg"]] += 1
     return counts_solo, counts_binome
 
 
@@ -96,46 +63,76 @@ def segment_coverage(solutions, runner):
 _DAY_NAMES = ["Mer", "Jeu", "Ven", "Sam"]
 
 
-def x_labels(segments):
+def x_labels(segments, constraints: RelayConstraints):
     """Retourne les étiquettes courtes pour chaque segment (km + jour heure)."""
     labels = []
     for s in segments:
-        km = s * SEGMENT_KM
-        h_abs = segment_start_hour(s)
+        km = s * constraints.segment_km
+        h_abs = constraints.segment_start_hour(s)
         day_idx = int(h_abs // 24)
         hh = int(h_abs % 24)
         day = _DAY_NAMES[day_idx] if day_idx < len(_DAY_NAMES) else f"J+{day_idx}"
-        labels.append(f"{km} km\n{day} {hh:02d}h")
+        labels.append(f"{km:.0f} km\n{day} {hh:02d}h")
     return labels
 
 
 # ── Calcul des débuts de relais par longueur ─────────────────────────────────
 
 
-def relay_start_coverage(solutions, runner):
+def relay_start_coverage(solutions, runner, constraints: RelayConstraints):
     """
-    Pour chaque segment de départ, retourne un dict {taille_km: np.array(N_SEGMENTS)}
+    Pour chaque segment de départ, retourne un dict {taille_km: np.array(n_segments)}
     comptant le nombre de solutions où le coureur commence un relais de cette longueur
     à ce segment.
     """
-    relay_sizes_km = sorted(set(s * SEGMENT_KM for s in RUNNERS_DATA[runner].relais))
-    counts = {km: np.zeros(N_SEGMENTS, dtype=int) for km in relay_sizes_km}
+    relay_sizes_km = sorted(set(int(s * constraints.segment_km) for s in constraints.runners_data[runner].relais))
+    counts = {km: np.zeros(constraints.nb_segments, dtype=int) for km in relay_sizes_km}
     for relays in solutions:
         for r in relays:
             if r["coureur"] == runner:
-                seg_start = r["km_debut"] // SEGMENT_KM
-                relay_km = r["km_fin"] - r["km_debut"]
+                relay_km = int(r["distance_km"])
                 if relay_km in counts:
-                    counts[relay_km][seg_start] += 1
+                    counts[relay_km][r["debut_seg"]] += 1
     return counts
+
+
+# ── Utilitaires graphiques ────────────────────────────────────────────────────
+
+
+def _draw_night_background(ax, seg_min, seg_max, constraints: RelayConstraints):
+    """Superpose un fond gris clair sur les périodes de nuit (segments contigus regroupés)."""
+    night_in_range = sorted(s for s in constraints.night_segments if seg_min <= s <= seg_max)
+    if not night_in_range:
+        return
+    groups, start = [], night_in_range[0]
+    for prev, curr in zip(night_in_range, night_in_range[1:]):
+        if curr != prev + 1:
+            groups.append((start, prev))
+            start = curr
+    groups.append((start, night_in_range[-1]))
+    for gs, ge in groups:
+        ax.axvspan(gs - 0.5, ge + 0.5, color="#dddddd", alpha=0.5, zorder=0)
+
+
+def _set_x_ticks(ax, seg_min, seg_max, constraints: RelayConstraints):
+    """Applique les ticks sur l'axe X tous les SEGMENT_STEP segments."""
+    tick_segs = np.arange(
+        (seg_min // SEGMENT_STEP) * SEGMENT_STEP,
+        seg_max + SEGMENT_STEP,
+        SEGMENT_STEP,
+        dtype=int,
+    )
+    tick_segs = tick_segs[(tick_segs >= seg_min) & (tick_segs <= seg_max)]
+    ax.set_xticks(tick_segs)
+    ax.set_xticklabels(x_labels(tick_segs, constraints), fontsize=7)
 
 
 # ── Utilitaire : hachuri d'indisponibilité ────────────────────────────────────
 
 
-def _draw_unavailability(ax, runner, seg_min, seg_max):
+def _draw_unavailability(ax, runner, seg_min, seg_max, constraints: RelayConstraints):
     """Superpose un fond hachuré (///) sur les périodes d'indisponibilité du coureur."""
-    for us, ue in unavailable_segments(runner):
+    for us, ue in unavailable_segments(runner, constraints):
         xs = max(us, seg_min) - 0.5
         xe = min(ue, seg_max + 1) - 0.5
         if xs < xe:
@@ -146,7 +143,7 @@ def _draw_unavailability(ax, runner, seg_min, seg_max):
 # ── Génération de l'histogramme PNG ───────────────────────────────────────────
 
 
-def make_histogram(runner, counts_solo, counts_binome, n_solutions, out_path):
+def make_histogram(runner, counts_solo, counts_binome, n_solutions, out_path, constraints: RelayConstraints):
     counts = counts_solo + counts_binome
     active = np.where(counts > 0)[0]
     if len(active) == 0:
@@ -167,12 +164,12 @@ def make_histogram(runner, counts_solo, counts_binome, n_solutions, out_path):
         plt.close(fig)
         return
 
-    seg_min, seg_max = 0, N_SEGMENTS - 1
+    seg_min, seg_max = 0, constraints.nb_segments - 1
     segs = np.arange(seg_min, seg_max + 1)
     vals_binome = counts_binome[seg_min : seg_max + 1]
     vals_solo = counts_solo[seg_min : seg_max + 1]
 
-    fig_w = max(10, N_SEGMENTS * 0.4)
+    fig_w = max(10, constraints.nb_segments * 0.4)
     fig, ax = plt.subplots(figsize=(fig_w, 4))
 
     ax.bar(segs, vals_binome, color="#3498db", edgecolor="white", linewidth=0.5, label="Binôme")
@@ -181,17 +178,7 @@ def make_histogram(runner, counts_solo, counts_binome, n_solutions, out_path):
     ax.set_xlim(seg_min - 0.5, seg_max + 0.5)
     ax.set_ylim(0, n_solutions + 1)
 
-    # Fond gris clair sur les périodes de nuit (regrouper les segments contigus)
-    night_in_range = sorted(s for s in NIGHT_SEGMENTS if seg_min <= s <= seg_max)
-    if night_in_range:
-        groups, start = [], night_in_range[0]
-        for prev, curr in zip(night_in_range, night_in_range[1:]):
-            if curr != prev + 1:
-                groups.append((start, prev))
-                start = curr
-        groups.append((start, night_in_range[-1]))
-        for gs, ge in groups:
-            ax.axvspan(gs - 0.5, ge + 0.5, color="#dddddd", alpha=0.5, zorder=0)
+    _draw_night_background(ax, seg_min, seg_max, constraints)
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     ax.axhline(
         n_solutions,
@@ -201,18 +188,7 @@ def make_histogram(runner, counts_solo, counts_binome, n_solutions, out_path):
         label=f"Total solutions ({n_solutions})",
     )
 
-    # Ticks uniquement sur les multiples de 10 km
-    km_step = 10  # km entre chaque tick
-    seg_step = km_step // SEGMENT_KM
-    tick_segs = np.arange(
-        (seg_min // seg_step) * seg_step,
-        seg_max + seg_step,
-        seg_step,
-        dtype=int,
-    )
-    tick_segs = tick_segs[(tick_segs >= seg_min) & (tick_segs <= seg_max)]
-    ax.set_xticks(tick_segs)
-    ax.set_xticklabels(x_labels(tick_segs), fontsize=7)
+    _set_x_ticks(ax, seg_min, seg_max, constraints)
 
     ax.set_xlabel("Position (km / heure de départ)", fontsize=9)
     ax.set_ylabel("Nombre de solutions", fontsize=9)
@@ -221,14 +197,14 @@ def make_histogram(runner, counts_solo, counts_binome, n_solutions, out_path):
     # Légende couleurs
     from matplotlib.patches import Patch
 
-    _draw_unavailability(ax, runner, seg_min, seg_max)
+    _draw_unavailability(ax, runner, seg_min, seg_max, constraints)
 
     legend_elements = [
         Patch(facecolor="#3498db", label="Binôme"),
         Patch(facecolor="#2ecc71", label="Solo"),
         Patch(facecolor="#dddddd", alpha=0.5, label="Période de nuit (0h–6h)"),
     ]
-    if unavailable_segments(runner):
+    if unavailable_segments(runner, constraints):
         legend_elements.append(
             Patch(facecolor="none", edgecolor="#c0392b", hatch="///", alpha=0.35, label="Indisponible")
         )
@@ -250,16 +226,16 @@ _RELAY_COLORS = {
 _RELAY_COLOR_DEFAULT = "#95a5a6"  # gris pour toute autre longueur
 
 
-def make_relay_start_histogram(runner, relay_counts, n_solutions, out_path):
+def make_relay_start_histogram(runner, relay_counts, n_solutions, out_path, constraints: RelayConstraints):
     """
     Histogramme empilé : pour chaque segment de départ, nombre de solutions
     par longueur de relais. Axe X fixe couvrant toute la course.
     """
-    seg_min, seg_max = 0, N_SEGMENTS - 1
+    seg_min, seg_max = 0, constraints.nb_segments - 1
     segs = np.arange(seg_min, seg_max + 1)
     relay_sizes = sorted(relay_counts.keys())
 
-    fig_w = max(10, N_SEGMENTS * 0.4)
+    fig_w = max(10, constraints.nb_segments * 0.4)
     fig, ax = plt.subplots(figsize=(fig_w, 4))
 
     bottom = np.zeros(len(segs), dtype=float)
@@ -267,39 +243,19 @@ def make_relay_start_histogram(runner, relay_counts, n_solutions, out_path):
         vals = relay_counts[km][seg_min: seg_max + 1].astype(float)
         color = _RELAY_COLORS.get(km, _RELAY_COLOR_DEFAULT)
         ax.bar(segs, vals, bottom=bottom, color=color, edgecolor="white",
-               linewidth=0.5, label=f"{km} km")
+               linewidth=0.5, label=f"{km:.0f} km")
         bottom += vals
 
     ax.set_xlim(seg_min - 0.5, seg_max + 0.5)
     ax.set_ylim(0, n_solutions + 1)
 
-    # Fond gris sur les nuits
-    night_in_range = sorted(s for s in NIGHT_SEGMENTS if seg_min <= s <= seg_max)
-    if night_in_range:
-        groups, start = [], night_in_range[0]
-        for prev, curr in zip(night_in_range, night_in_range[1:]):
-            if curr != prev + 1:
-                groups.append((start, prev))
-                start = curr
-        groups.append((start, night_in_range[-1]))
-        for gs, ge in groups:
-            ax.axvspan(gs - 0.5, ge + 0.5, color="#dddddd", alpha=0.5, zorder=0)
+    _draw_night_background(ax, seg_min, seg_max, constraints)
 
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
     ax.axhline(n_solutions, color="#e74c3c", linewidth=1, linestyle="--",
                label=f"Total solutions ({n_solutions})")
 
-    km_step = 10
-    seg_step = km_step // SEGMENT_KM
-    tick_segs = np.arange(
-        (seg_min // seg_step) * seg_step,
-        seg_max + seg_step,
-        seg_step,
-        dtype=int,
-    )
-    tick_segs = tick_segs[(tick_segs >= seg_min) & (tick_segs <= seg_max)]
-    ax.set_xticks(tick_segs)
-    ax.set_xticklabels(x_labels(tick_segs), fontsize=7)
+    _set_x_ticks(ax, seg_min, seg_max, constraints)
 
     ax.set_xlabel("Position (km / heure de départ)", fontsize=9)
     ax.set_ylabel("Nombre de solutions", fontsize=9)
@@ -307,12 +263,12 @@ def make_relay_start_histogram(runner, relay_counts, n_solutions, out_path):
 
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor=_RELAY_COLORS.get(km, _RELAY_COLOR_DEFAULT), label=f"{km} km")
+        Patch(facecolor=_RELAY_COLORS.get(km, _RELAY_COLOR_DEFAULT), label=f"{km:.0f} km")
         for km in relay_sizes
     ]
     legend_elements.append(Patch(facecolor="#dddddd", alpha=0.5, label="Période de nuit (0h–6h)"))
-    _draw_unavailability(ax, runner, seg_min, seg_max)
-    if unavailable_segments(runner):
+    _draw_unavailability(ax, runner, seg_min, seg_max, constraints)
+    if unavailable_segments(runner, constraints):
         legend_elements.append(
             Patch(facecolor="none", edgecolor="#c0392b", hatch="///", alpha=0.35, label="Indisponible")
         )
@@ -326,22 +282,20 @@ def make_relay_start_histogram(runner, relay_counts, n_solutions, out_path):
 # ── Diversité : coureurs distincts par segment ────────────────────────────────
 
 
-def segment_runner_diversity(solutions):
+def segment_runner_diversity(solutions, constraints: RelayConstraints):
     """
     Pour chaque segment élémentaire, retourne le nombre de coureurs distincts
     qui l'ont couvert dans au moins une solution.
     """
-    runners_per_seg = [set() for _ in range(N_SEGMENTS)]
+    runners_per_seg = [set() for _ in range(constraints.nb_segments)]
     for relays in solutions:
         for r in relays:
-            seg_start = r["km_debut"] // SEGMENT_KM
-            seg_end = r["km_fin"] // SEGMENT_KM
-            for s in range(seg_start, seg_end):
+            for s in range(r["debut_seg"], r["fin_seg"]):
                 runners_per_seg[s].add(r["coureur"])
     return np.array([len(s) for s in runners_per_seg], dtype=int)
 
 
-def make_diversity_histogram(diversity, out_path):
+def make_diversity_histogram(diversity, out_path, constraints: RelayConstraints):
     active = np.where(diversity > 0)[0]
     if len(active) == 0:
         return
@@ -356,33 +310,13 @@ def make_diversity_histogram(diversity, out_path):
     colors = ["#2ecc71" if v == 1 else "#3498db" if v <= 3 else "#e67e22" if v <= 6 else "#e74c3c" for v in vals]
     ax.bar(segs, vals, color=colors, edgecolor="white", linewidth=0.3)
 
-    # Fond gris sur les nuits
-    night_in_range = sorted(s for s in NIGHT_SEGMENTS if seg_min <= s <= seg_max)
-    if night_in_range:
-        groups, start = [], night_in_range[0]
-        for prev, curr in zip(night_in_range, night_in_range[1:]):
-            if curr != prev + 1:
-                groups.append((start, prev))
-                start = curr
-        groups.append((start, night_in_range[-1]))
-        for gs, ge in groups:
-            ax.axvspan(gs - 0.5, ge + 0.5, color="#dddddd", alpha=0.5, zorder=0)
+    _draw_night_background(ax, seg_min, seg_max, constraints)
 
     ax.set_xlim(seg_min - 0.5, seg_max + 0.5)
     ax.set_ylim(0, n_runners + 1)
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
 
-    km_step = 10
-    seg_step = km_step // SEGMENT_KM
-    tick_segs = np.arange(
-        (seg_min // seg_step) * seg_step,
-        seg_max + seg_step,
-        seg_step,
-        dtype=int,
-    )
-    tick_segs = tick_segs[(tick_segs >= seg_min) & (tick_segs <= seg_max)]
-    ax.set_xticks(tick_segs)
-    ax.set_xticklabels(x_labels(tick_segs), fontsize=7)
+    _set_x_ticks(ax, seg_min, seg_max, constraints)
 
     ax.set_xlabel("Position (km / heure de départ)", fontsize=9)
     ax.set_ylabel("Nombre de coureurs distincts", fontsize=9)
@@ -439,26 +373,24 @@ def make_diversity_page(diversity, n_solutions, img_name, out_html):
 # ── Solo vs binôme global par segment ─────────────────────────────────────────
 
 
-def segment_solo_binome(solutions):
+def segment_solo_binome(solutions, constraints: RelayConstraints):
     """
     Pour chaque segment élémentaire, retourne deux tableaux :
     - nombre total de passages solo (sur toutes les solutions et tous les coureurs)
     - nombre total de passages en binôme
     """
-    counts_solo = np.zeros(N_SEGMENTS, dtype=int)
-    counts_binome = np.zeros(N_SEGMENTS, dtype=int)
+    counts_solo = np.zeros(constraints.nb_segments, dtype=int)
+    counts_binome = np.zeros(constraints.nb_segments, dtype=int)
     for relays in solutions:
         for r in relays:
-            seg_start = r["km_debut"] // SEGMENT_KM
-            seg_end = r["km_fin"] // SEGMENT_KM
-            if r["solo"] == "oui":
-                counts_solo[seg_start:seg_end] += 1
+            if r["solo"]:
+                counts_solo[r["debut_seg"]:r["fin_seg"]] += 1
             else:
-                counts_binome[seg_start:seg_end] += 1
+                counts_binome[r["debut_seg"]:r["fin_seg"]] += 1
     return counts_solo, counts_binome
 
 
-def make_solo_binome_histogram(counts_solo, counts_binome, out_path):
+def make_solo_binome_histogram(counts_solo, counts_binome, out_path, constraints: RelayConstraints):
     counts = counts_solo + counts_binome
     active = np.where(counts > 0)[0]
     seg_min, seg_max = int(active[0]), int(active[-1])
@@ -473,33 +405,13 @@ def make_solo_binome_histogram(counts_solo, counts_binome, out_path):
     ax.bar(segs, vals_binome, color="#3498db", edgecolor="white", linewidth=0.3, label="Binôme")
     ax.bar(segs, vals_solo, bottom=vals_binome, color="#2ecc71", edgecolor="white", linewidth=0.3, label="Solo")
 
-    # Fond gris sur les nuits
-    night_in_range = sorted(s for s in NIGHT_SEGMENTS if seg_min <= s <= seg_max)
-    if night_in_range:
-        groups, start = [], night_in_range[0]
-        for prev, curr in zip(night_in_range, night_in_range[1:]):
-            if curr != prev + 1:
-                groups.append((start, prev))
-                start = curr
-        groups.append((start, night_in_range[-1]))
-        for gs, ge in groups:
-            ax.axvspan(gs - 0.5, ge + 0.5, color="#dddddd", alpha=0.5, zorder=0)
+    _draw_night_background(ax, seg_min, seg_max, constraints)
 
     ax.set_xlim(seg_min - 0.5, seg_max + 0.5)
     ax.set_ylim(0, y_max + 1)
     ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
 
-    km_step = 10
-    seg_step = km_step // SEGMENT_KM
-    tick_segs = np.arange(
-        (seg_min // seg_step) * seg_step,
-        seg_max + seg_step,
-        seg_step,
-        dtype=int,
-    )
-    tick_segs = tick_segs[(tick_segs >= seg_min) & (tick_segs <= seg_max)]
-    ax.set_xticks(tick_segs)
-    ax.set_xticklabels(x_labels(tick_segs), fontsize=7)
+    _set_x_ticks(ax, seg_min, seg_max, constraints)
 
     ax.set_xlabel("Position (km / heure de départ)", fontsize=9)
     ax.set_ylabel("Nombre de passages (toutes solutions)", fontsize=9)
@@ -555,56 +467,65 @@ def make_solo_binome_page(counts_solo, counts_binome, n_solutions, img_name, out
 # ── Infos contraintes d'un coureur ────────────────────────────────────────────
 
 
-def unavailable_segments(runner):
+def unavailable_segments(runner, constraints: RelayConstraints):
     """
     Retourne la liste de plages (start, end) où le coureur est indisponible,
-    calculée comme le complément des fenêtres de dispo (RUNNERS_DATA[runner].dispo) sur [0, N_SEGMENTS].
+    calculée comme le complément des fenêtres de dispo sur [0, n_segments].
     Si le coureur n'a pas de fenêtre de dispo, il est disponible partout → [].
     """
-    if not RUNNERS_DATA[runner].dispo:
+    if not constraints.runners_data[runner].dispo:
         return []
-    avail = sorted(RUNNERS_DATA[runner].dispo)
+    avail = sorted(constraints.runners_data[runner].dispo)
     unavail = []
     cursor = 0
     for a_start, a_end in avail:
         if cursor < a_start:
             unavail.append((cursor, a_start))
         cursor = max(cursor, a_end)
-    if cursor < N_SEGMENTS:
-        unavail.append((cursor, N_SEGMENTS))
+    if cursor < constraints.nb_segments:
+        unavail.append((cursor, constraints.nb_segments))
     return unavail
 
 
-def format_unavailability(runner):
-    periods = unavailable_segments(runner)
+def format_unavailability(runner, constraints: RelayConstraints):
+    periods = unavailable_segments(runner, constraints)
     if not periods:
         return "Disponible sur toute la course"
     lines = []
     for s, e in periods:
-        h_s = segment_start_hour(s)
-        if e >= N_SEGMENTS:
+        h_s = constraints.segment_start_hour(s)
+        if e >= constraints.nb_segments:
             lines.append(
                 f"Indisponible à partir du segment {s} (≈ {h_s:.1f}h après départ)"
             )
         else:
-            h_e = segment_start_hour(e)
+            h_e = constraints.segment_start_hour(e)
             lines.append(
                 f"Indisponible seg {s}–{e} (≈ {h_s:.1f}h – {h_e:.1f}h après départ)"
             )
     return " ; ".join(lines)
 
 
-def runner_constraints_html(runner):
-    relays_seg = RUNNERS_DATA[runner].relais
-    relays_km = [s * SEGMENT_KM for s in relays_seg]
-    compatible = sorted(r for r in RUNNERS_DATA if r != runner and is_compatible(runner, r))
-    mandatory = [f"{a}+{b}" for a, b in MATCHING_CONSTRAINTS["pair_at_least_once"] if runner in (a, b)]
-    multi_night = RUNNERS_DATA[runner].nuit_max > 1
+def _rows_to_html_table(rows):
+    """Génère une table HTML class='constraints' à partir d'une liste de (label, valeur)."""
+    html = '<table class="constraints">\n'
+    for label, value in rows:
+        html += f"  <tr><th>{label}</th><td>{value}</td></tr>\n"
+    html += "</table>\n"
+    return html
+
+
+def runner_constraints_html(runner, constraints: RelayConstraints):
+    relays_seg = constraints.runners_data[runner].relais
+    relays_km = [s * constraints.segment_km for s in relays_seg]
+    compatible = sorted(r for r in constraints.runners_data if r != runner and constraints.is_compatible(runner, r))
+    mandatory = [f"{a}+{b}" for a, b in constraints.binomes_once_min if runner in (a, b)]
+    multi_night = constraints.runners_data[runner].nuit_max > 1
 
     rows = []
 
     # Relais engagés
-    relay_str = ", ".join(f"{k} km" for k in relays_km)
+    relay_str = ", ".join(f"{k:.1f} km" for k in relays_km)
     rows.append(
         ("Relais engagés", relay_str)
     )
@@ -618,16 +539,12 @@ def runner_constraints_html(runner):
     rows.append(("Paires obligatoires", ", ".join(mandatory) if mandatory else "—"))
 
     # Disponibilité
-    rows.append(("Disponibilité", format_unavailability(runner)))
+    rows.append(("Disponibilité", format_unavailability(runner, constraints)))
 
     # Nuits multiples
     rows.append(("Plusieurs nuits autorisées", "Oui" if multi_night else "Non"))
 
-    html = '<table class="constraints">\n'
-    for label, value in rows:
-        html += f"  <tr><th>{label}</th><td>{value}</td></tr>\n"
-    html += "</table>\n"
-    return html
+    return _rows_to_html_table(rows)
 
 
 # ── Page HTML par coureur ─────────────────────────────────────────────────────
@@ -648,8 +565,8 @@ nav { margin-bottom: 1.5em; }
 """
 
 
-def make_runner_page(runner, counts_solo, counts_binome, n_solutions, img_name, img_relay_name, out_html):
-    constraints_html = runner_constraints_html(runner)
+def make_runner_page(runner, counts_solo, counts_binome, n_solutions, img_name, img_relay_name, out_html, constraints: RelayConstraints):
+    constraints_html = runner_constraints_html(runner, constraints)
     counts = counts_solo + counts_binome
 
     # Stats de présence
@@ -699,58 +616,54 @@ def make_runner_page(runner, counts_solo, counts_binome, n_solutions, img_name, 
 # ── Page de synthèse ──────────────────────────────────────────────────────────
 
 
-def _params_html():
+def _params_html(constraints: RelayConstraints):
     """Génère un tableau HTML des paramètres généraux du problème."""
-    total_duration_h = N_SEGMENTS * SEGMENT_DURATION_H
-    arr_h_abs = START_HOUR + total_duration_h
+    total_duration_h = constraints.nb_segments * constraints.segment_duration
+    arr_h_abs = constraints.start_hour + total_duration_h
     arr_day_idx = int(arr_h_abs // 24)
     arr_hh = int(arr_h_abs % 24)
     arr_mm = int((arr_h_abs % 1) * 60) if arr_h_abs % 1 else 0
     day_names = ["Mercredi", "Jeudi", "Vendredi", "Samedi"]
     arr_day = day_names[arr_day_idx] if arr_day_idx < len(day_names) else f"J+{arr_day_idx}"
-    seg_dur_min = SEGMENT_DURATION_H * 60
+    seg_dur_min = constraints.segment_duration * 60
 
-    rest_normal_h = REST_NORMAL * SEGMENT_DURATION_H
-    rest_night_h = REST_NIGHT * SEGMENT_DURATION_H
+    rest_normal_h = constraints.repos_jour_default * constraints.segment_duration
+    rest_night_h = constraints.repos_nuit_default * constraints.segment_duration
 
-    total_km_engaged = sum(sum(c.relais) * SEGMENT_KM for c in RUNNERS_DATA.values())
-    n_runners = len(RUNNERS_DATA)
+    total_km_engaged = sum(sum(c.relais) * constraints.segment_km for c in constraints.runners_data.values())
+    n_runners = len(constraints.runners_data)
 
     params = [
-        ("Parcours", f"Lyon → Fessenheim, {TOTAL_KM} km"),
-        ("Départ", f"Mercredi {START_HOUR:02d}h00"),
+        ("Parcours", f"Lyon → Fessenheim, {constraints.total_km} km"),
+        ("Départ", f"Mercredi {constraints.start_hour:02d}h00"),
         ("Arrivée estimée", f"{arr_day} {arr_hh:02d}h{arr_mm:02d}"),
         ("Durée totale estimée", f"{total_duration_h:.1f} h"),
-        ("Vitesse moyenne", f"{SPEED_KMH} km/h"),
-        ("Segments élémentaires", f"{N_SEGMENTS} × {SEGMENT_KM} km ({seg_dur_min:.0f} min/segment)"),
+        ("Vitesse moyenne", f"{constraints.speed_kmh} km/h"),
+        ("Segments élémentaires", f"{constraints.nb_segments} × {constraints.segment_km:.2f} km ({seg_dur_min:.1f} min/segment)"),
         ("Nombre de coureurs", str(n_runners)),
-        ("Distance totale engagée", f"{total_km_engaged} km (pour {TOTAL_KM} km à couvrir)"),
-        ("Repos après relais de jour", f"{REST_NORMAL} segments ({rest_normal_h:.1f} h)"),
-        ("Repos après relais de nuit", f"{REST_NIGHT} segments ({rest_night_h:.1f} h)"),
+        ("Distance totale engagée", f"{total_km_engaged:.0f} km (pour {constraints.total_km:.0f} km à couvrir)"),
+        ("Repos après relais de jour", f"{constraints.repos_jour_default} segments ({rest_normal_h:.1f} h)"),
+        ("Repos après relais de nuit", f"{constraints.repos_nuit_default} segments ({rest_night_h:.1f} h)"),
         ("Période de nuit", "0h – 6h"),
     ]
 
-    html = '<table class="constraints">\n'
-    for label, value in params:
-        html += f"  <tr><th>{label}</th><td>{value}</td></tr>\n"
-    html += "</table>\n"
-    return html
+    return _rows_to_html_table(params)
 
 
-def make_index(runners_info, n_solutions, out_path):
+def make_index(runners_info, n_solutions, out_path, constraints: RelayConstraints):
     rows = ""
     for runner, counts_solo, counts_binome, html_name in runners_info:
         counts = counts_solo + counts_binome
         active = int(np.sum(counts > 0))
         always = int(np.sum(counts == n_solutions))
-        km_min = int(np.where(counts > 0)[0][0]) * SEGMENT_KM if active else "—"
-        km_max = (int(np.where(counts > 0)[0][-1]) + 1) * SEGMENT_KM if active else "—"
+        km_min = int(np.where(counts > 0)[0][0]) * constraints.segment_km if active else "—"
+        km_max = (int(np.where(counts > 0)[0][-1]) + 1) * constraints.segment_km if active else "—"
         rows += (
             f"  <tr>"
             f"<td><a href='{html_name}'>{runner}</a></td>"
             f"<td>{active}</td>"
             f"<td>{always}</td>"
-            f"<td>{km_min}–{km_max} km</td>"
+            f"<td>{km_min:.1f}–{km_max:.1f} km</td>"
             f"</tr>\n"
         )
 
@@ -772,7 +685,7 @@ def make_index(runners_info, n_solutions, out_path):
   <h1>Synthèse — {n_solutions} solutions énumérées</h1>
 
   <h2>Paramètres généraux</h2>
-  {_params_html()}
+  {_params_html(constraints)}
 
   <h2>Coureurs</h2>
   <p>
@@ -802,7 +715,7 @@ def make_index(runners_info, n_solutions, out_path):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 
-def main():
+def main(constraints: RelayConstraints):
     OUT_DIR.mkdir(exist_ok=True)
 
     print("Chargement des solutions…")
@@ -810,12 +723,12 @@ def main():
     n = len(solutions)
     print(f"  {n} solutions chargées.")
 
-    runners = list(RUNNERS_DATA.keys())
+    runners = constraints.runners
     runners_info = []
 
     for runner in runners:
         print(f"  Traitement : {runner}")
-        counts_solo, counts_binome = segment_coverage(solutions, runner)
+        counts_solo, counts_binome = segment_coverage(solutions, runner, constraints)
         img_name = f"{runner.lower()}_histogram.png"
         img_path = OUT_DIR / img_name
         img_relay_name = f"{runner.lower()}_relay_starts.png"
@@ -823,29 +736,30 @@ def main():
         html_name = f"{runner.lower()}.html"
         html_path = OUT_DIR / html_name
 
-        make_histogram(runner, counts_solo, counts_binome, n, img_path)
+        make_histogram(runner, counts_solo, counts_binome, n, img_path, constraints)
 
-        relay_counts = relay_start_coverage(solutions, runner)
-        make_relay_start_histogram(runner, relay_counts, n, img_relay_path)
+        relay_counts = relay_start_coverage(solutions, runner, constraints)
+        make_relay_start_histogram(runner, relay_counts, n, img_relay_path, constraints)
 
-        make_runner_page(runner, counts_solo, counts_binome, n, img_name, img_relay_name, html_path)
+        make_runner_page(runner, counts_solo, counts_binome, n, img_name, img_relay_name, html_path, constraints)
         runners_info.append((runner, counts_solo, counts_binome, html_name))
 
     print("  Génération de la page de diversité…")
-    diversity = segment_runner_diversity(solutions)
-    make_diversity_histogram(diversity, OUT_DIR / "diversity_histogram.png")
+    diversity = segment_runner_diversity(solutions, constraints)
+    make_diversity_histogram(diversity, OUT_DIR / "diversity_histogram.png", constraints)
     make_diversity_page(diversity, n, "diversity_histogram.png", OUT_DIR / "diversity.html")
 
     print("  Génération de la page solo vs binôme…")
-    sb_solo, sb_binome = segment_solo_binome(solutions)
-    make_solo_binome_histogram(sb_solo, sb_binome, OUT_DIR / "solo_binome_histogram.png")
+    sb_solo, sb_binome = segment_solo_binome(solutions, constraints)
+    make_solo_binome_histogram(sb_solo, sb_binome, OUT_DIR / "solo_binome_histogram.png", constraints)
     make_solo_binome_page(sb_solo, sb_binome, n, "solo_binome_histogram.png", OUT_DIR / "solo_binome.html")
 
     print("  Génération de la page de synthèse…")
-    make_index(runners_info, n, OUT_DIR / "index.html")
+    make_index(runners_info, n, OUT_DIR / "index.html", constraints)
 
     print(f"\nTerminé. Ouvrez : {OUT_DIR / 'index.html'}")
 
 
 if __name__ == "__main__":
-    main()
+    from data import build_constraints
+    main(build_constraints())

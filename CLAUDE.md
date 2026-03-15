@@ -9,16 +9,11 @@ source venv/bin/activate
 python solver.py
 ```
 
-The solver runs for up to 180 seconds and writes timestamped `.txt`, `.csv`, and `.html` files in `plannings/` on success.
+The solver runs up to a fixed timeout and writes timestamped `.txt`, `.csv`, and `.html` files in `plannings/` on success.
 
 To check data consistency:
 ```bash
 python data.py
-```
-
-To debug constraint feasibility incrementally:
-```bash
-python debug_faisabilite.py
 ```
 
 ## Environment
@@ -29,54 +24,68 @@ python debug_faisabilite.py
 
 ## Architecture
 
-The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 88 segments of 5 km, ~9 km/h, departing Wednesday 15h00. 14 runners must cover every segment (1 or 2 runners per segment).
+The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 82 segments, ~9 km/h, departing Wednesday 15h00. 14 runners must cover every segment (1 or 2 runners per segment).
 
-**`data.py`** — All problem constants and derived data:
-- `Coureur` dataclass: holds per-runner data — `relais` (list of relay sizes in segments), `compatible` (set of partner names), `dispo` (availability windows, empty = always available), `pinned_segments` (windows the runner must cover), `repos_jour`/`repos_nuit` (rest durations, per-runner overridable), `solo_max`, `nuit_max`, `flexible` (can shrink relay to match a non-flexible partner)
-- `RUNNERS_DATA`: `dict[str, Coureur]` — single source of truth for all runner parameters (replaces separate `RUNNER_RELAYS`, `PARTIAL_AVAILABILITY`, `COMPATIBLE`, `MULTI_NIGHT_ALLOWED`, `PINNED_RUNNERS`, `FLEXIBLE_RUNNERS`)
-- `MATCHING_CONSTRAINTS`: dict with keys `"pinned_binomes"` (list of `(r1, r2, start_seg, end_seg)`), `"pair_at_least_once"`, `"pair_at_most_once"` (replaces `PINNED_BINOMES` and `MANDATORY_PAIRS`)
-- `ENABLE_FLEXIBILITY`: feature flag — when `True`, flexible runners can reduce relay size to form a binôme with a non-flexible partner; `MIN_RELAY_SIZE` sets the minimum allowed size
-- `SOLO_MAX_DEFAULT`, `NUIT_MAX_DEFAULT`: global defaults (overridable per runner in `Coureur`)
-- Time is measured in **segments** (1 seg = 5 km ≈ 33 min); `segment_start_hour(seg)` converts to hours from midnight Wednesday; `hour_to_seg(h)` converts hours-from-start to segment index
-- `print_summary()`: prints a full human-readable summary of input data (runners, compatibilities, availability, constraints, upper bound)
+**`data.py`** — Problem constants, runner data, and entry point:
+- `Coureur` dataclass: per-runner data — `relais` (list of relay sizes in segments), `dispo` (availability windows, empty = always available), `pinned_segments` (windows the runner must cover), `repos_jour`/`repos_nuit` (rest durations, per-runner overridable), `solo_max`, `nuit_max`, `flexible` (can shrink relay to match a non-flexible partner)
+- `RUNNERS_DATA`: `dict[str, Coureur]` — single source of truth for all runner parameters
+- `BINOMES_PINNED`: list of `(r1, r2, start_seg, end_seg)` — pairs forced to run together in a given window
+- `BINOMES_ONCE_MIN` / `BINOMES_ONCE_MAX`: pairs that must run together at least / at most once
+- `ENABLE_FLEX`: feature flag — when `True`, flexible runners can reduce relay size to form a binôme with a non-flexible partner; `MIN_RELAY_SIZE` sets the minimum allowed size
+- `SOLO_MAX_DEFAULT`, `NUIT_MAX_DEFAULT`, `REPOS_JOUR_DEFAULT`, `REPOS_NUIT_DEFAULT`: global defaults (overridable per runner in `Coureur`); rest durations are computed via `hours_to_segs(h)` (rounds up)
+- `hour_to_seg(h)`: converts hours-from-start to segment index (truncates); `hours_to_segs(h)`: converts a duration in hours to a number of segments (rounds up)
+- `build_constraints()`: assembles and returns a `RelayConstraints` object; `python data.py` prints a full summary
 
-**`constraint_model.py`** — CP-SAT model builder, broken into private `_add_*` functions:
-1. Variables: `start[r][k]`, `end[r][k]`, `size[r][k]` (segment index / relay size); for flexible runners `size` is a CP-SAT int var with a reduced domain, otherwise a constant
-2. No-overlap intra-runner
-3. `night_relay[r][k]` bool vars + per-runner `nuit_max` constraint
-4. Rest constraints: per-runner `repos_jour`/`repos_nuit` (defaults REST_NORMAL=13 segs, REST_NIGHT=17 segs)
-5. Availability windows + pinned binômes + pinned runners (all read from `RUNNERS_DATA` / `MATCHING_CONSTRAINTS`)
-6. `same_relay[(r,k,rp,kp)]` bool: 1 if two runners share same start AND same effective size (binôme); 0 forces disjoint; flexible×non-flexible binômes add a `size[flexible][k] == sz_partner` constraint
-7. Coverage: every segment covered by ≥1 relay; cumulative capacity ≤2; flexible-size relays use auxiliary bool decomposition
-8. Inter-runner no-overlap for incompatible pairs
-9. `relais_solo[r][k]` bool + per-runner `solo_max` constraint; flexible runners in solo are forced to their declared size
-10. `_add_no_solo_runners`: enforces `solo_max == 0` (solo forbidden) per runner
-11. `pair_at_least_once` / `pair_at_most_once` enforcement (replaces `_add_mandatory_pairs`)
+**`constraints.py`** — `RelayConstraints` dataclass: snapshot of all problem data passed to the model:
+- Holds all fields from `build_constraints()` (parcours params, runner data, compat matrix, binôme lists, defaults)
+- Properties: `runners`, `relay_sizes`, `runner_nuit_max`, `runner_solo_max`, `night_segments`, `n_segments`, `segment_duration`, `segment_km`
+- Methods: `segment_start_hour(seg)`, `is_night(seg)`, `is_compatible(r1, r2)`, `compat_score(r1, r2)`, `compute_upper_bound()` (LP relaxation via GLOP), `print_summary()`
 
-**`solver.py`** — Runs the CP-SAT solver with objective: maximize number of `same_relay` vars (binômes). Imports `constraint_model` and `solution_formatter`.
+**`compat.py`** — `COMPAT_MATRIX: dict[tuple[str, str], int]` — compatibility scores (0, 1, or 2) for every runner pair. Auto-generated by `refresh_compat.py` from `compat_coureurs.xlsx`; do not edit manually.
 
-**`solution_formatter.py`** — Display and verification after solving. Saves `.txt`, `.csv`, and `.html` outputs (the HTML includes a visual Gantt-style grid per runner). Imported by `solver.py` and `enumerate_optimal_solutions.py`.
+**`model.py`** — CP-SAT model builder:
+- `RelayModel`: holds the `cp_model.CpModel` instance and all CP-SAT variables:
+  - `start[r][k]`, `end[r][k]`, `size[r][k]` (IntVar); for flexible runners `size` has a domain including compatible partner sizes
+  - `same_relay[(r,k,rp,kp)]` (BoolVar): 1 if the pair forms a binôme (same start + same effective size)
+  - `relais_solo[r][k]`, `relais_nuit[r][k]` (BoolVar)
+- `build(constraints)`: calls `_add_variables`, `_add_night_relay`, `_add_rest_constraints`, `_add_availability`, `_add_same_relay`, `_add_coverage`, `_add_inter_runner_no_overlap`, `_add_solo_constraints`, `_add_binomes_min_max`
+- `build_model(constraints)`: factory returning a built `RelayModel`
+- `build_model_fixed_config(active_keys, constraints)`: builds a model with all `same_relay` vars fixed to the given configuration (used by the enumerator)
+- Public methods for enumeration: `add_optimisation_func(constraints)`, `add_min_score(constraints, score)`, `fix_binome_config(active_keys)`, `add_config_exclusion_cut(active_keys)`, `add_schedule_exclusion_cut(solver, constraints)`
 
-**`enumerate_optimal_solutions.py`** — Enumerates all optimal solutions in two phases: collect all distinct binôme configurations, then enumerate placements per configuration. Solutions are saved as CSV only (no `.txt`), named `run_<timestamp>_config_NNN_place_NN.csv`. Duplicate-placement detection uses no-good cuts refactored into `_add_cut()`. Tunable constants: `OPTIMAL_BINOMES_NUM`, `TIME_LIMIT_FIRST`, `TIME_LIMIT_ENUM`, `MAX_PER_CONFIG`, `MAX_CONFIGS`.
+**`solver.py`** — Solver and solution builder:
+- `build_solution(model, constraints, solver) -> RelaySolution`: extracts variable values, computes `rest_h` (rest time in hours after each relay), and constructs a `RelaySolution`
+- `RelaySolver(model, constraints)`: wraps CP-SAT solving; `solve(timeout_sec, target_score, max_count)` is a streaming iterator that yields `RelaySolution` objects as they are found; solver runs in a background thread
+- Objective: maximize weighted sum of `same_relay` vars (weight = `compat_score`)
+- Default: `SOLVER_TIME_LIMIT=5*3600s`, `SOLVER_NUM_WORKERS=12`
 
-**`find_duplicate_solutions.py`** — Detects duplicate CSV solutions in `enumerate_solutions/` using a canonical SHA-256 hash (order-insensitive, binôme-pair-normalised).
+**`solution.py`** — `RelaySolution(relais_list, constraints, score=None)`:
+- Constructor runs `verifications.check()` and sets `.valid`
+- `stats()` → `(n_binomes, n_solos, km_solos, n_flex)`
+- `to_text()` → full text planning (chrono + per-runner recap)
+- `to_csv(filename)` / `to_json(filename)` / `to_html(filename)` — save to file
+- `save(verbose=STATS)` — saves timestamped `.txt`, `.csv`, `.json`, `.html` in `plannings/`; verbosity levels: `QUIET=0`, `STATS=1`, `DETAIL=2`
+- HTML output includes a Gantt-style grid per runner (colour-coded: green=binôme, pink=solo, purple=unavail) with 6h time markers
 
-**`analyze_solutions.py`** — Reads CSV solutions from `enumerate_solutions/` and generates per-runner histograms and HTML pages in `explore_solutions/`.
+**`enumerate.py`** — 3-phase solution enumerator (replaces `enumerate_optimal_solutions.py`):
+- Phase 1: finds the best achievable score (skipped if `SCORE_MINIMAL` is set)
+- Phase 2: enumerates up to `MAX_CONFIGS` distinct binôme configurations at that score using `add_config_exclusion_cut`
+- Phase 3: for each configuration, enumerates up to `MAX_PER_CONFIG` distinct placements using `add_schedule_exclusion_cut`
+- Each solution saved as `.csv`, `.json`, `.html` in `enumerate_solutions/` (named `run_<ts>_config_NNN_place_NN`)
+- Calls `analyze_solutions.main()` at the end; Ctrl+C stops gracefully at each phase
 
-**`upper_bound.py`** — Computes an analytical upper bound on the number of binômes (bipartite matching + coverage constraint).
+**`check_configs_unique.py`** — verifies that all phase-2 binôme configurations in `enumerate_solutions/` are distinct (loads `place_00.json` fingerprints). Optional `run_ts` argument to filter a specific run.
 
-**`debug_faisabilite.py`** — Standalone script that activates constraints one by one to isolate infeasibility.
+**`analyze_solutions.py`** — loads `.json` files from `enumerate_solutions/`, generates per-runner histograms (PNG) and HTML pages, plus a synthesis and diversity page. Outputs to `explore_solutions/`. Reads `RelayConstraints` directly (no longer imports `data.py` constants).
 
 ## Key modeling details
 
-- Segments are 0-indexed; segment `s` covers km `s*5` to `(s+1)*5`
-- Two runners form a binôme if same effective relay size AND same start segment AND listed as compatible: for flexible runners, their `size` CP-SAT var is constrained to match the partner's fixed size
-- Incompatible pairs or non-overlapping sizes are forced disjoint via `add_no_overlap`
-- All runner-specific constraints (rest, night limit, solo limit, availability, flexibility) live in `Coureur` fields in `RUNNERS_DATA`; `MATCHING_CONSTRAINTS` holds cross-runner constraints
-- `solution_formatter.formatte_html()` generates an HTML planning with a per-runner Gantt grid, colour-coded by relay type (binôme/solo/repos/indispo), with day/time markers every 6h
-- Stats footer reports total km of solo relays in addition to count
-- Solver time limit: 180 s; enumerate time limits configurable in `enumerate_optimal_solutions.py`
-- `analyze_solutions.py` now reads `run_*_config_*.csv` glob pattern (updated from `config_*.csv`)
+- Segments are 0-indexed; segment `s` covers km `s * segment_km` to `(s+1) * segment_km`
+- Two runners form a binôme if same effective relay size AND same start segment AND `compat_score > 0`: for flexible runners, their `size` CP-SAT var is constrained to match the partner's fixed size
+- Incompatible pairs (or pairs with no `same_relay` var) are forced disjoint via `add_no_overlap`
+- Solo + night relays are mutually exclusive per relay (`relais_solo[r][k] + relais_nuit[r][k] <= 1`)
+- Flexible runners in solo are forced to their declared relay size
+- Solver time limit: 5h (solver.py) / configurable per phase in enumerate.py
 
 ## Commit instructions
 - **DO NOT ADD** 'CoAuthored by:' footers or any other promotional content in commit messages

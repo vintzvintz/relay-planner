@@ -1,12 +1,11 @@
 """
-Cherche les solutions CSV identiques dans enumerate_solutions/.
+Cherche les solutions JSON identiques dans enumerate_solutions/.
 Deux solutions sont identiques si elles couvrent exactement les mêmes relais :
-- même segment (km_debut, km_fin)
+- même segment (debut_seg, fin_seg)
 - même coureur(s) (paire triée pour les binômes)
-L'ordre des lignes CSV n'est pas pris en compte.
+L'ordre des entrées JSON n'est pas pris en compte.
 """
 
-import csv
 import hashlib
 import json
 from collections import defaultdict
@@ -15,30 +14,30 @@ from pathlib import Path
 SOLUTIONS_DIR = Path("enumerate_solutions")
 
 
-def canonical_key(csv_path: Path) -> str:
-    """Retourne une clé canonique représentant la solution (insensible à l'ordre des lignes)."""
+def canonical_key(json_path: Path) -> str:
+    """Retourne une clé canonique représentant la solution (insensible à l'ordre des entrées)."""
     relays = set()
-    seen_pairs = set()  # pour dédupliquer les binômes (2 lignes → 1 entrée)
+    seen_pairs = set()  # pour dédupliquer les binômes (2 entrées → 1 clé)
 
-    with open(csv_path, newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            km_debut = row["km_debut"]
-            km_fin = row["km_fin"]
-            coureur = row["coureur"].strip()
-            partenaire = row["partenaire"].strip()
-            nuit = row["nuit"].strip()
-            solo = row["solo"].strip()
+    with open(json_path, encoding="utf-8") as f:
+        data = json.load(f)
 
-            if partenaire:
-                # binôme : normalise la paire
-                pair = tuple(sorted([coureur, partenaire]))
-                key = (km_debut, km_fin, pair, nuit)
-                if key not in seen_pairs:
-                    seen_pairs.add(key)
-                    relays.add((km_debut, km_fin, "binome", pair[0], pair[1], nuit))
-            else:
-                relays.add((km_debut, km_fin, "solo", coureur, "", nuit))
+    for row in data:
+        debut_seg = row["debut_seg"]
+        fin_seg = row["fin_seg"]
+        coureur = row["coureur"]
+        partenaire = row["partenaire"]
+        nuit = row["nuit"]
+
+        if partenaire:
+            # binôme : normalise la paire
+            pair = tuple(sorted([coureur, partenaire]))
+            key = (debut_seg, fin_seg, pair, nuit)
+            if key not in seen_pairs:
+                seen_pairs.add(key)
+                relays.add((debut_seg, fin_seg, "binome", pair[0], pair[1], nuit))
+        else:
+            relays.add((debut_seg, fin_seg, "solo", coureur, "", nuit))
 
     # trie pour obtenir une représentation stable
     sorted_relays = sorted(relays)
@@ -47,15 +46,15 @@ def canonical_key(csv_path: Path) -> str:
 
 
 def main():
-    csv_files = sorted(SOLUTIONS_DIR.glob("*.csv"))
-    if not csv_files:
-        print(f"Aucun fichier CSV trouvé dans {SOLUTIONS_DIR}/")
+    json_files = sorted(SOLUTIONS_DIR.glob("*.json"))
+    if not json_files:
+        print(f"Aucun fichier JSON trouvé dans {SOLUTIONS_DIR}/")
         return
 
-    print(f"{len(csv_files)} fichiers CSV trouvés.\n")
+    print(f"{len(json_files)} fichiers JSON trouvés.\n")
 
     key_to_files: dict[str, list[Path]] = defaultdict(list)
-    for path in csv_files:
+    for path in json_files:
         try:
             key = canonical_key(path)
             key_to_files[key].append(path)

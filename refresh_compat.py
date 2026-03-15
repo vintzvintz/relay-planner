@@ -17,21 +17,33 @@ def read_matrix(path: str) -> tuple[list[str], dict[tuple[str, str], bool]]:
     header = [c for c in rows[0][1:] if c is not None]
     n = len(header)
 
-    compat: dict[tuple[str, str], bool] = {}
+    compat: dict[tuple[str, str], int] = {}
+    errors = []
     for data_row in rows[1:]:
         row_name = data_row[0]
         if row_name is None:
             continue
         for col_idx, col_name in enumerate(header):
             val = data_row[col_idx + 1]
-            is_compat = val == "Oui"
-            compat[(row_name, col_name)] = is_compat
-            compat[(col_name, row_name)] = is_compat
+            if row_name == col_name:
+                continue  # diagonale, ignorée
+            if val is None:
+                val = 0
+            elif isinstance(val, float) and val.is_integer():
+                val = int(val)
+            if not isinstance(val, int) or val < 0:
+                errors.append(f"  ({row_name}, {col_name}): {val!r} n'est pas un entier naturel")
+                continue
+            compat[(row_name, col_name)] = val
+            compat[(col_name, row_name)] = val
+
+    if errors:
+        raise ValueError("Valeurs invalides dans la matrice :\n" + "\n".join(errors))
 
     return header, compat
 
 
-def generate_compat_py(runners: list[str], compat: dict[tuple[str, str], bool]) -> str:
+def generate_compat_py(runners: list[str], compat: dict[tuple[str, str], int]) -> str:
     lines = [
         '"""',
         "Matrice de compatibilité générée automatiquement par refresh_compat.py.",
@@ -39,24 +51,19 @@ def generate_compat_py(runners: list[str], compat: dict[tuple[str, str], bool]) 
         '"""',
         "",
         "# fmt: off",
-        "COMPAT_MATRIX: dict[tuple[str, str], bool] = {",
+        "COMPAT_MATRIX: dict[tuple[str, str], int] = {",
     ]
 
     for r1 in runners:
         for r2 in runners:
             if r1 == r2:
                 continue
-            val = compat.get((r1, r2), False)
+            val = compat.get((r1, r2), 0)
             lines.append(f'    ("{r1}", "{r2}"): {val},')
 
     lines += [
         "}",
         "# fmt: on",
-        "",
-        "",
-        "def is_compatible(coureur_1: str, coureur_2: str) -> bool:",
-        '    """Retourne True si coureur_1 et coureur_2 peuvent former un binôme."""',
-        "    return COMPAT_MATRIX.get((coureur_1, coureur_2), False)",
     ]
 
     return "\n".join(lines) + "\n"
@@ -67,4 +74,4 @@ if __name__ == "__main__":
     content = generate_compat_py(runners, compat)
     with open(OUTPUT_PATH, "w") as f:
         f.write(content)
-    print(f"Généré : {OUTPUT_PATH}  ({len(runners)} coureurs, {sum(compat.values()) // 2} paires compatibles)")
+    print(f"Généré : {OUTPUT_PATH}  ({len(runners)} coureurs, {sum(v > 0 for v in compat.values()) // 2} paires compatibles)")
