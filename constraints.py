@@ -63,10 +63,6 @@ class RelayConstraints:
         """durée d'un segment en heures"""
         return self.segment_km / self.speed_kmh
 
-    @property
-    def n_segments(self):
-        return self.nb_segments
-
     def segment_start_hour(self, seg: int) -> float:
         """Heure de début du segment (0-indexé), en heures depuis minuit mercredi."""
         return self.start_hour + seg * self.segment_duration

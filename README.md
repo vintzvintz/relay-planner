@@ -56,8 +56,8 @@ python solver.py
 ### `solution.py`
 `RelaySolution` : encapsule une solution avec vérification automatique et formatage.
 API : `to_text()`, `to_csv()`, `to_json()`, `to_html()`, `save(verbose=)`, `stats()`.
-Le HTML inclut une grille Gantt par coureur (vert = binôme, rose = solo, violet = indisponible)
-avec repères toutes les 6h.
+Le HTML inclut une grille Gantt par coureur (vert = binôme, rose = solo, gris = repos minimal,
+violet = indisponible) avec repères toutes les 6h. Coureurs triés alphabétiquement.
 
 ### `enumerate.py`
 Énumère toutes les solutions optimales en trois phases :
@@ -83,22 +83,31 @@ python analyze_solutions.py
 # Puis ouvrir : explore_solutions/index.html
 ```
 
-### `check_configs_unique.py`
+### `utils/check_configs_unique.py`
 Vérifie que toutes les configurations de binômes (phase 2) dans `enumerate_solutions/`
 sont distinctes en comparant les empreintes des fichiers `place_00.json`.
 Accepte un argument optionnel `run_ts` pour filtrer un run spécifique.
 
 ```bash
-python check_configs_unique.py
-python check_configs_unique.py 20260315_204953
+python utils/check_configs_unique.py
+python utils/check_configs_unique.py 20260315_204953
 ```
 
-### `find_duplicate_solutions.py`
+### `utils/find_duplicate_solutions.py`
 Détecte les solutions JSON identiques dans `enumerate_solutions/` à l'aide d'un hash SHA-256
 canonique (insensible à l'ordre des lignes, paires de binômes normalisées).
 
 ```bash
-python find_duplicate_solutions.py
+python utils/find_duplicate_solutions.py
+```
+
+### `utils/reformat.py`
+Recharge la solution JSON la plus récente depuis `plannings/` et régénère le HTML.
+Accepte un chemin de fichier optionnel en argument.
+
+```bash
+python utils/reformat.py
+python utils/reformat.py plannings/mon_planning.json
 ```
 
 ## Sorties

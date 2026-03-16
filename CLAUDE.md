@@ -65,7 +65,8 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 8
 - `to_text()` → full text planning (chrono + per-runner recap)
 - `to_csv(filename)` / `to_json(filename)` / `to_html(filename)` — save to file
 - `save(verbose=STATS)` — saves timestamped `.txt`, `.csv`, `.json`, `.html` in `plannings/`; verbosity levels: `QUIET=0`, `STATS=1`, `DETAIL=2`
-- HTML output includes a Gantt-style grid per runner (colour-coded: green=binôme, pink=solo, purple=unavail) with 6h time markers
+- HTML output includes a Gantt-style grid per runner (colour-coded: green=binôme, pink=solo, grey=mandatory rest, purple=unavail) with 6h time markers; runners sorted alphabetically
+- `_build_gantt()`: dedicated method returning `(header_row, rows_html)` for the Gantt table; CSS factored into classes (no inline styles)
 
 **`enumerate.py`** — 3-phase solution enumerator (replaces `enumerate_optimal_solutions.py`):
 - Phase 1: finds the best achievable score (skipped if `SCORE_MINIMAL` is set)
@@ -74,7 +75,11 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 8
 - Each solution saved as `.csv`, `.json`, `.html` in `enumerate_solutions/` (named `run_<ts>_config_NNN_place_NN`)
 - Calls `analyze_solutions.main()` at the end; Ctrl+C stops gracefully at each phase
 
-**`check_configs_unique.py`** — verifies that all phase-2 binôme configurations in `enumerate_solutions/` are distinct (loads `place_00.json` fingerprints). Optional `run_ts` argument to filter a specific run.
+**`utils/check_configs_unique.py`** — verifies that all phase-2 binôme configurations in `enumerate_solutions/` are distinct (loads `place_00.json` fingerprints). Optional `run_ts` argument to filter a specific run.
+
+**`utils/find_duplicate_solutions.py`** — detects identical JSON solutions in `enumerate_solutions/` using a canonical SHA-256 hash (order-insensitive, binôme pairs normalized).
+
+**`utils/reformat.py`** — reloads the most recent JSON solution from `plannings/` and regenerates the HTML. Accepts an optional path argument.
 
 **`analyze_solutions.py`** — loads `.json` files from `enumerate_solutions/`, generates per-runner histograms (PNG) and HTML pages, plus a synthesis and diversity page. Outputs to `explore_solutions/`. Reads `RelayConstraints` directly (no longer imports `data.py` constants).
 

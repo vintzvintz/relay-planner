@@ -31,7 +31,7 @@ REPOS_JOUR_DEFAULT = hours_to_segs(7)
 REPOS_NUIT_DEFAULT = hours_to_segs(9)
 
 
-ENABLE_FLEX = False
+ENABLE_FLEX = True
 
 def hour_to_seg(hours_from_start: float) -> int:
     """Convertit une durée depuis le départ en numéro de segment."""

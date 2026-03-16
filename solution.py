@@ -237,7 +237,7 @@ class RelaySolution:
         lines.append("  PAR COUREUR")
         lines.append(f"{'─' * W}")
         pw = self._recap_partenaire_width()
-        for r in c.runners:
+        for r in sorted(c.runners):
             r_rels = sorted(
                 [x for x in self.relais_list if x["runner"] == r], key=lambda x: x["start"]
             )
@@ -280,6 +280,13 @@ class RelaySolution:
         c = self.constraints
         rl = self.relais_list
 
+        def row_class(rel):
+            if rel["solo"]:
+                return ' class="row-solo"'
+            if rel["partner"]:
+                return ' class="row-binome"'
+            return ""
+
         # --- Planning chronologique ---
         chrono_rows = []
         seen = set()
@@ -295,26 +302,25 @@ class RelaySolution:
             coureurs = f"{rel['runner']} + {rel['partner']}" if rel["partner"] else rel["runner"]
             tags = self._chrono_tags(rel)
             flags = ", ".join(tags)
-            bg = "#fff0f5" if rel["solo"] else ("#f0fff4" if rel["partner"] else "#fff")
             chrono_rows.append(
-                f'<tr style="background:{bg};">'
-                f'<td style="padding:3px 8px;white-space:nowrap;">{day_s} {hh:02d}h{mm:02d} → {hh_end:02d}h{mm_end:02d}</td>'
-                f'<td style="padding:3px 8px;white-space:nowrap;">{dist}</td>'
-                f'<td style="padding:3px 8px;text-align:right;">{rel["km"]:.1f} km</td>'
-                f'<td style="padding:3px 8px;font-weight:bold;">{coureurs}</td>'
-                f'<td style="padding:3px 8px;color:#888;font-size:11px;">{flags}</td>'
+                f'<tr{row_class(rel)}>'
+                f'<td class="td-time td-nowrap">{day_s} {hh:02d}h{mm:02d} → {hh_end:02d}h{mm_end:02d}</td>'
+                f'<td class="td-time td-nowrap">{dist}</td>'
+                f'<td class="td-time td-right">{rel["km"]:.1f} km</td>'
+                f'<td class="td-time td-bold">{coureurs}</td>'
+                f'<td class="td-time td-meta">{flags}</td>'
                 f'</tr>'
             )
 
         chrono_html = (
-            '<h3 style="margin-top:2em;">Planning chronologique</h3>'
-            '<table style="border-collapse:collapse;font-size:12px;">'
-            '<thead><tr style="background:#eee;font-weight:bold;">'
-            '<th style="padding:4px 8px;text-align:left;">Horaire</th>'
-            '<th style="padding:4px 8px;text-align:left;">Distance</th>'
-            '<th style="padding:4px 8px;text-align:right;">Dist.</th>'
-            '<th style="padding:4px 8px;text-align:left;">Coureur(s)</th>'
-            '<th style="padding:4px 8px;text-align:left;">Tags</th>'
+            '<h3 class="section-title">Planning chronologique</h3>'
+            '<table class="detail-table">'
+            '<thead><tr class="thead-row">'
+            '<th class="th-detail">Horaire</th>'
+            '<th class="th-detail">Distance</th>'
+            '<th class="th-detail th-right">Dist.</th>'
+            '<th class="th-detail">Coureur(s)</th>'
+            '<th class="th-detail">Tags</th>'
             '</tr></thead>'
             '<tbody>' + "\n".join(chrono_rows) + '</tbody>'
             '</table>'
@@ -322,7 +328,7 @@ class RelaySolution:
 
         # --- Récap par coureur ---
         recap_sections = []
-        for r in c.runners:
+        for r in sorted(c.runners):
             r_rels = sorted(
                 [x for x in rl if x["runner"] == r], key=lambda x: x["start"]
             )
@@ -349,45 +355,37 @@ class RelaySolution:
                     repos = ""
                 tags = self._recap_tags(rel)
                 tags_str = ", ".join(tags)
-                bg = "#fff0f5" if rel["solo"] else ("#f0fff4" if rel["partner"] else "#fff")
                 detail_rows.append(
-                    f'<tr style="background:{bg};">'
-                    f'<td style="padding:2px 8px;white-space:nowrap;">{day_s} {hh:02d}h{mm:02d} → {hh_e:02d}h{mm_e:02d}</td>'
-                    f'<td style="padding:2px 8px;text-align:right;">{rel["km"]:.1f} km</td>'
-                    f'<td style="padding:2px 8px;">{p}</td>'
-                    f'<td style="padding:2px 8px;color:#888;font-size:11px;">{repos}</td>'
-                    f'<td style="padding:2px 8px;color:#888;font-size:11px;">{tags_str}</td>'
+                    f'<tr{row_class(rel)}>'
+                    f'<td class="td-recap td-nowrap">{day_s} {hh:02d}h{mm:02d} → {hh_e:02d}h{mm_e:02d}</td>'
+                    f'<td class="td-recap td-right">{rel["km"]:.1f} km</td>'
+                    f'<td class="td-recap">{p}</td>'
+                    f'<td class="td-recap td-meta">{repos}</td>'
+                    f'<td class="td-recap td-meta">{tags_str}</td>'
                     f'</tr>'
                 )
 
             recap_sections.append(
-                f'<h4 style="margin:1.2em 0 0.3em;">{r}'
-                f'<span style="font-weight:normal;font-size:12px;"> — {total:.1f} km, {len(r_rels)} relais{flags_str}</span></h4>'
-                '<table style="border-collapse:collapse;font-size:12px;">'
-                # '<thead><tr style="background:#eee;">'
-                # '<th style="padding:3px 8px;text-align:left;">Horaire</th>'
-                # '<th style="padding:3px 8px;text-align:right;">Dist.</th>'
-                # '<th style="padding:3px 8px;text-align:left;">Partenaire</th>'
-                # '<th style="padding:3px 8px;text-align:left;">Repos suivant</th>'
-                # '<th style="padding:3px 8px;text-align:left;">Tags</th>'
-                # '</tr></thead>'
+                f'<h4 class="runner-title">{r}'
+                f'<span class="runner-subtitle"> — {total:.1f} km, {len(r_rels)} relais{flags_str}</span></h4>'
+                '<table class="detail-table">'
                 '<tbody>' + "\n".join(detail_rows) + '</tbody>'
                 '</table>'
             )
 
         recap_html = (
-            '<h3 style="margin-top:2em;">Par coureur</h3>'
+            '<h3 class="section-title">Par coureur</h3>'
             + "\n".join(recap_sections)
         )
 
         return chrono_html + "\n" + recap_html
 
-    def _build_html(self):
+    def _build_gantt(self):
+        """Retourne (header_row, rows_html) pour le tableau Gantt."""
         c = self.constraints
-        rl = self.relais_list
 
         by_runner = {r: {} for r in c.runners}
-        for rel in rl:
+        for rel in self.relais_list:
             by_runner[rel["runner"]][rel["start"]] = rel
 
         def unavail_segs(runner):
@@ -398,9 +396,6 @@ class RelaySolution:
                 avail.update(range(s, e))
             return set(range(c.nb_segments)) - avail
 
-        night_segments = c.night_segments
-
-        SEG_WIDTH_PX = 10
         mark_segs = set()
         for day in range(4):
             for hh_mark in (0, 6, 12, 18):
@@ -423,14 +418,18 @@ class RelaySolution:
             unavail = unavail_segs(r)
             relais_by_start = by_runner[r]
             sorted_relais = sorted(relais_by_start.values(), key=lambda x: x["start"])
+            rd = c.runners_data[r]
 
             spans = []
             seg = 0
+            last_repos_end = None  # seg index jusqu'où le repos minimal court
             while seg < c.nb_segments:
                 if seg in relais_by_start:
                     rel = relais_by_start[seg]
                     relay_typ = "relay_solo" if rel["solo"] else ("relay_binome" if rel["partner"] else "relay_solo")
                     spans.append((seg, rel["end"], relay_typ, ""))
+                    repos_segs = rd.repos_nuit if rel["night"] else rd.repos_jour
+                    last_repos_end = min(rel["end"] + repos_segs, c.nb_segments)
                     seg = rel["end"]
                 elif seg in unavail:
                     end = seg + 1
@@ -449,7 +448,14 @@ class RelaySolution:
                             next_event = min(next_event, us)
                             break
                     end = next_event
-                    spans.append((seg, end, "free", ""))
+                    # Découpe la zone libre en repos minimal (gris) + libre (blanc)
+                    if last_repos_end is not None and seg < last_repos_end:
+                        repos_end = min(last_repos_end, end)
+                        spans.append((seg, repos_end, "rest", ""))
+                        if repos_end < end:
+                            spans.append((repos_end, end, "free", ""))
+                    else:
+                        spans.append((seg, end, "free", ""))
                     seg = end
 
             spans = split_spans(spans)
@@ -459,28 +465,24 @@ class RelaySolution:
                 colspan = e - s
                 if colspan == 0:
                     continue
-                bl = "border-left:2px solid #000;" if s in mark_segs else ""
+                mark_class = " seg-mark" if s in mark_segs else ""
                 if typ == "free":
-                    is_night_span = all(seg_i in night_segments for seg_i in range(s, e))
-                    bg = "#d0d0d0" if is_night_span else "#ffffff"
-                    style = f"background:{bg};color:#555;font-size:10px;text-align:center;border:1px solid #ccc;{bl}"
+                    css_class = f"seg-free{mark_class}"
+                elif typ == "rest":
+                    css_class = f"seg-rest{mark_class}"
                 elif typ == "relay_binome":
-                    style = f"background:#4caf50;color:#000;font-size:10px;text-align:center;font-weight:bold;border:1px solid #2e7d32;{bl}"
+                    css_class = f"seg-binome{mark_class}"
                 elif typ == "relay_solo":
-                    style = f"background:#f48fb1;color:#000;font-size:10px;text-align:center;font-weight:bold;border:1px solid #c2185b;{bl}"
+                    css_class = f"seg-solo{mark_class}"
                 elif typ == "unavail":
-                    style = f"background:#8b00ff;border:1px solid #6a00cc;{bl}"
+                    css_class = f"seg-unavail{mark_class}"
                 else:
-                    style = f"background:#fff;border:1px solid #ccc;{bl}"
-                tds.append(f'<td colspan="{colspan}" style="{style}">{label}</td>')
+                    css_class = f"seg-free{mark_class}"
+                tds.append(f'<td colspan="{colspan}" class="{css_class}">{label}</td>')
 
-            row = (
-                f'<tr><th style="text-align:left;padding:2px 6px;white-space:nowrap;'
-                f'font-size:12px;">{r}</th>{"".join(tds)}</tr>'
-            )
-            rows_html.append(row)
+            rows_html.append(f'<tr><th class="th-runner">{r}</th>\n{chr(10).join(tds)}\n</tr>')
 
-        header_tds = ['<th style="padding:1px;font-size:9px;width:20px;min-width:20px;"></th>']
+        header_tds = ['<th class="th-seg-label"></th>']
         for seg in range(c.nb_segments):
             h = c.segment_start_hour(seg)
             is_mark = seg in mark_segs
@@ -490,12 +492,17 @@ class RelaySolution:
                 label = f"{closest_hh:02d}h"
             else:
                 label = ""
-            bl = "border-left:2px solid #fff;" if is_mark else ""
-            header_tds.append(
-                f'<th style="background:#555;color:#fff;font-size:8px;padding:1px;'
-                f'text-align:center;width:{SEG_WIDTH_PX}px;min-width:{SEG_WIDTH_PX}px;{bl}">{label}</th>'
-            )
-        header_row = f'<tr>{"".join(header_tds)}</tr>'
+            night_class = " seg-header-night" if seg in c.night_segments else ""
+            mark_class = " seg-mark-header" if is_mark else ""
+            header_tds.append(f'<th class="th-seg{night_class}{mark_class}">{label}</th>')
+        header_row = f'<tr>\n{chr(10).join(header_tds)}\n</tr>'
+
+        return header_row, rows_html
+
+    def _build_html(self):
+        c = self.constraints
+
+        header_row, rows_html = self._build_gantt()
 
         h_end = c.segment_start_hour(c.nb_segments)
         day_end = DAY_NAMES[min(int(h_end // 24), 2)]
@@ -513,6 +520,42 @@ class RelaySolution:
   body {{ font-family: sans-serif; font-size: 12px; margin: 16px; }}
   table {{ border-collapse: collapse; table-layout: fixed; }}
   th, td {{ padding: 2px; }}
+
+  /* Gantt — header */
+  .th-seg-label {{ padding: 2px 6px; white-space: nowrap; font-size: 12px; }}
+  .th-seg {{ background: #90caf9; color: #000; font-size: 8px; padding: 1px; text-align: center; width: 10px; min-width: 10px; }}
+  .th-seg.seg-header-night {{ background: #1565c0; color: #fff; }}
+  .th-seg.seg-mark-header {{ border-left: 2px solid #fff; }}
+  .th-runner {{ text-align: left; padding: 2px 6px; white-space: nowrap; font-size: 12px; }}
+
+  /* Gantt — cellules segments */
+  .seg-free    {{ color: #555; font-size: 10px; text-align: center; border: 1px solid #ccc; background: #ffffff; }}
+  .seg-rest    {{ color: #555; font-size: 10px; text-align: center; border: 1px solid #ccc; background: #d0d0d0; }}
+  .seg-binome  {{ background: #4caf50; color: #000; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #2e7d32; }}
+  .seg-solo    {{ background: #f48fb1; color: #000; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #c2185b; }}
+  .seg-unavail {{ background: #8b00ff; border: 1px solid #6a00cc; }}
+  .seg-mark    {{ border-left: 2px solid #000; }}
+
+  /* Tables de détail */
+  .detail-table {{ border-collapse: collapse; font-size: 12px; table-layout: auto; }}
+  .section-title {{ margin-top: 2em; }}
+  .thead-row {{ background: #eee; font-weight: bold; }}
+  .th-detail {{ padding: 4px 8px; text-align: left; }}
+  .th-detail.th-right {{ text-align: right; }}
+  .runner-title {{ margin: 1.2em 0 0.3em; }}
+  .runner-subtitle {{ font-weight: normal; font-size: 12px; }}
+
+  /* Lignes colorées */
+  .row-solo   {{ background: #fff0f5; }}
+  .row-binome {{ background: #f0fff4; }}
+
+  /* Cellules de détail */
+  .td-time   {{ padding: 3px 8px; }}
+  .td-recap  {{ padding: 2px 8px; }}
+  .td-nowrap {{ white-space: nowrap; }}
+  .td-right  {{ text-align: right; }}
+  .td-bold   {{ font-weight: bold; }}
+  .td-meta   {{ color: #888; font-size: 11px; }}
 </style>
 </head>
 <body>
