@@ -32,7 +32,7 @@ SEGMENT_STEP  = 2
 def load_solutions(folder="enumerate_solutions"):
     solutions = []
     for path in sorted(Path(folder).glob("run_*_config_*.json")):
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:
             solutions.append(json.load(f))
     return solutions
 
@@ -61,7 +61,6 @@ def segment_coverage(solutions, runner, constraints: RelayConstraints):
 # ── Axe X : étiquettes "km / jour+heure" ─────────────────────────────────────
 
 _DAY_NAMES = ["Mer", "Jeu", "Ven", "Sam"]
-
 
 def x_labels(segments, constraints: RelayConstraints):
     """Retourne les étiquettes courtes pour chaque segment (km + jour heure)."""

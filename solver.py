@@ -24,7 +24,7 @@ def build_solution(model, constraints, solver) -> solution.RelaySolution:
     segment_km = c.segment_km
     relais_list = []
     for r in c.runners:
-        for k, sz_declared in enumerate(c.runners_data[r].relais):
+        for k, (sz_declared, _flex) in enumerate(c.runners_data[r].relais):
             s = solver.value(model.start[r][k])
             e = solver.value(model.end[r][k])
             sz = solver.value(model.size[r][k])

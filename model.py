@@ -45,33 +45,29 @@ class RelayModel:
         self._add_binomes_min_max(constraints)
         return self
 
-    def _size_domain(self, r, sz_max, constraints):
-        """Retourne le domaine de taille pour le relais de taille déclarée sz_max du coureur r.
+    def _relay_bounds(self, req, flex, constraints):
+        """Retourne (lo, hi) pour un relais, en tenant compte de enable_flex."""
+        if not constraints.enable_flex:
+            return req, req
+        return min(req, flex), max(req, flex)
 
-        - Coureur non-flexible : domaine singleton [sz_max].
-        - Coureur flexible     : sz_max + tailles des partenaires non-flexibles compatibles
-                                strictement inférieures à sz_max et >= MIN_RELAY_SIZE.
+    def _size_domain(self, r, k, constraints):
+        """Retourne le domaine de taille pour le k-ième relais du coureur r.
+
+        - ENABLE_FLEX=False ou req == flex : domaine singleton {req}.
+        - Relais flexible (req != flex)    : intervalle [min(req,flex), max(req,flex)].
         """
-        c = constraints
-        if not c.runners_data[r].flexible:
-            return [sz_max]
-        partner_sizes = set()
-        for rp, cp in c.runners_data.items():
-            if rp == r or cp.flexible:
-                continue
-            if not c.is_compatible(r, rp):
-                continue
-            for sz_p in cp.relais:
-                if c.min_relay_size <= sz_p < sz_max:
-                    partner_sizes.add(sz_p)
-        return sorted(partner_sizes | {sz_max})
+        req, flex = constraints.runners_data[r].relais[k]
+        if not constraints.enable_flex or req == flex:
+            return cp_model.Domain.from_values([req])
+        lo, hi = min(req, flex), max(req, flex)
+        return cp_model.Domain(lo, hi)
 
     def _add_variables(self, constraints):
         """Crée les variables start/end/size et intervalles pour chaque relais.
 
-        size[r][k] est toujours une variable CP-SAT. Pour les coureurs non-flexibles,
-        le domaine est un singleton. Pour les flexibles, le domaine inclut les tailles
-        des partenaires non-flexibles compatibles.
+        size[r][k] a pour domaine {req} si le relais est non-flexible,
+        ou [min(req,flex), max(req,flex)] si flexible.
         """
         c = constraints
         model = self.model
@@ -79,19 +75,18 @@ class RelayModel:
             self.start[r], self.end[r], self.size[r] = [], [], []
             runner_ivs = []
             coureur = c.runners_data[r]
-            for k, sz_max in enumerate(coureur.relais):
-                s = model.new_int_var(0, c.nb_segments - c.min_relay_size, f"s_{r}_{k}")
-                domain_vals = self._size_domain(r, sz_max, constraints)
-                sz_var = model.new_int_var_from_domain(
-                    cp_model.Domain.from_values(domain_vals), f"sz_{r}_{k}"
-                )
-                e = model.new_int_var(c.min_relay_size, c.nb_segments, f"e_{r}_{k}")
+            for k, (req, flex) in enumerate(coureur.relais):
+                sz_lo, _ = self._relay_bounds(req, flex, constraints)
+                s = model.new_int_var(0, c.nb_segments - sz_lo, f"s_{r}_{k}")
+                domain = self._size_domain(r, k, constraints)
+                sz_var = model.new_int_var_from_domain(domain, f"sz_{r}_{k}")
+                e = model.new_int_var(sz_lo, c.nb_segments, f"e_{r}_{k}")
                 model.add(e == s + sz_var)
                 iv = model.new_interval_var(s, sz_var, e, f"iv_{r}_{k}")
                 self.start[r].append(s)
                 self.end[r].append(e)
                 self.size[r].append(sz_var)
-                self._intervals_all.append((r, k, sz_max, iv))
+                self._intervals_all.append((r, k, req, iv))
                 runner_ivs.append(iv)
             if len(runner_ivs) > 1:
                 model.add_no_overlap(runner_ivs)
@@ -103,13 +98,16 @@ class RelayModel:
         seg_night_list = sorted(c.night_segments)
         for r in c.runners:
             self.relais_nuit[r] = []
-            for k, sz in enumerate(c.runners_data[r].relais):
+            for k, (req, flex) in enumerate(c.runners_data[r].relais):
+                # Pour le calcul des starts possibles la nuit, on utilise la taille minimale
+                # du domaine (un relais court peut quand même commencer la nuit).
+                sz_lo, sz_hi = self._relay_bounds(req, flex, constraints)
                 night_starts = sorted(
                     set(
                         n - off
                         for n in seg_night_list
-                        for off in range(sz)
-                        if 0 <= n - off <= c.nb_segments - sz
+                        for off in range(sz_hi)
+                        if 0 <= n - off <= c.nb_segments - sz_lo
                     )
                 )
                 rhn = model.new_bool_var(f"rn_{r}_{k}")
@@ -118,7 +116,7 @@ class RelayModel:
                 else:
                     nd = cp_model.Domain.from_values(night_starts)
                     dd = nd.complement().intersection_with(
-                        cp_model.Domain(0, c.nb_segments - sz)
+                        cp_model.Domain(0, c.nb_segments - sz_lo)
                     )
                     model.add_linear_expression_in_domain(self.start[r][k], nd).only_enforce_if(rhn)
                     if not dd.is_empty():
@@ -187,13 +185,13 @@ class RelayModel:
             idx = pair_relay_counters.get(pair_key, 0)
             min_relay_size = window_end - window_start
 
-            r1_relays = [k for k, sz in enumerate(c.runners_data[r1].relais) if sz >= min_relay_size]
-            r2_relays = [k for k, sz in enumerate(c.runners_data[r2].relais) if sz >= min_relay_size]
+            r1_relays = [k for k, (req, _) in enumerate(c.runners_data[r1].relais) if req >= min_relay_size]
+            r2_relays = [k for k, (req, _) in enumerate(c.runners_data[r2].relais) if req >= min_relay_size]
             if idx < len(r1_relays) and idx < len(r2_relays):
                 k1, k2 = r1_relays[idx], r2_relays[idx]
-                sz1 = c.runners_data[r1].relais[k1]
+                req1 = c.runners_data[r1].relais[k1][0]
                 model.add(self.start[r1][k1] <= window_start)
-                model.add(self.start[r1][k1] >= window_end - sz1)
+                model.add(self.start[r1][k1] >= window_end - req1)
                 model.add(self.start[r2][k2] == self.start[r1][k1])
             pair_relay_counters[pair_key] = idx + 1
 
@@ -203,44 +201,36 @@ class RelayModel:
                 window_start, window_end = window[0], window[1]
                 min_relay_size = window_end - window_start
 
-                r_relays = [k for k, sz in enumerate(coureur.relais) if sz >= min_relay_size]
+                r_relays = [k for k, (req, _) in enumerate(coureur.relais) if req >= min_relay_size]
                 if idx < len(r_relays):
                     k = r_relays[idx]
-                    sz = coureur.relais[k]
+                    req = coureur.relais[k][0]
                     model.add(self.start[r][k] <= window_start)
-                    model.add(self.start[r][k] >= window_end - sz)
+                    model.add(self.start[r][k] >= window_end - req)
 
     def _add_same_relay(self, constraints):
         """Crée les variables same_relay pour les binômes potentiels.
 
-        Cas flexible×non-flexible : même start ET size[flexible] == sz_non_flexible.
-        Cas non-flex×non-flex ou flex×flex : même start ET sz_r == sz_rp (taille déclarée).
+        Deux relais (r,k) et (rp,kp) peuvent former un binôme si leurs domaines de taille
+        se chevauchent (intersection non vide). Quand b=1 : même start ET même taille effective.
         """
         c = constraints
         model = self.model
         n_runners = len(c.runners)
         for ri, r in enumerate(c.runners):
-            r_flex = c.runners_data[r].flexible
-            for k, sz_r in enumerate(c.runners_data[r].relais):
+            for k, (req_r, flex_r) in enumerate(c.runners_data[r].relais):
+                lo_r, hi_r = self._relay_bounds(req_r, flex_r, c)
                 for rpi in range(ri + 1, n_runners):
                     rp = c.runners[rpi]
                     if not c.is_compatible(r, rp):
                         continue
-                    rp_flex = c.runners_data[rp].flexible
-                    for kp, sz_rp in enumerate(c.runners_data[rp].relais):
-                        # Détermine si ce binôme est potentiellement possible
-                        if r_flex and not rp_flex:
-                            # flexible r peut s'aligner sur sz_rp si sz_rp <= sz_r et >= MIN
-                            if sz_rp > sz_r or sz_rp < c.min_relay_size:
-                                continue
-                        elif rp_flex and not r_flex:
-                            # flexible rp peut s'aligner sur sz_r si sz_r <= sz_rp et >= MIN
-                            if sz_r > sz_rp or sz_r < c.min_relay_size:
-                                continue
-                        else:
-                            # non-flex×non-flex ou flex×flex : tailles déclarées identiques
-                            if sz_r != sz_rp:
-                                continue
+                    for kp, (req_rp, flex_rp) in enumerate(c.runners_data[rp].relais):
+                        lo_rp, hi_rp = self._relay_bounds(req_rp, flex_rp, c)
+                        # Domaines se chevauchent ?
+                        overlap_lo = max(lo_r, lo_rp)
+                        overlap_hi = min(hi_r, hi_rp)
+                        if overlap_lo > overlap_hi:
+                            continue
 
                         key = (r, k, rp, kp)
                         b = model.new_bool_var(f"sr_{r}_{k}_{rp}_{kp}")
@@ -249,20 +239,15 @@ class RelayModel:
                         # Même start
                         model.add(self.start[r][k] == self.start[rp][kp]).only_enforce_if(b)
 
-                        # Même taille effective
-                        if r_flex and not rp_flex:
-                            model.add(self.size[r][k] == sz_rp).only_enforce_if(b)
-                        elif rp_flex and not r_flex:
-                            model.add(self.size[rp][kp] == sz_r).only_enforce_if(b)
-                        elif r_flex and rp_flex:
-                            model.add(self.size[r][k] == self.size[rp][kp]).only_enforce_if(b)
+                        # Même taille effective (dans l'intersection des domaines)
+                        model.add(self.size[r][k] == self.size[rp][kp]).only_enforce_if(b)
 
-                        # No-overlap quand ~b : start[r] >= end[rp] ou start[rp] >= end[r]
-                        # i.e. start[r] - start[rp] >= sz_rp  ou  start[rp] - start[r] >= sz_r
+                        # No-overlap quand ~b
+                        # La séparation minimale dépend de la taille minimale de chaque relais
                         diff = model.new_int_var(-c.nb_segments, c.nb_segments, f"d_{r}_{k}_{rp}_{kp}")
                         model.add(diff == self.start[r][k] - self.start[rp][kp])
-                        no_overlap_dom = cp_model.Domain(-c.nb_segments, -sz_r).union_with(
-                            cp_model.Domain(sz_rp, c.nb_segments)
+                        no_overlap_dom = cp_model.Domain(-c.nb_segments, -lo_r).union_with(
+                            cp_model.Domain(lo_rp, c.nb_segments)
                         )
                         model.add_linear_expression_in_domain(diff, no_overlap_dom).only_enforce_if(~b)
 
@@ -316,15 +301,14 @@ class RelayModel:
     def _add_solo_constraints(self, constraints):
         """Crée relais_solo[r][k] et limite à au plus 1 solo par coureur.
 
-        Pour un coureur flexible en solo, force la taille à sz_max (pas de réduction
-        sans binôme).
+        Pour un relais flexible en solo, force la taille à req (pas de réduction sans binôme).
         """
         c = constraints
         model = self.model
         for r in c.runners:
             self.relais_solo[r] = []
             coureur = c.runners_data[r]
-            for k, sz_max in enumerate(coureur.relais):
+            for k, (req, flex) in enumerate(coureur.relais):
                 partners = [
                     bv
                     for key, bv in self.same_relay.items()
@@ -337,9 +321,12 @@ class RelayModel:
                 else:
                     model.add(b == 1)
                 self.relais_solo[r].append(b)
-                # Flexible en solo → taille déclarée obligatoire
-                if coureur.flexible:
-                    model.add(self.size[r][k] == sz_max).only_enforce_if(b)
+                # Flexible en solo → taille nominale obligatoire
+                if c.enable_flex and req != flex:
+                    model.add(self.size[r][k] == req).only_enforce_if(b)
+                # Solo interdit si taille nominale > solo_max_size
+                if req > c.solo_max_size:
+                    model.add(self.size[r][k] <= c.solo_max_size).only_enforce_if(b)
 
         for r in c.runners:
             model.add(sum(self.relais_solo[r]) <= c.runner_solo_max[r])
@@ -378,18 +365,72 @@ class RelayModel:
         ]
 
     def _weighted_binome_sum(self, constraints):
+        """Retourne la somme pondérée des binômes actifs (poids = compat_score).
+
+        Objectif linéaire en BoolVar same_relay. Utilisé quand OPTIMISE_SUR='compat_score'.
+        """
         return sum(
             constraints.compat_score(r, rp) * var
             for (r, _k, rp, _kp), var in self.same_relay.items()
         )
 
+    def _distance_solo_sum(self, constraints):
+        """Retourne une expression linéaire = somme des tailles des relais solo.
+
+        Linéarisation : solo_size[r][k] = size[r][k] * relais_solo[r][k]
+        (produit IntVar × BoolVar via add_multiplication_equality).
+        On veut minimiser cette somme → on maximise son négatif.
+        """
+        model = self.model
+        c = constraints
+        terms = []
+        for r in c.runners:
+            for k, (req, _) in enumerate(c.runners_data[r].relais):
+                solo_sz = model.new_int_var(0, req, f"solo_sz_{r}_{k}")
+                model.add_multiplication_equality(solo_sz, [self.size[r][k], self.relais_solo[r][k]])
+                terms.append(solo_sz)
+        return sum(terms)
+
+    def _flex_reduction_sum(self, constraints):
+        """Retourne une expression linéaire = réduction totale des relais flexibles.
+
+        Pour chaque relais flexible (req != flex) :
+          réduction = req - size[r][k]
+        On veut minimiser cette somme → on maximise sum(size[r][k]) pour les flexibles
+        (les req sont des constantes).
+        """
+        c = constraints
+        terms = []
+        for r in c.runners:
+            for k, (req, flex) in enumerate(c.runners_data[r].relais):
+                if c.enable_flex and req != flex:
+                    terms.append(self.size[r][k])
+        if not terms:
+            return 0
+        return sum(terms)
+
+    def _objective_expr(self, constraints):
+        """Retourne l'expression à maximiser selon constraints.optimise_sur."""
+        import warnings
+        mode = constraints.optimise_sur
+        if mode == 'compat_score':
+            return self._weighted_binome_sum(constraints)
+        elif mode == 'distance_solo':
+            warnings.warn("OPTIMISE_SUR='distance_solo' n'a pas été testé — résultats non validés.", stacklevel=3)
+            return -self._distance_solo_sum(constraints)
+        elif mode == 'flex_minimal':
+            warnings.warn("OPTIMISE_SUR='flex_minimal' n'a pas été testé — résultats non validés.", stacklevel=3)
+            return self._flex_reduction_sum(constraints)
+        else:
+            raise ValueError(f"OPTIMISE_SUR inconnu : {mode!r}")
+
     def add_optimisation_func(self, constraints):
         """Ajoute la fonction que le solveur va optimiser."""
-        self.model.maximize(self._weighted_binome_sum(constraints))
+        self.model.maximize(self._objective_expr(constraints))
 
     def add_min_score(self, constraints, score):
-        """Contraint le score pondéré des binômes actifs à être >= score."""
-        self.model.add(self._weighted_binome_sum(constraints) >= score)
+        """Contraint le score de l'objectif courant à être >= score."""
+        self.model.add(self._objective_expr(constraints) >= score)
 
     def fix_binome_config(self, active_keys):
         """Fixe toutes les variables same_relay à la configuration donnée (phase 2)."""

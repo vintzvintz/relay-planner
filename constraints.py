@@ -29,9 +29,14 @@ class RelayConstraints:
     # contraintes planning
     min_relay_size: int
     solo_max_default: int
+    solo_max_size: int
     nuit_max_default: int
     repos_jour_default: int
     repos_nuit_default: int
+
+    # fonction objectif
+    optimise_sur: str = 'compat_score'
+    enable_flex: bool = True  # si False, tous les relais sont traités comme non-flexibles (size == req)
 
     @property
     def runners(self):
@@ -39,7 +44,8 @@ class RelayConstraints:
 
     @property
     def relay_sizes(self):
-        return {r: list(cd.relais) for r, cd in self.runners_data.items()}
+        """Retourne les tailles nominales (nb_seg_requested) de chaque relais."""
+        return {r: [req for req, _flex in cd.relais] for r, cd in self.runners_data.items()}
 
     @property
     def runner_nuit_max(self):
@@ -95,13 +101,14 @@ class RelayConstraints:
         """
         from ortools.linear_solver import pywraplp
 
-        total_segs_engaged = sum(sum(c.relais) for c in self.runners_data.values())
+        req_sizes = {r: [req for req, _flex in c.relais] for r, c in self.runners_data.items()}
+        total_segs_engaged = sum(sum(sizes) for sizes in req_sizes.values())
         surplus = total_segs_engaged - self.nb_segments
 
         solver = pywraplp.Solver.CreateSolver("GLOP")
 
-        counts = {r: count_by_size(c.relais) for r, c in self.runners_data.items()}
-        all_sizes = sorted({s for c in self.runners_data.values() for s in c.relais})
+        counts = {r: count_by_size(sizes) for r, sizes in req_sizes.items()}
+        all_sizes = sorted({s for sizes in req_sizes.values() for s in sizes})
 
         # Variables b[r1, r2, s] avec r1 < r2 (ordre de la liste runners)
         b = {}
@@ -193,7 +200,8 @@ class RelayConstraints:
         print("-" * 60)
         km_engages = 0
         for name, coureur in self.runners_data.items():
-            km = sum(coureur.relais) * self.segment_km
+            req_sizes = [req for req, _flex in coureur.relais]
+            km = sum(req_sizes) * self.segment_km
             km_engages += km
             flags = []
             if coureur.nuit_max == 0:
@@ -212,8 +220,14 @@ class RelayConstraints:
                 flags.append("dispo partielle")
             if coureur.pinned_segments:
                 flags.append(f"épinglé×{len(coureur.pinned_segments)}")
+            flex_count = sum(1 for req, flex in coureur.relais if req != flex)
+            if flex_count:
+                flags.append(f"flex×{flex_count}")
             flag_str = f"  [{', '.join(flags)}]" if flags else ""
-            sizes_str = " + ".join(f"{s * self.segment_km:.1f}" for s in coureur.relais)
+            sizes_str = " + ".join(
+                f"{req * self.segment_km:.1f}" + (f"[±{flex * self.segment_km:.1f}]" if req != flex else "")
+                for req, flex in coureur.relais
+            )
             print(f"  {name:12s} : {km:.0f} km = {sizes_str} km{flag_str}")
         print(
             f"  {'TOTAL':12s}   {km_engages:.0f} km engagés  (reste {2 * self.total_km - km_engages:.1f} km en solo)"
