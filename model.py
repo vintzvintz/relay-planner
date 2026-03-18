@@ -35,6 +35,7 @@ class RelayModel:
         self.model = cp_model.CpModel()
 
         self._add_variables(constraints)
+        self._add_fixed_relays(constraints)
         self._add_night_relay(constraints)
         self._add_rest_constraints(constraints)
         self._add_availability(constraints)
@@ -44,6 +45,17 @@ class RelayModel:
         self._add_solo_constraints(constraints)
         self._add_binomes_min_max(constraints)
         return self
+
+    def _add_fixed_relays(self, constraints):
+        """Fixe start et size des relais dont pinned[k] n'est pas None."""
+        model = self.model
+        for r, coureur in constraints.runners_data.items():
+            for k, pin in enumerate(coureur.pinned):
+                if pin is None:
+                    continue
+                fixed_size, fixed_start = pin
+                model.add(self.start[r][k] == fixed_start)
+                model.add(self.size[r][k] == fixed_size)
 
     def _relay_bounds(self, req, flex, constraints):
         """Retourne (lo, hi) pour un relais, en tenant compte de enable_flex."""
@@ -183,10 +195,10 @@ class RelayModel:
         for r1, r2, window_start, window_end in c.binomes_pinned:
             pair_key = (r1, r2)
             idx = pair_relay_counters.get(pair_key, 0)
-            min_relay_size = window_end - window_start
+            window_size = window_end - window_start
 
-            r1_relays = [k for k, (req, _) in enumerate(c.runners_data[r1].relais) if req >= min_relay_size]
-            r2_relays = [k for k, (req, _) in enumerate(c.runners_data[r2].relais) if req >= min_relay_size]
+            r1_relays = [k for k, (req, _) in enumerate(c.runners_data[r1].relais) if req >= window_size]
+            r2_relays = [k for k, (req, _) in enumerate(c.runners_data[r2].relais) if req >= window_size]
             if idx < len(r1_relays) and idx < len(r2_relays):
                 k1, k2 = r1_relays[idx], r2_relays[idx]
                 req1 = c.runners_data[r1].relais[k1][0]
@@ -194,19 +206,6 @@ class RelayModel:
                 model.add(self.start[r1][k1] >= window_end - req1)
                 model.add(self.start[r2][k2] == self.start[r1][k1])
             pair_relay_counters[pair_key] = idx + 1
-
-        # Pinned runners: force a single runner to have a relay covering the window.
-        for r, coureur in c.runners_data.items():
-            for idx, window in enumerate(coureur.pinned_segments):
-                window_start, window_end = window[0], window[1]
-                min_relay_size = window_end - window_start
-
-                r_relays = [k for k, (req, _) in enumerate(coureur.relais) if req >= min_relay_size]
-                if idx < len(r_relays):
-                    k = r_relays[idx]
-                    req = coureur.relais[k][0]
-                    model.add(self.start[r][k] <= window_start)
-                    model.add(self.start[r][k] >= window_end - req)
 
     def _add_same_relay(self, constraints):
         """Crée les variables same_relay pour les binômes potentiels.

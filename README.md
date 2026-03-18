@@ -2,8 +2,8 @@
 
 Planificateur de course en relais par contraintes (CP-SAT).
 
-Problème : Lyon → Fessenheim, 440 km, 82 segments, vitesse ~9 km/h, départ mercredi 15h00.
-14 coureurs doivent couvrir chaque segment (1 ou 2 coureurs par segment).
+Problème : Lyon → Fessenheim, 440 km, 82 segments, vitesse ~9 km/h, départ mercredi 14h30.
+15 coureurs doivent couvrir chaque segment (1 ou 2 coureurs par segment).
 L'objectif est de maximiser le nombre de relais courus en binôme.
 
 ## Prérequis
@@ -22,6 +22,7 @@ pip install -r requirements.txt
 Constantes du problème, données coureurs (`RUNNERS_DATA`, dataclass `Coureur`),
 listes de binômes épinglés/obligatoires/limités (`BINOMES_PINNED`, `BINOMES_ONCE_MIN`,
 `BINOMES_ONCE_MAX`). `build_constraints()` assemble un objet `RelayConstraints`.
+Chaque relais est défini par un tuple `(req, flex)` ; `pinned[k]` fixe `(size, start_seg)` pour le k-ième relais.
 Exécuter directement pour afficher un résumé complet.
 
 ```bash
@@ -39,10 +40,11 @@ Généré automatiquement depuis `compat_coureurs.xlsx` par `refresh_compat.py`.
 
 ### `model.py`
 Construction du modèle CP-SAT (`RelayModel`). Variables : `start/end/size` par relais,
-`same_relay` (binômes), `relais_solo`, `relais_nuit`. Expose `build_model(constraints)`,
-`build_model_fixed_config(active_keys, constraints)` et des méthodes publiques pour
-l'énumération (`add_min_score`, `fix_binome_config`, `add_config_exclusion_cut`,
-`add_schedule_exclusion_cut`). Pas destiné à être exécuté directement.
+`same_relay` (binômes), `relais_solo`, `relais_nuit`. Supporte plusieurs modes d'objectif
+via `optimise_sur` : `'compat_score'`, `'distance_solo'`, `'flex_minimal'`.
+Expose `build_model(constraints)`, `build_model_fixed_config(active_keys, constraints)` et
+des méthodes publiques pour l'énumération (`add_min_score`, `fix_binome_config`,
+`add_config_exclusion_cut`, `add_schedule_exclusion_cut`). Pas destiné à être exécuté directement.
 
 ### `solver.py`
 `RelaySolver` : itérateur streaming sur les solutions CP-SAT (thread séparé).
@@ -56,8 +58,9 @@ python solver.py
 ### `solution.py`
 `RelaySolution` : encapsule une solution avec vérification automatique et formatage.
 API : `to_text()`, `to_csv()`, `to_json()`, `to_html()`, `save(verbose=)`, `stats()`.
-Le HTML inclut une grille Gantt par coureur (vert = binôme, rose = solo, gris = repos minimal,
-violet = indisponible) avec repères toutes les 6h. Coureurs triés alphabétiquement.
+`stats()` retourne `(n_binomes, n_solos, km_solos, n_flex, n_fixes)`.
+Le HTML inclut une grille Gantt par coureur (vert = binôme, rose = solo, bleu = relais fixe,
+gris = repos minimal, violet = indisponible) avec repères toutes les 6h. Coureurs triés alphabétiquement.
 
 ### `enumerate.py`
 Énumère toutes les solutions optimales en trois phases :

@@ -47,6 +47,7 @@ def build_solution(model, constraints, solver) -> solution.RelaySolution:
                     "solo": bool(solver.value(model.relais_solo[r][k])),
                     "night": bool(solver.value(model.relais_nuit[r][k])),
                     "partner": partner,
+                    "fixe": k < len(c.runners_data[r].pinned) and c.runners_data[r].pinned[k] is not None,
                 }
             )
     relais_list.sort(key=lambda x: (x["start"], x["runner"]))

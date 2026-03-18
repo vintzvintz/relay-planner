@@ -49,11 +49,11 @@ class RelaySolution:
 
     @staticmethod
     def _chrono_tags(rel):
-        return [t for t, v in [("solo", rel["solo"]), ("nuit", rel["night"])] if v]
+        return [t for t, v in [("fixe", rel["fixe"]), ("solo", rel["solo"]), ("nuit", rel["night"])] if v]
 
     @staticmethod
     def _recap_tags(rel):
-        return [t for t, v in [("nuit", rel["night"]), ("flex", rel["flex"])] if v]
+        return [t for t, v in [("fixe", rel["fixe"]), ("nuit", rel["night"]), ("flex", rel["flex"])] if v]
 
     @staticmethod
     def _dedup_key(rel):
@@ -99,12 +99,13 @@ class RelaySolution:
     # ------------------------------------------------------------------
 
     def stats(self):
-        """Retourne (n_binomes, n_solos, km_solos, n_flex)."""
+        """Retourne (n_binomes, n_solos, km_solos, n_flex, n_fixes)."""
         rl = self.relais_list
         n_binomes = sum(1 for x in rl if x["partner"]) // 2
         solos = [x for x in rl if x["solo"]]
         n_flex = sum(1 for x in rl if x["flex"])
-        return n_binomes, len(solos), sum(x["km"] for x in solos), n_flex
+        n_fixes = sum(1 for x in rl if x["fixe"])
+        return n_binomes, len(solos), sum(x["km"] for x in solos), n_flex, n_fixes
 
     def to_text(self) -> str:
         """Retourne le planning complet en texte (planning chrono + récap)."""
@@ -131,6 +132,7 @@ class RelaySolution:
             "solo": rel["solo"],
             "nuit": rel["night"],
             "flex": rel["flex"],
+            "fixe": rel["fixe"],
             "rest_h": rel["rest_h"],
         }
 
@@ -178,8 +180,8 @@ class RelaySolution:
             print(text)
             print(f"Solution sauvegardée     : {txt_fname}/csv/html")
         elif verbose==STATS:
-            n_binomes, n_solo, km_solo, n_flex = self.stats()
-            print( f"score:{self.score:.1f} binomes:{n_binomes} solos:{n_solo} ({km_solo:.1f} km) flex:{n_flex}  --> planning_{ts}")
+            n_binomes, n_solo, km_solo, n_flex, n_fixes = self.stats()
+            print( f"score:{self.score:.1f} binomes:{n_binomes} solos:{n_solo} ({km_solo:.1f} km) flex:{n_flex} fixes:{n_fixes}  --> planning_{ts}")
         else: # verbose==QUIET
             pass
 
@@ -192,13 +194,14 @@ class RelaySolution:
         c = self.constraints
         W = 74
         lines = []
-        n_binomes, n_solos, km_solos, n_flex = self.stats()
+        n_binomes, n_solos, km_solos, n_flex, n_fixes = self.stats()
         score_str = f"  Score:{self.score:.1f}" if self.score is not None else "  Score:<valeur>"
         flex_str = f"   Flex : {n_flex}"
+        fixes_str = f"   Fixes : {n_fixes}" if n_fixes else ""
         lines.append("=" * W)
         lines.append(f"  PLANNING  {c.total_km:.1f} km — {c.nb_segments} segments de {c.segment_km:.1f} km - Vitesse {c.speed_kmh:.1f} km/h")
         lines.append(
-            f"  Binômes : {n_binomes}   Solos : {n_solos} ({km_solos:.1f} km){flex_str}{score_str}"
+            f"  Binômes : {n_binomes}   Solos : {n_solos} ({km_solos:.1f} km){flex_str}{fixes_str}{score_str}"
         )
         lines.append("=" * W)
 
@@ -281,6 +284,8 @@ class RelaySolution:
         rl = self.relais_list
 
         def row_class(rel):
+            if rel["fixe"]:
+                return ' class="row-fixe"'
             if rel["solo"]:
                 return ' class="row-solo"'
             if rel["partner"]:
@@ -426,7 +431,12 @@ class RelaySolution:
             while seg < c.nb_segments:
                 if seg in relais_by_start:
                     rel = relais_by_start[seg]
-                    relay_typ = "relay_solo" if rel["solo"] else ("relay_binome" if rel["partner"] else "relay_solo")
+                    if rel["fixe"]:
+                        relay_typ = "relay_fixe"
+                    elif rel["solo"]:
+                        relay_typ = "relay_solo"
+                    else:
+                        relay_typ = "relay_binome" if rel["partner"] else "relay_solo"
                     spans.append((seg, rel["end"], relay_typ, ""))
                     repos_segs = rd.repos_nuit if rel["night"] else rd.repos_jour
                     last_repos_end = min(rel["end"] + repos_segs, c.nb_segments)
@@ -474,6 +484,8 @@ class RelaySolution:
                     css_class = f"seg-binome{mark_class}"
                 elif typ == "relay_solo":
                     css_class = f"seg-solo{mark_class}"
+                elif typ == "relay_fixe":
+                    css_class = f"seg-fixe{mark_class}"
                 elif typ == "unavail":
                     css_class = f"seg-unavail{mark_class}"
                 else:
@@ -507,7 +519,7 @@ class RelaySolution:
         h_end = c.segment_start_hour(c.nb_segments)
         day_end = DAY_NAMES[min(int(h_end // 24), 2)]
         hh_end, mm_end = int(h_end) % 24, int((h_end % 1) * 60)
-        n_binomes, n_solos, km_solos, n_flex = self.stats()
+        n_binomes, n_solos, km_solos, n_flex, n_fixes = self.stats()
 
         text_section = self._build_html_detail()
 
@@ -533,6 +545,7 @@ class RelaySolution:
   .seg-rest    {{ color: #555; font-size: 10px; text-align: center; border: 1px solid #ccc; background: #d0d0d0; }}
   .seg-binome  {{ background: #4caf50; color: #000; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #2e7d32; }}
   .seg-solo    {{ background: #f48fb1; color: #000; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #c2185b; }}
+  .seg-fixe    {{ background: #2196f3; color: #fff; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #1565c0; }}
   .seg-unavail {{ background: #8b00ff; border: 1px solid #6a00cc; }}
   .seg-mark    {{ border-left: 2px solid #000; }}
 
@@ -548,6 +561,7 @@ class RelaySolution:
   /* Lignes colorées */
   .row-solo   {{ background: #fff0f5; }}
   .row-binome {{ background: #f0fff4; }}
+  .row-fixe   {{ background: #e3f2fd; }}
 
   /* Cellules de détail */
   .td-time   {{ padding: 3px 8px; }}
@@ -560,11 +574,12 @@ class RelaySolution:
 </head>
 <body>
 <h2>Planning {c.total_km:.1f} km — {c.nb_segments} segments de {c.segment_km:.1f} km — Vitesse {c.speed_kmh:.1f} km/h</h2>
-<p>Départ : {DAY_NAMES[0]} {c.start_hour:02d}h00 &nbsp;|&nbsp; Arrivée : {day_end} ~{hh_end:02d}h{mm_end:02d}</p>
-<p>Binômes : <strong>{n_binomes}</strong> &nbsp;|&nbsp; Solos : <strong>{n_solos}</strong> ({km_solos:.1f} km) &nbsp;|&nbsp; Flex : <strong>{n_flex}</strong> &nbsp;|&nbsp; Score : <strong>{f"{self.score:.1f}" if self.score is not None else "—"}</strong></p>
+<p>Départ : {DAY_NAMES[0]} {int(c.start_hour):02d}h{int((c.start_hour % 1) * 60):02d} &nbsp;|&nbsp; Arrivée : {day_end} ~{hh_end:02d}h{mm_end:02d}</p>
+<p>Binômes : <strong>{n_binomes}</strong> &nbsp;|&nbsp; Solos : <strong>{n_solos}</strong> ({km_solos:.1f} km) &nbsp;|&nbsp; Flex : <strong>{n_flex}</strong> &nbsp;|&nbsp; Fixes : <strong>{n_fixes}</strong> &nbsp;|&nbsp; Score : <strong>{f"{self.score:.1f}" if self.score is not None else "—"}</strong></p>
 <p>
   <span style="background:#4caf50;padding:2px 8px;border:1px solid #2e7d32;">Relais binôme</span>&nbsp;
   <span style="background:#f48fb1;padding:2px 8px;border:1px solid #c2185b;">Relais solo</span>&nbsp;
+  <span style="background:#2196f3;padding:2px 8px;border:1px solid #1565c0;color:#fff;">Relais fixe</span>&nbsp;
   <span style="background:#8b00ff;padding:2px 8px;border:1px solid #6a00cc;">&nbsp;&nbsp;&nbsp;</span> Indisponible
 </p>
 <div style="overflow-x:auto;">

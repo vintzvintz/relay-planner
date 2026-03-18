@@ -27,7 +27,6 @@ class RelayConstraints:
     binomes_once_max: list
 
     # contraintes planning
-    min_relay_size: int
     solo_max_default: int
     solo_max_size: int
     nuit_max_default: int
@@ -172,9 +171,6 @@ class RelayConstraints:
         total_solo_nb = sum(solo_nb.values())
         total_solo_km = sum(solo_km.values())
 
-        # print(f"  Total segments engagés : {total_segs_engaged}  ({total_segs_engaged * 5} km)")
-        # print(f"  Segments à couvrir     : {N_SEGMENTS}  ({N_SEGMENTS * 5} km)")
-        # print(f"  Surplus                : {surplus} segments")
         print(f"\n  Majorant (relaxation LP) : {bound:.4f} → {int(bound)} binômes")
         print(f"  Solos (borne basse LP)   : {total_solo_nb:.2f} relais  ({total_solo_km:.0f} km)")
         return int(bound)
@@ -218,8 +214,9 @@ class RelayConstraints:
                 flags.append(f"repos_nuit={coureur.repos_nuit} segs ({coureur.repos_nuit * self.segment_duration:.1f}h)")  # fmt: skip
             if coureur.dispo:
                 flags.append("dispo partielle")
-            if coureur.pinned_segments:
-                flags.append(f"épinglé×{len(coureur.pinned_segments)}")
+            n_pinned = sum(1 for p in coureur.pinned if p is not None)
+            if n_pinned:
+                flags.append(f"fixes×{n_pinned}")
             flex_count = sum(1 for req, flex in coureur.relais if req != flex)
             if flex_count:
                 flags.append(f"flex×{flex_count}")
@@ -278,13 +275,19 @@ class RelayConstraints:
                 print(f"    {r1}+{r2} : segs [{s},{e}]  ({h_s:.1f}h–{h_e:.1f}h depuis départ)")
         else:
             print("  Binômes : (aucun)")
-        pinned_runners = [(n, w) for n, c in self.runners_data.items() for w in c.pinned_segments]
-
+        pinned_runners = [
+            (name, k, size, seg)
+            for name, coureur in self.runners_data.items()
+            for k, pin in enumerate(coureur.pinned)
+            if pin is not None
+            for size, seg in (pin,)
+        ]
         if pinned_runners:
-            print("  Coureurs :")
-            for name, w in pinned_runners:
-                print(f"    {name} : segs {w}")
+            print("  Relais individuels fixes :")
+            for name, k, size, seg in pinned_runners:
+                h = self.segment_start_hour(seg)
+                print(f"    {name} relais[{k}] : seg {seg} ({h:.1f}h), taille {size} segs ({size * self.segment_km:.1f} km)")
         else:
-            print("  Coureurs : (aucun)")
+            print("  Relais individuels fixes : (aucun)")
 
         print("=" * 60)
