@@ -33,18 +33,14 @@ class RelayConstraints:
     repos_jour_default: int
     repos_nuit_default: int
 
-    # fonction objectif
-    optimise_sur: str = 'compat_score'
-    enable_flex: bool = True  # si False, tous les relais sont traités comme non-flexibles (size == req)
-
     @property
     def runners(self):
         return list(self.runners_data.keys())
 
     @property
     def relay_sizes(self):
-        """Retourne les tailles nominales (nb_seg_requested) de chaque relais."""
-        return {r: [req for req, _flex in cd.relais] for r, cd in self.runners_data.items()}
+        """Retourne les tailles nominales (max du set) de chaque relais."""
+        return {r: [max(s) for s in cd.relais] for r, cd in self.runners_data.items()}
 
     @property
     def runner_nuit_max(self):
@@ -100,7 +96,7 @@ class RelayConstraints:
         """
         from ortools.linear_solver import pywraplp
 
-        req_sizes = {r: [req for req, _flex in c.relais] for r, c in self.runners_data.items()}
+        req_sizes = {r: [max(s) for s in c.relais] for r, c in self.runners_data.items()}
         total_segs_engaged = sum(sum(sizes) for sizes in req_sizes.values())
         surplus = total_segs_engaged - self.nb_segments
 
@@ -161,7 +157,7 @@ class RelayConstraints:
             binomes_r[r2][s] += v
 
         solo_km = {
-            r: sum((counts[r].get(s, 0) - binomes_r[r][s]) * s * 5 for s in all_sizes)
+            r: sum((counts[r].get(s, 0) - binomes_r[r][s]) * s * self.segment_km for s in all_sizes)
             for r in self.runners
         }
         solo_nb = {
@@ -196,7 +192,7 @@ class RelayConstraints:
         print("-" * 60)
         km_engages = 0
         for name, coureur in self.runners_data.items():
-            req_sizes = [req for req, _flex in coureur.relais]
+            req_sizes = [max(s) for s in coureur.relais]
             km = sum(req_sizes) * self.segment_km
             km_engages += km
             flags = []
@@ -217,13 +213,13 @@ class RelayConstraints:
             n_pinned = sum(1 for p in coureur.pinned if p is not None)
             if n_pinned:
                 flags.append(f"fixes×{n_pinned}")
-            flex_count = sum(1 for req, flex in coureur.relais if req != flex)
+            flex_count = sum(1 for s in coureur.relais if len(s) > 1)
             if flex_count:
                 flags.append(f"flex×{flex_count}")
             flag_str = f"  [{', '.join(flags)}]" if flags else ""
             sizes_str = " + ".join(
-                f"{req * self.segment_km:.1f}" + (f"[±{flex * self.segment_km:.1f}]" if req != flex else "")
-                for req, flex in coureur.relais
+                f"{max(s) * self.segment_km:.1f}" + (f"[{min(s) * self.segment_km:.1f}–{max(s) * self.segment_km:.1f}]" if len(s) > 1 else "")
+                for s in coureur.relais
             )
             print(f"  {name:12s} : {km:.0f} km = {sizes_str} km{flag_str}")
         print(
@@ -276,17 +272,20 @@ class RelayConstraints:
         else:
             print("  Binômes : (aucun)")
         pinned_runners = [
-            (name, k, size, seg)
+            (name, k, seg, coureur.relais[k])
             for name, coureur in self.runners_data.items()
-            for k, pin in enumerate(coureur.pinned)
-            if pin is not None
-            for size, seg in (pin,)
+            for k, seg in enumerate(coureur.pinned)
+            if seg is not None
         ]
         if pinned_runners:
             print("  Relais individuels fixes :")
-            for name, k, size, seg in pinned_runners:
+            for name, k, seg, sizes in pinned_runners:
                 h = self.segment_start_hour(seg)
-                print(f"    {name} relais[{k}] : seg {seg} ({h:.1f}h), taille {size} segs ({size * self.segment_km:.1f} km)")
+                req = max(sizes)
+                size_str = f"{req} segs ({req * self.segment_km:.1f} km)"
+                if len(sizes) > 1:
+                    size_str += f" [flex {min(sizes)}–{max(sizes)} segs]"
+                print(f"    {name} relais[{k}] : seg {seg} ({h:.1f}h), taille {size_str}")
         else:
             print("  Relais individuels fixes : (aucun)")
 

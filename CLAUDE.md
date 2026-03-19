@@ -24,21 +24,22 @@ python data.py
 
 ## Architecture
 
-The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 82 segments, ~9 km/h, departing Wednesday 14h30. 15 runners must cover every segment (1 or 2 runners per segment).
+The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 135 segments, ~9 km/h, departing Wednesday 15h00. 15 runners must cover every segment (1 or 2 runners per segment).
 
 **`data.py`** — Problem constants, runner data, and entry point:
-- `Coureur` dataclass: per-runner data — `relais` (list of `(req, flex)` tuples in segments), `dispo` (availability windows, empty = always available), `pinned` (list of `(size, start_seg)` or `None` per relay — fixes start and size in the CP-SAT model), `repos_jour`/`repos_nuit` (rest durations, per-runner overridable), `solo_max`, `nuit_max`
+- `Coureur` dataclass: per-runner data — `relais` (list of `set[int]` of permitted sizes in segments: singleton = fixed, multi-value = flexible), `dispo` (availability windows, empty = always available), `pinned` (list of `start_seg` or `None` per relay — fixes start in the CP-SAT model), `repos_jour`/`repos_nuit` (rest durations, per-runner overridable), `solo_max`, `nuit_max`
+- Predefined relay-type constants: `R10={3}`, `R15={5}`, `R20={6}`, `R30={9}`, `R13_flex={3,4}`, `R15_flex={3,4,5}` (flex variants depend on `ENABLE_FLEX`)
 - `RUNNERS_DATA`: `dict[str, Coureur]` — single source of truth for all runner parameters (15 runners)
 - `BINOMES_PINNED`: list of `(r1, r2, start_seg, end_seg)` — pairs forced to run together in a given window
 - `BINOMES_ONCE_MIN` / `BINOMES_ONCE_MAX`: pairs that must run together at least / at most once
-- `ENABLE_FLEX`: feature flag — when `True`, flexible runners can shrink relay size to form a binôme; `SOLO_MAX_SIZE`: max relay size (in segments) allowed for solo relays
+- `ENABLE_FLEX`: feature flag — when `True`, flexible relay types include multiple sizes; `SOLO_MAX_SIZE`: max relay size (in segments) allowed for solo relays
 - `SOLO_MAX_DEFAULT`, `NUIT_MAX_DEFAULT`, `REPOS_JOUR_DEFAULT`, `REPOS_NUIT_DEFAULT`: global defaults (overridable per runner in `Coureur`); rest durations are computed via `hours_to_segs(h)` (rounds up)
 - `hour_to_seg(h)`: converts hours-from-start to segment index (truncates); `hours_to_segs(h)`: converts a duration in hours to a number of segments (rounds up)
 - `build_constraints()`: assembles and returns a `RelayConstraints` object; `python data.py` prints a full summary
 
 **`constraints.py`** — `RelayConstraints` dataclass: snapshot of all problem data passed to the model:
 - Holds all fields from `build_constraints()` (parcours params, runner data, compat matrix, binôme lists, defaults)
-- Fields: `optimise_sur` (objective mode: `'compat_score'`, `'distance_solo'`, `'flex_minimal'`), `enable_flex`, `solo_max_size`
+- Field: `solo_max_size`; nominal relay size = `max(sizes_set)` for each relay
 - Properties: `runners`, `relay_sizes`, `runner_nuit_max`, `runner_solo_max`, `night_segments`, `segment_duration`, `segment_km`
 - Methods: `segment_start_hour(seg)`, `is_night(seg)`, `is_compatible(r1, r2)`, `compat_score(r1, r2)`, `compute_upper_bound()` (LP relaxation via GLOP), `print_summary()`
 
@@ -50,8 +51,8 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 8
   - `same_relay[(r,k,rp,kp)]` (BoolVar): 1 if the pair forms a binôme (same start + same effective size)
   - `relais_solo[r][k]`, `relais_nuit[r][k]` (BoolVar)
 - `build(constraints)`: calls `_add_variables`, `_add_fixed_relays`, `_add_night_relay`, `_add_rest_constraints`, `_add_availability`, `_add_same_relay`, `_add_coverage`, `_add_inter_runner_no_overlap`, `_add_solo_constraints`, `_add_binomes_min_max`
-- `_add_fixed_relays`: enforces `pinned[k]` entries as equality constraints on `start` and `size`
-- Objective modes via `_objective_expr(constraints)`: `'compat_score'` (maximize weighted binôme sum), `'distance_solo'` (minimize solo km), `'flex_minimal'` (minimize flex reduction)
+- `_add_fixed_relays`: enforces `pinned[k]` entries as equality constraints on `start`; size domain comes from the relay's set
+- Objective: maximize weighted binôme sum (`_weighted_binome_sum`); no alternative objective modes
 - `build_model(constraints)`: factory returning a built `RelayModel`
 - `build_model_fixed_config(active_keys, constraints)`: builds a model with all `same_relay` vars fixed to the given configuration (used by the enumerator)
 - Public methods for enumeration: `add_optimisation_func(constraints)`, `add_min_score(constraints, score)`, `fix_binome_config(active_keys)`, `add_config_exclusion_cut(active_keys)`, `add_schedule_exclusion_cut(solver, constraints)`
@@ -92,7 +93,7 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 8
 - Two runners form a binôme if same effective relay size AND same start segment AND `compat_score > 0`: for flexible runners, their `size` CP-SAT var is constrained to match the partner's fixed size
 - Incompatible pairs (or pairs with no `same_relay` var) are forced disjoint via `add_no_overlap`
 - Solo + night relays are mutually exclusive per relay (`relais_solo[r][k] + relais_nuit[r][k] <= 1`)
-- Flexible runners in solo are forced to their declared relay size
+- Flexible runners in solo are forced to the nominal size (`max` of their size set)
 - Solver time limit: 5h (solver.py) / configurable per phase in enumerate.py
 
 ## Commit instructions

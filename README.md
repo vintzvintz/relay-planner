@@ -2,9 +2,9 @@
 
 Planificateur de course en relais par contraintes (CP-SAT).
 
-Problème : Lyon → Fessenheim, 440 km, 82 segments, vitesse ~9 km/h, départ mercredi 14h30.
+Problème : Lyon → Fessenheim, 440 km, 135 segments, vitesse ~9 km/h, départ mercredi 15h00.
 15 coureurs doivent couvrir chaque segment (1 ou 2 coureurs par segment).
-L'objectif est de maximiser le nombre de relais courus en binôme.
+L'objectif est de maximiser la somme pondérée des relais courus en binôme (poids = score de compatibilité).
 
 ## Prérequis
 
@@ -22,7 +22,9 @@ pip install -r requirements.txt
 Constantes du problème, données coureurs (`RUNNERS_DATA`, dataclass `Coureur`),
 listes de binômes épinglés/obligatoires/limités (`BINOMES_PINNED`, `BINOMES_ONCE_MIN`,
 `BINOMES_ONCE_MAX`). `build_constraints()` assemble un objet `RelayConstraints`.
-Chaque relais est défini par un tuple `(req, flex)` ; `pinned[k]` fixe `(size, start_seg)` pour le k-ième relais.
+Chaque relais est défini par un `set[int]` de tailles permises (en segments) : singleton = taille fixe, multi-valeurs = flexible.
+Des constantes prédéfinies sont disponibles : `R10`, `R15`, `R20`, `R30`, `R13_flex`, `R15_flex`.
+`pinned[k]` fixe le segment de départ pour le k-ième relais (`None` = libre).
 Exécuter directement pour afficher un résumé complet.
 
 ```bash
@@ -40,8 +42,8 @@ Généré automatiquement depuis `compat_coureurs.xlsx` par `refresh_compat.py`.
 
 ### `model.py`
 Construction du modèle CP-SAT (`RelayModel`). Variables : `start/end/size` par relais,
-`same_relay` (binômes), `relais_solo`, `relais_nuit`. Supporte plusieurs modes d'objectif
-via `optimise_sur` : `'compat_score'`, `'distance_solo'`, `'flex_minimal'`.
+`same_relay` (binômes), `relais_solo`, `relais_nuit`. Objectif unique : maximiser la somme
+pondérée des binômes actifs (poids = score de compatibilité).
 Expose `build_model(constraints)`, `build_model_fixed_config(active_keys, constraints)` et
 des méthodes publiques pour l'énumération (`add_min_score`, `fix_binome_config`,
 `add_config_exclusion_cut`, `add_schedule_exclusion_cut`). Pas destiné à être exécuté directement.
