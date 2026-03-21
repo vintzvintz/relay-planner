@@ -15,12 +15,12 @@ def check(solution: list[dict], constraints: RelayConstraints, out=_NULL) -> boo
 
     ok = True
     ok &= _check_coverage(solution, constraints, out)
+    ok &= _check_relay_sizes(solution, constraints, out)
     ok &= _check_rest(solution, constraints, out)
     ok &= _check_night_max(solution, constraints, out)
     ok &= _check_solo_max(solution, constraints, out)
     ok &= _check_solo_night(solution, out)
-    ok &= _check_pair_at_least_once(solution, constraints, out)
-    ok &= _check_pair_at_most_once(solution, constraints, out)
+    ok &= _check_pairings(solution, constraints, out)
     ok &= _check_compatibility_matrix(solution, constraints, out)
 
     return ok
@@ -53,6 +53,24 @@ def _active_pairs(solution: list[dict]) -> list[tuple[str, str]]:
 # Vérifications post-résolution
 # ------------------------------------------------------------------
 
+def _check_relay_sizes(solution: list[dict], constraints: RelayConstraints, out) -> bool:
+    ok = True
+    for rel in solution:
+        r, k = rel["runner"], rel["k"]
+        size = rel["size"]
+        length = rel["end"] - rel["start"]
+        allowed = constraints.runners_data[r].relais[k].size
+        if length != size:
+            print(f"  TAILLE {r}[{k}]: end-start={length} ≠ size={size}", file=out)
+            ok = False
+        if size not in allowed:
+            print(f"  TAILLE {r}[{k}]: size={size} ∉ autorisé={allowed}", file=out)
+            ok = False
+    if ok:
+        print("Tailles relais : OK", file=out)
+    return ok
+
+
 def _check_coverage(solution: list[dict], constraints: RelayConstraints, out) -> bool:
     coverage = [0] * constraints.nb_segments
     for rel in solution:
@@ -72,8 +90,8 @@ def _check_rest(solution: list[dict], constraints: RelayConstraints, out) -> boo
     relais = _relais_by_runner(solution)
     ok = True
     for r, rels in relais.items():
-        repos_jour = constraints.runners_data[r].repos_jour
-        repos_nuit = constraints.runners_data[r].repos_nuit
+        repos_jour = constraints._resolved_repos_jour(constraints.runners_data[r])
+        repos_nuit = constraints._resolved_repos_nuit(constraints.runners_data[r])
         sorted_relais = sorted(rels, key=lambda x: x["start"])
         for i in range(len(sorted_relais) - 1):
             prev, nxt = sorted_relais[i], sorted_relais[i + 1]
@@ -91,7 +109,7 @@ def _check_night_max(solution: list[dict], constraints: RelayConstraints, out) -
     relais = _relais_by_runner(solution)
     ok = True
     for r, rels in relais.items():
-        nuit_max = constraints.runners_data[r].nuit_max
+        nuit_max = constraints._resolved_nuit_max(constraints.runners_data[r])
         n = sum(1 for rel in rels if rel["night"])
         if n > nuit_max:
             print(f"  NUIT x{n} : {r}", file=out)
@@ -105,7 +123,7 @@ def _check_solo_max(solution: list[dict], constraints: RelayConstraints, out) ->
     relais = _relais_by_runner(solution)
     ok = True
     for r, rels in relais.items():
-        solo_max = constraints.runners_data[r].solo_max
+        solo_max = constraints._resolved_solo_max(constraints.runners_data[r])
         n = sum(1 for rel in rels if rel["solo"])
         if n > solo_max:
             print(f"  SOLO x{n} : {r}", file=out)
@@ -126,29 +144,21 @@ def _check_solo_night(solution: list[dict], out) -> bool:
     return ok
 
 
-def _active_pairs_set(solution: list[dict]) -> list[frozenset]:
-    return [frozenset({rel["runner"], rel["partner"]}) for rel in solution if rel["partner"] is not None]
-
-
-def _check_pair_at_least_once(solution: list[dict], constraints: RelayConstraints, out) -> bool:
-    pair_sets = _active_pairs_set(solution)
+def _check_pairings(solution: list[dict], constraints: RelayConstraints, out) -> bool:
     ok = True
-    for r1, r2 in constraints.binomes_once_min:
-        if frozenset({r1, r2}) not in pair_sets:
-            print(f"  BINÔME OBLIGATOIRE MANQUANT: {r1}-{r2}", file=out)
+    for r1, k1, r2, k2 in constraints.paired_relays:
+        # Vérifie que r1[k1] et r2[k2] forment bien un binôme dans la solution
+        relais_r1 = [rel for rel in solution if rel["runner"] == r1 and rel["k"] == k1]
+        if not relais_r1:
+            print(f"  PAIRING MANQUANT (index hors bornes): {r1}[{k1}]+{r2}[{k2}]", file=out)
             ok = False
-    return ok
-
-
-def _check_pair_at_most_once(solution: list[dict], constraints: RelayConstraints, out) -> bool:
-    # Chaque binôme produit 2 entrées dans _active_pairs_set (une par coureur) : on divise par 2
-    pair_sets = _active_pairs_set(solution)
-    ok = True
-    for r1, r2 in constraints.binomes_once_max:
-        count = pair_sets.count(frozenset({r1, r2})) // 2
-        if count > 1:
-            print(f"  BINÔME EN TROP: {r1}-{r2} ({count} relais ensemble)", file=out)
+            continue
+        rel1 = relais_r1[0]
+        if rel1["partner"] != r2:
+            print(f"  PAIRING NON RESPECTÉ: {r1}[{k1}] devrait être avec {r2} (est avec {rel1['partner']})", file=out)
             ok = False
+    if ok:
+        print("Pairings       : OK", file=out)
     return ok
 
 

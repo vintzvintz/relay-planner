@@ -224,11 +224,12 @@ class RelaySolution:
             _, hh_end, mm_end = self._fmt_short(rel["end"])
             debut = f"{day_s} {hh:02d}h{mm:02d}"
             fin = f"{hh_end:02d}h{mm_end:02d}"
-            dist = f"{rel['start'] * c.segment_km:.1f}–{rel['end'] * c.segment_km:.1f} km"
+            seg_dep = f"{rel['start']:>3}"
+            km_dep = f"{rel['start'] * c.segment_km:>6.1f} km"
             coureurs = f"{rel['runner']} + {rel['partner']}" if rel["partner"] else rel["runner"]
             tags = self._chrono_tags(rel)
             flags = f"  [{' '.join(tags)}]" if tags else ""
-            lines.append(f"  {debut} → {fin}   {dist:<16} {rel['km']:>4.1f} km   {coureurs:<{cw}}{flags}")
+            lines.append(f"  {debut} → {fin}   {seg_dep}   {km_dep}   {rel['km']:>4.1f} km   {coureurs:<{cw}}{flags}")
 
         return lines
 
@@ -303,14 +304,14 @@ class RelaySolution:
             seen.add(dedup)
 
             _, hh_end, mm_end = self._fmt_short(rel["end"])
-            dist = f"{rel['start'] * c.segment_km:.1f}–{rel['end'] * c.segment_km:.1f} km"
             coureurs = f"{rel['runner']} + {rel['partner']}" if rel["partner"] else rel["runner"]
             tags = self._chrono_tags(rel)
             flags = ", ".join(tags)
             chrono_rows.append(
                 f'<tr{row_class(rel)}>'
                 f'<td class="td-time td-nowrap">{day_s} {hh:02d}h{mm:02d} → {hh_end:02d}h{mm_end:02d}</td>'
-                f'<td class="td-time td-nowrap">{dist}</td>'
+                f'<td class="td-time td-right">{rel["start"]}</td>'
+                f'<td class="td-time td-right">{rel["start"] * c.segment_km:.1f} km</td>'
                 f'<td class="td-time td-right">{rel["km"]:.1f} km</td>'
                 f'<td class="td-time td-bold">{coureurs}</td>'
                 f'<td class="td-time td-meta">{flags}</td>'
@@ -322,7 +323,8 @@ class RelaySolution:
             '<table class="detail-table">'
             '<thead><tr class="thead-row">'
             '<th class="th-detail">Horaire</th>'
-            '<th class="th-detail">Distance</th>'
+            '<th class="th-detail th-right">Seg.</th>'
+            '<th class="th-detail th-right">Km</th>'
             '<th class="th-detail th-right">Dist.</th>'
             '<th class="th-detail">Coureur(s)</th>'
             '<th class="th-detail">Tags</th>'
@@ -394,11 +396,14 @@ class RelaySolution:
             by_runner[rel["runner"]][rel["start"]] = rel
 
         def unavail_segs(runner):
-            if not c.runners_data[runner].dispo:
+            specs = c.runners_data[runner].relais
+            # Si au moins un relais n'a pas de window, le coureur est disponible partout
+            if any(spec.window is None for spec in specs):
                 return set()
+            windows = [w for spec in specs for w in spec.window]
             avail = set()
-            for s, e in c.runners_data[runner].dispo:
-                avail.update(range(s, e))
+            for s, e in windows:
+                avail.update(range(s, e + 1))
             return set(range(c.nb_segments)) - avail
 
         mark_segs = set()
@@ -438,7 +443,7 @@ class RelaySolution:
                     else:
                         relay_typ = "relay_binome" if rel["partner"] else "relay_solo"
                     spans.append((seg, rel["end"], relay_typ, ""))
-                    repos_segs = rd.repos_nuit if rel["night"] else rd.repos_jour
+                    repos_segs = c._resolved_repos_nuit(rd) if rel["night"] else c._resolved_repos_jour(rd)
                     last_repos_end = min(rel["end"] + repos_segs, c.nb_segments)
                     seg = rel["end"]
                 elif seg in unavail:

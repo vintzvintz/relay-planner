@@ -84,7 +84,7 @@ def relay_start_coverage(solutions, runner, constraints: RelayConstraints):
     comptant le nombre de solutions où le coureur commence un relais de cette longueur
     à ce segment.
     """
-    relay_sizes_km = sorted(set(int(s * constraints.segment_km) for s in constraints.runners_data[runner].relais))
+    relay_sizes_km = sorted(set(int(max(spec.size) * constraints.segment_km) for spec in constraints.runners_data[runner].relais))
     counts = {km: np.zeros(constraints.nb_segments, dtype=int) for km in relay_sizes_km}
     for relays in solutions:
         for r in relays:
@@ -472,15 +472,17 @@ def unavailable_segments(runner, constraints: RelayConstraints):
     calculée comme le complément des fenêtres de dispo sur [0, n_segments].
     Si le coureur n'a pas de fenêtre de dispo, il est disponible partout → [].
     """
-    if not constraints.runners_data[runner].dispo:
+    specs = constraints.runners_data[runner].relais
+    if any(spec.window is None for spec in specs):
         return []
-    avail = sorted(constraints.runners_data[runner].dispo)
+    windows = [w for spec in specs for w in spec.window]
+    avail = sorted(windows)
     unavail = []
     cursor = 0
     for a_start, a_end in avail:
         if cursor < a_start:
             unavail.append((cursor, a_start))
-        cursor = max(cursor, a_end)
+        cursor = max(cursor, a_end + 1)
     if cursor < constraints.nb_segments:
         unavail.append((cursor, constraints.nb_segments))
     return unavail
@@ -518,8 +520,8 @@ def runner_constraints_html(runner, constraints: RelayConstraints):
     relays_seg = constraints.runners_data[runner].relais
     relays_km = [s * constraints.segment_km for s in relays_seg]
     compatible = sorted(r for r in constraints.runners_data if r != runner and constraints.is_compatible(runner, r))
-    mandatory = [f"{a}+{b}" for a, b in constraints.binomes_once_min if runner in (a, b)]
-    multi_night = constraints.runners_data[runner].nuit_max > 1
+    mandatory = [f"{r1}+{r2}" for r1, k1, r2, k2 in constraints.binomes_once_min if runner in (r1, r2)]
+    multi_night = constraints._resolved_nuit_max(constraints.runners_data[runner]) > 1
 
     rows = []
 
@@ -629,7 +631,7 @@ def _params_html(constraints: RelayConstraints):
     rest_normal_h = constraints.repos_jour_default * constraints.segment_duration
     rest_night_h = constraints.repos_nuit_default * constraints.segment_duration
 
-    total_km_engaged = sum(sum(c.relais) * constraints.segment_km for c in constraints.runners_data.values())
+    total_km_engaged = sum(sum(max(spec.size) for spec in c.relais) * constraints.segment_km for c in constraints.runners_data.values())
     n_runners = len(constraints.runners_data)
 
     params = [

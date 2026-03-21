@@ -2,193 +2,160 @@
 Données du problème
 """
 
-import math
-from dataclasses import dataclass, field
-from constraints import RelayConstraints
+from constraints import RelayConstraints, RelayIntervals
 from compat import COMPAT_MATRIX
 
 
-TOTAL_KM = 440.0
-NB_SEGMENTS = 135  # 440 / (10/3) = 132 
-SPEED_KMH = 9.0
-START_HOUR = 15.0  # mercredi 14h30
-
-
-def hours_to_segs(hours: float) -> int:
-    """Convertit une durée en heures en nombre de segments (arrondi au supérieur)."""
-    return math.ceil(hours * SPEED_KMH * NB_SEGMENTS / TOTAL_KM)
-
-def hour_to_seg(hours_from_start: float) -> int:
-    """Convertit une durée depuis le départ en numéro de segment."""
-    return int(hours_from_start * SPEED_KMH * NB_SEGMENTS / TOTAL_KM)
-
-
-# contraintes globales sur l'affectation des relais
-# modifiables pour chaque coureur ( ex: 2 nuits, solo interdit, etc.. )
-NUIT_MAX_DEFAULT = 1  # au plus 1 relais nuit par coureur
-SOLO_MAX_DEFAULT = 1  # au plus 1 relais solo par coureur
-
-# Repos minimum en nombre de segments
-REPOS_JOUR_DEFAULT = hours_to_segs(7)  # 7 heures
-REPOS_NUIT_DEFAULT = hours_to_segs(9)  # 9 heures
-SOLO_MAX_SIZE = 5    # longueur max des relais solo 
-
-ENABLE_FLEX = True # si False, ignore la flexibilité (size == req pour tous les relais)
+ENABLE_FLEX = True  # si False, ignore la flexibilité à la baisse
 
 # --- Constantes de type de relais : set des tailles permises (en segments) ---
-R10        = {3}        # 10 km fixe
-R15        = {5}        # 16 km fixe
-R20        = {6}        # 19 km fixe
-R30        = {9}        # 30 km
+R10       = {3}      # 10 km fixe
+R15       = {5}      # 16 km fixe
+R20       = {6}      # 19 km fixe
+R30       = {9}      # 30 km
 if ENABLE_FLEX:
-    R13_flex   = {3, 4}     # 10 à 13 km
-    R15_flex   = {3, 4, 5}  # 10 à 16 km
-else: 
-    R13_flex   = {4}
-    R15_flex   = {5}
+    R13_F  = {3, 4}    # 10 à 13 km
+    R15_F  = {3, 4, 5} # 10 à 16 km
+else:
+    R13_F  = {4}
+    R15_F  = {5}
 
 
-# --- Structure par coureur ---
-@dataclass
-class Coureur:
-    """Contraintes sur chaque coureur avec valeurs par défaut.
-
-    relais : liste de set() de tailles permises (en segments).
-      - Un singleton {n} : relais non-flexible de taille fixe n.
-      - Un set multi-valeurs {a, b, ...} : relais flexible pouvant prendre
-        n'importe quelle valeur du set.
-      La taille nominale (utilisée pour les calculs de km engagés, etc.)
-      est le max du set.
-
-    pinned : liste de même longueur que relais, une entrée par relais.
-      - None            : le relais est libre, le solveur choisit sa position.
-      - (size, start)   : le relais est fixé — start et size sont imposés au modèle
-                          CP-SAT (contraintes d'égalité strictes). Pour un relais
-                          flexible, size doit être précisé pour lever l'ambiguïté.
-      Liste vide autorisée (équivalent à tout None) : aucun relais fixé.
-    """
-    relais: list[set[int]]
-    pinned: list[tuple[int, int] | None] = field(default_factory=list)  # par index de relais : (size, start_seg) ou None
-    dispo: list[tuple[int, int]] = field(default_factory=list)  # vide = toujours disponible
-    repos_jour: int = REPOS_JOUR_DEFAULT  # repos après un relais de jour
-    repos_nuit: int = REPOS_NUIT_DEFAULT  # repos après un relais de nuit
-    solo_max: int = SOLO_MAX_DEFAULT  # nombre max de relais solo (0 = interdit)
-    nuit_max: int = NUIT_MAX_DEFAULT  # nombre max de relais nuit
+c = RelayConstraints(
+    total_km=440,
+    nb_segments=135,
+    speed_kmh=9.0,
+    start_hour=15.0,     # départ à 15 heures
+    solo_max_km=17,      # pas de solo sur 17km et plus
+    solo_max_default=1,   # 1 relais solo max par coureur
+    nuit_max_default=1,   # 1 relais nocturne max par coureur
+    repos_jour_heures=7,
+    repos_nuit_heures=9,
+    nuit_debut=0,          # définition des relais nocturnes
+    nuit_fin=6,
+    max_same_partenaire=2, # nombre maximal de binômes entre deux mêmes coureurs
+    compat_matrix=COMPAT_MATRIX,
+)
 
 
+# --- Plages temporelles ---
+nuit1_30k   = RelayIntervals([(c.hour_to_seg(23.5, jour=0), c.hour_to_seg(4, jour=1))])  # entre 23h30 et 4h
+nuit2_30k   = RelayIntervals([(c.hour_to_seg(23.5, jour=1), c.hour_to_seg(4, jour=2))])  # entre 23h30 et 4h
+girls_night = c.night_windows()
 
-RUNNERS_DATA: dict[str, Coureur] = {
-    "Pierre": Coureur(
-        relais=[R20, R15_flex, R15_flex, R15_flex],
-        #pinned=[None, None, None, None],
-    ),
-    "Vincent": Coureur(
-        relais=[R13_flex, R13_flex, R10, R10],
-        #pinned=[None, None, None, None],
-        repos_jour=hours_to_segs(5.5),
-        repos_nuit=hours_to_segs(8),
-    ),
-    "Matthieu": Coureur(
-        relais=[R15_flex, R15_flex, R15_flex, R15_flex],
-        #pinned=[None, None, None, None],
-    ),
-    "Olivier": Coureur(
-        relais=[R10, R10, R10, R30, R30],
-        #pinned=[None, None, None, None, None],
-        nuit_max=5,  # autorisé plusieurs nuits
-    ),
-    "Alexis": Coureur(
-        relais=[R10, R10, R10, R30, R30],
-        #pinned=[(3, 0), None, None, None, None],
-        nuit_max=5,  # autorisé plusieurs nuits
-    ),
-    "Guillaume": Coureur(
-        relais=[R20, R20],
-        #pinned=[None, None],
-        dispo=[(0, hour_to_seg(24))],
-    ),
-    "Eric": Coureur(
-        relais=[R15, R15_flex],
-        #pinned=[None, None],
-        dispo=[(0, hour_to_seg(26))],
-    ),
-    "Yacine": Coureur(
-        relais=[R10, R15_flex, R15_flex],
-        #pinned=[None, None, None],
-        dispo=[(0, hour_to_seg(26))],
-        repos_jour=hours_to_segs(5),
-        repos_nuit=hours_to_segs(8),
-    ),
-    "Alexandre": Coureur(
-        relais=[R13_flex, R13_flex, R15_flex, R15_flex],
-    ),
-    "Antoine": Coureur(
-        relais=[R15, R15, R15_flex, R13_flex],
-        #pinned=[None, None, None, None],
-    ),
-    "Ludovic": Coureur(
-        relais=[R20, R15, R15, R15],
-        #pinned=[None, None, None, None],
-    ),
-    "Nelly": Coureur(
-        relais=[R10, R10, R10, R10],
-        #pinned=[None, None, None, None],
-    ),
-    "Gaelle": Coureur(
-        relais=[R13_flex, R13_flex, R10, R10],
-        #pinned=[None, None, None, None],
-    ),
-    "Clemence": Coureur(
-        relais=[R10, R10],
-        #pinned=[None, None],
-        dispo=[(0, hour_to_seg(8)),
-               (hour_to_seg(48-START_HOUR+11), NB_SEGMENTS)],
-    ),
-    "Leo": Coureur(
-        relais=[R10, R10, R10, R10],
-        #pinned=[None, None, None, None],
-    ),
-}
+# --- Coureurs ---
+pierre    = c.new_runner("Pierre")
+alexis    = c.new_runner("Alexis",    nuit_max=5)
+olivier   = c.new_runner("Olivier",   nuit_max=5)
+vincent   = c.new_runner("Vincent",   repos_jour=6, repos_nuit=8)
+matthieu  = c.new_runner("Matthieu")
+guillaume = c.new_runner("Guillaume")
+eric      = c.new_runner("Eric")
+yacine    = c.new_runner("Yacine",    repos_jour=5, repos_nuit=8)
+alexandre = c.new_runner("Alexandre")
+antoine   = c.new_runner("Antoine")
+ludovic   = c.new_runner("Ludovic")
+nelly     = c.new_runner("Nelly")
+gaelle    = c.new_runner("Gaelle")
+clemence  = c.new_runner("Clemence")
+leo       = c.new_runner("Leo",       solo_max=0)
 
-# Binômes épinglés sur certains segments, pas forcément le relais entier:
-# (r1, r2, start_seg, end_seg)
-BINOMES_PINNED = [
-    ("Olivier", "Alexis", hour_to_seg(9), hour_to_seg(11)),  # 0h jeudi
-    ("Olivier", "Alexis", hour_to_seg(9 + 24), hour_to_seg(11 + 24)),  # 0h vendredi
-]
+# --- Disponibilités (fenêtres communes) ---
+dispo_guillaume   = RelayIntervals([(0, c.hour_to_seg(15.0, jour=1))])
+dispo_eric_yacine = RelayIntervals([(0, c.hour_to_seg(17.0, jour=1))])
+dispo_clemence    = RelayIntervals([  # deux intervalles
+    (0, c.hour_to_seg(23, jour=0)),
+    (c.hour_to_seg(11, jour=2), c.nb_segments),
+])
 
-# Binômes obligatoires (au moins 1 relais ensemble)
-BINOMES_ONCE_MIN = [
-    ("Nelly", "Gaelle"),
-    ("Nelly", "Clemence"),
-]
+# --- Relais ---
 
-# Binômes limités (au plus 1 relais ensemble)
-BINOMES_ONCE_MAX = [
-    ("Gaelle", "Nelly"),
-]
+(pierre
+    .add_relay(R20, pinned=3)   # pinned = exemple de relais fixé au segment 3 (10eme km) ou déja couru
+    .add_relay(R15_F, nb=3))
 
 
+# pairing imposé
+alexis_olivier_1 = c.new_relay(R30)
+alexis_olivier_2 = c.new_relay(R30)
+
+(alexis
+    .set_max_same_partenaire(4)  # au moins un relais avec qqun d'autre que olivier, ou seul
+    .add_relay(alexis_olivier_1, window=nuit1_30k)
+    .add_relay(alexis_olivier_2, window=nuit2_30k)
+    .add_relay(R10, pinned=0)   # premier relais
+    .add_relay(R10, nb=2))
+
+(olivier
+    .set_max_same_partenaire(4)  # au moins un relais avec qqun d'autre que Alexis, ou seul
+    .add_relay(alexis_olivier_1, window=nuit1_30k)
+    .add_relay(alexis_olivier_2, window=nuit2_30k)
+    .add_relay(R10, nb=2)
+    .add_relay(R10, pinned=c.nb_segments - 3))  # dernier relais
+
+(vincent
+    .add_relay(R13_F, nb=2)  # 2x3km en 'upside' comme certains aiment le dire :)
+    .add_relay(R10, nb=2))
+
+matthieu.add_relay(R15_F, nb=4)
+
+(guillaume
+    #.set_max_same_partenaire(1)        # decommenter pour forcer des binomes différents
+    .add_relay(R20, window=dispo_guillaume, pinned=3)
+    .add_relay(R20, window=dispo_guillaume))
+
+(eric
+    #.set_max_same_partenaire(1)        # decommenter pour forcer des binomes différents
+    .add_relay(R15, nb=2, window=dispo_eric_yacine))
+
+(yacine
+     #.set_max_same_partenaire(1)       # decommenter pour forcer des binomes différents
+    .add_relay(R10, window=dispo_eric_yacine)
+    .add_relay(R15_F, window=dispo_eric_yacine)
+    .add_relay(R15_F, window=dispo_eric_yacine))
+
+(alexandre
+    .add_relay(R13_F, nb=2)
+    .add_relay(R15_F, nb=2))
+
+(antoine
+    .add_relay(R15, nb=2)
+    .add_relay(R15_F)
+    .add_relay(R13_F))
+
+(ludovic
+    .add_relay(R20)
+    .add_relay(R15, nb=3))
+
+
+# binomes imposés
+nelly_gaelle = c.new_relay(R10)
+nelly_clemence = c.new_relay(R10)
+
+c.add_max_binomes(gaelle, nelly, nb=1)
+
+(nelly
+    .add_relay(nelly_gaelle, window=girls_night)
+    .add_relay(nelly_clemence)
+    .add_relay(R10, nb=2))
+
+(gaelle
+    .add_relay(nelly_gaelle, window=girls_night)
+    .add_relay(R13_F)
+    .add_relay(R10, nb=2))
+
+(clemence
+    .add_relay(nelly_clemence, window=dispo_clemence)
+    .add_relay(R10, window=dispo_clemence))
+
+leo.add_relay(R10, nb=4)
+
+
+##################################################################################
 
 def build_constraints() -> RelayConstraints:
-    """Construit et retourne un RelayConstraints à partir des données module-level."""
-    return RelayConstraints(
-        total_km=TOTAL_KM,
-        nb_segments=NB_SEGMENTS,
-        speed_kmh=SPEED_KMH,
-        start_hour=START_HOUR,
-        runners_data=RUNNERS_DATA,
-        compat_matrix=COMPAT_MATRIX,
-        binomes_pinned=BINOMES_PINNED,
-        binomes_once_min=BINOMES_ONCE_MIN,
-        binomes_once_max=BINOMES_ONCE_MAX,
-        solo_max_size=SOLO_MAX_SIZE,
-        solo_max_default=SOLO_MAX_DEFAULT,
-        nuit_max_default=NUIT_MAX_DEFAULT,
-        repos_jour_default=REPOS_JOUR_DEFAULT,
-        repos_nuit_default=REPOS_NUIT_DEFAULT,
-    )
+    """Retourne le RelayConstraints construit à partir des données module-level."""
+    return c
 
 if __name__ == "__main__":
-    c = build_constraints()
     c.print_summary()

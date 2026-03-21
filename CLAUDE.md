@@ -9,7 +9,7 @@ source venv/bin/activate
 python solver.py
 ```
 
-The solver runs up to a fixed timeout and writes timestamped `.txt`, `.csv`, and `.html` files in `plannings/` on success.
+The solver runs up to a fixed timeout and writes timestamped `.txt`, `.csv`, `.json`, and `.html` files in `plannings/` on success.
 
 To check data consistency:
 ```bash
@@ -27,21 +27,27 @@ python data.py
 The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 135 segments, ~9 km/h, departing Wednesday 15h00. 15 runners must cover every segment (1 or 2 runners per segment).
 
 **`data.py`** — Problem constants, runner data, and entry point:
-- `Coureur` dataclass: per-runner data — `relais` (list of `set[int]` of permitted sizes in segments: singleton = fixed, multi-value = flexible), `dispo` (availability windows, empty = always available), `pinned` (list of `start_seg` or `None` per relay — fixes start in the CP-SAT model), `repos_jour`/`repos_nuit` (rest durations, per-runner overridable), `solo_max`, `nuit_max`
-- Predefined relay-type constants: `R10={3}`, `R15={5}`, `R20={6}`, `R30={9}`, `R13_flex={3,4}`, `R15_flex={3,4,5}` (flex variants depend on `ENABLE_FLEX`)
-- `RUNNERS_DATA`: `dict[str, Coureur]` — single source of truth for all runner parameters (15 runners)
-- `BINOMES_PINNED`: list of `(r1, r2, start_seg, end_seg)` — pairs forced to run together in a given window
-- `BINOMES_ONCE_MIN` / `BINOMES_ONCE_MAX`: pairs that must run together at least / at most once
-- `ENABLE_FLEX`: feature flag — when `True`, flexible relay types include multiple sizes; `SOLO_MAX_SIZE`: max relay size (in segments) allowed for solo relays
-- `SOLO_MAX_DEFAULT`, `NUIT_MAX_DEFAULT`, `REPOS_JOUR_DEFAULT`, `REPOS_NUIT_DEFAULT`: global defaults (overridable per runner in `Coureur`); rest durations are computed via `hours_to_segs(h)` (rounds up)
-- `hour_to_seg(h)`: converts hours-from-start to segment index (truncates); `hours_to_segs(h)`: converts a duration in hours to a number of segments (rounds up)
-- `build_constraints()`: assembles and returns a `RelayConstraints` object; `python data.py` prints a full summary
+- `ENABLE_FLEX`: feature flag — when `True`, flexible relay types include multiple sizes
+- Relay-type constants: `R10={3}`, `R15={5}`, `R20={6}`, `R30={9}`, `R13_flex={3,4}`, `R15_flex={3,4,5}`
+- Declarative API: `c = RelayConstraints(...)`, then `c.new_runner(name, ...)` → `RunnerBuilder`, then `runner.add_relay(size, nb=, window=, pinned=)`
+- `c.new_relay(size)` → `SharedRelay`: pass to two runners' `add_relay()` to force a binôme
+- `RelayIntervals([(start, end), ...])`: named availability/window objects; `c.hour_to_seg(h, jour=)` converts hours to segment index; `c.night_windows()` returns all nocturnal intervals
+- `build_constraints()`: returns the module-level `RelayConstraints` object; `python data.py` prints a full summary
+- See [CONSTRAINTS.md](CONSTRAINTS.md) for the full constraint declaration API reference
 
-**`constraints.py`** — `RelayConstraints` dataclass: snapshot of all problem data passed to the model:
-- Holds all fields from `build_constraints()` (parcours params, runner data, compat matrix, binôme lists, defaults)
-- Field: `solo_max_size`; nominal relay size = `max(sizes_set)` for each relay
-- Properties: `runners`, `relay_sizes`, `runner_nuit_max`, `runner_solo_max`, `night_segments`, `segment_duration`, `segment_km`
-- Methods: `segment_start_hour(seg)`, `is_night(seg)`, `is_compatible(r1, r2)`, `compat_score(r1, r2)`, `compute_upper_bound()` (LP relaxation via GLOP), `print_summary()`
+**`constraints.py`** — `RelayConstraints` class and supporting types:
+- `RelayConstraints.__init__`: accepts `total_km`, `nb_segments`, `speed_kmh`, `start_hour`, `compat_matrix`, `solo_max_km`, `solo_max_default`, `nuit_max_default`, `repos_jour_heures`, `repos_nuit_heures`, `nuit_debut`, `nuit_fin`, `max_same_partenaire`
+- `new_runner(name, *, solo_max, nuit_max, repos_jour, repos_nuit)` → `RunnerBuilder`
+- `new_relay(size)` → `SharedRelay` (forced binôme between two runners)
+- `add_max_binomes(runner1, runner2, nb)`: limits to at most `nb` binômes between two runners across the whole planning (stored in `once_max`)
+- `night_windows()` → `RelayIntervals` covering all nocturnal segments
+- `RunnerBuilder.add_relay(size, *, nb, window, pinned)` → `self` (chainable)
+- `RunnerBuilder.set_max_same_partenaire(max_same)` → `self`: overrides global `max_same_partenaire` for this runner
+- `RelaySpec` dataclass: `size`, `paired_with`, `window`, `pinned`
+- `Coureur` dataclass: `relais`, `repos_jour`, `repos_nuit`, `solo_max`, `nuit_max`, `max_same_partenaire`
+- `RelayIntervals` dataclass: `intervals: list[tuple[int,int]]`
+- Properties: `runners`, `relay_sizes`, `runner_nuit_max`, `runner_solo_max`, `runner_repos_jour`, `runner_repos_nuit`, `night_segments`, `segment_km`, `segment_duration`, `paired_relays`, `solo_max_size`
+- Methods: `segment_start_hour(seg)`, `is_night(seg)`, `is_compatible(r1, r2)`, `compat_score(r1, r2)`, `hour_to_seg(h, jour=0)`, `duration_to_segs(hours)`, `compute_upper_bound()` (LP relaxation via GLOP), `print_summary()`
 
 **`compat.py`** — `COMPAT_MATRIX: dict[tuple[str, str], int]` — compatibility scores (0, 1, or 2) for every runner pair. Auto-generated by `refresh_compat.py` from `compat_coureurs.xlsx`; do not edit manually.
 
@@ -50,15 +56,15 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 1
   - `start[r][k]`, `end[r][k]`, `size[r][k]` (IntVar); for flexible runners `size` has a domain including compatible partner sizes
   - `same_relay[(r,k,rp,kp)]` (BoolVar): 1 if the pair forms a binôme (same start + same effective size)
   - `relais_solo[r][k]`, `relais_nuit[r][k]` (BoolVar)
-- `build(constraints)`: calls `_add_variables`, `_add_fixed_relays`, `_add_night_relay`, `_add_rest_constraints`, `_add_availability`, `_add_same_relay`, `_add_coverage`, `_add_inter_runner_no_overlap`, `_add_solo_constraints`, `_add_binomes_min_max`
-- `_add_fixed_relays`: enforces `pinned[k]` entries as equality constraints on `start`; size domain comes from the relay's set
+- `build(constraints)`: calls `_add_variables`, `_add_fixed_relays`, `_add_night_relay`, `_add_rest_constraints`, `_add_availability`, `_add_same_relay`, `_add_coverage`, `_add_inter_runner_no_overlap`, `_add_solo_constraints`, `_add_forced_pairings`
+- `_add_fixed_relays`: enforces `pinned` entries as equality constraints on `start`; size domain comes from the relay's set
 - Objective: maximize weighted binôme sum (`_weighted_binome_sum`); no alternative objective modes
 - `build_model(constraints)`: factory returning a built `RelayModel`
 - `build_model_fixed_config(active_keys, constraints)`: builds a model with all `same_relay` vars fixed to the given configuration (used by the enumerator)
 - Public methods for enumeration: `add_optimisation_func(constraints)`, `add_min_score(constraints, score)`, `fix_binome_config(active_keys)`, `add_config_exclusion_cut(active_keys)`, `add_schedule_exclusion_cut(solver, constraints)`
 
 **`solver.py`** — Solver and solution builder:
-- `build_solution(model, constraints, solver) -> RelaySolution`: extracts variable values, computes `rest_h` (rest time in hours after each relay), and constructs a `RelaySolution`; `fixe` flag set when `pinned[k]` is not None
+- `build_solution(model, constraints, solver) -> RelaySolution`: extracts variable values, computes `rest_h` (rest time in hours after each relay), and constructs a `RelaySolution`; `fixe` flag set when `pinned` is not None
 - `RelaySolver(model, constraints)`: wraps CP-SAT solving; `solve(timeout_sec, target_score, max_count)` is a streaming iterator that yields `RelaySolution` objects as they are found; solver runs in a background thread
 - `add_optimisation_func()` takes no arguments (uses `self.constraints`)
 - Default: `SOLVER_TIME_LIMIT=5*3600s`, `SOLVER_NUM_WORKERS=12`
@@ -72,20 +78,27 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, 1
 - HTML output includes a Gantt-style grid per runner (colour-coded: green=binôme, pink=solo, blue=fixed relay, grey=mandatory rest, purple=unavail) with 6h time markers; runners sorted alphabetically
 - `_build_gantt()`: dedicated method returning `(header_row, rows_html)` for the Gantt table; CSS factored into classes (no inline styles)
 
-**`enumerate.py`** — 3-phase solution enumerator (replaces `enumerate_optimal_solutions.py`):
+**`enumerate.py`** — 3-phase solution enumerator:
 - Phase 1: finds the best achievable score (skipped if `SCORE_MINIMAL` is set)
 - Phase 2: enumerates up to `MAX_CONFIGS` distinct binôme configurations at that score using `add_config_exclusion_cut`
 - Phase 3: for each configuration, enumerates up to `MAX_PER_CONFIG` distinct placements using `add_schedule_exclusion_cut`
 - Each solution saved as `.csv`, `.json`, `.html` in `enumerate_solutions/` (named `run_<ts>_config_NNN_place_NN`)
 - Calls `analyze_solutions.main()` at the end; Ctrl+C stops gracefully at each phase
 
+**`verifications.py`** — post-solve verification suite:
+- `check(solution, constraints)`: validates coverage, relay sizes, rest constraints, night/solo limits, pairings, and compatibility
+
+**`refresh_compat.py`** — regenerates `compat.py` from `compat_coureurs.xlsx`:
+- Validates matrix structure (square, symmetric, diagonal=`X`, lower triangle only)
+- Run after modifying the Excel file
+
+**`analyze_solutions.py`** — loads `.json` files from `enumerate_solutions/`, generates per-runner histograms (PNG) and HTML pages, plus a synthesis and diversity page. Outputs to `explore_solutions/`. Reads `RelayConstraints` directly.
+
 **`utils/check_configs_unique.py`** — verifies that all phase-2 binôme configurations in `enumerate_solutions/` are distinct (loads `place_00.json` fingerprints). Optional `run_ts` argument to filter a specific run.
 
 **`utils/find_duplicate_solutions.py`** — detects identical JSON solutions in `enumerate_solutions/` using a canonical SHA-256 hash (order-insensitive, binôme pairs normalized).
 
 **`utils/reformat.py`** — reloads the most recent JSON solution from `plannings/` and regenerates the HTML. Accepts an optional path argument.
-
-**`analyze_solutions.py`** — loads `.json` files from `enumerate_solutions/`, generates per-runner histograms (PNG) and HTML pages, plus a synthesis and diversity page. Outputs to `explore_solutions/`. Reads `RelayConstraints` directly (no longer imports `data.py` constants).
 
 ## Key modeling details
 

@@ -14,7 +14,6 @@ class RelayModel:
 
     def __init__(self):
         self.model = None    # construit par build()
-        # self.solver = None   # Attaché après résolution
 
         # Variables CP-SAT (remplies par build())
         self.start = {}        # start[r][k]: IntVar
@@ -24,7 +23,6 @@ class RelayModel:
         self.relais_solo = {}  # relais_solo[r][k]: BoolVar
         self.relais_nuit = {}  # relais_nuit[r][k]: BoolVar
         self._intervals_all = []  # [(r, k, sz_max, interval_var)]
-        self._cut_count = 0
 
     # ------------------------------------------------------------------
     # Construction du modèle
@@ -43,19 +41,20 @@ class RelayModel:
         self._add_coverage(constraints)
         self._add_inter_runner_no_overlap(constraints)
         self._add_solo_constraints(constraints)
-        self._add_binomes_min_max(constraints)
+        self._add_forced_pairings(constraints)
+        self._add_once_max(constraints)
+        self._add_max_same_partenaire(constraints)
         return self
 
     def _add_fixed_relays(self, constraints):
         """Fixe start et size des relais dont pinned[k] n'est pas None."""
         model = self.model
         for r, coureur in constraints.runners_data.items():
-            for k, pin in enumerate(coureur.pinned):
-                if pin is None:
+            for k, spec in enumerate(coureur.relais):
+                if spec.pinned is None:
                     continue
-                fixed_size, fixed_start = pin
-                model.add(self.start[r][k] == fixed_start)
-                model.add(self.size[r][k] == fixed_size)
+                model.add(self.start[r][k] == spec.pinned)
+                model.add(self.size[r][k] == max(spec.size))
 
     def _add_variables(self, constraints):
         """Crée les variables start/end/size et intervalles pour chaque relais."""
@@ -65,7 +64,8 @@ class RelayModel:
             self.start[r], self.end[r], self.size[r] = [], [], []
             runner_ivs = []
             coureur = c.runners_data[r]
-            for k, sizes in enumerate(coureur.relais):
+            for k, spec in enumerate(coureur.relais):
+                sizes = spec.size
                 sz_lo = min(sizes)
                 s = model.new_int_var(0, c.nb_segments - sz_lo, f"s_{r}_{k}")
                 domain = cp_model.Domain.from_values(sorted(sizes))
@@ -88,9 +88,10 @@ class RelayModel:
         seg_night_list = sorted(c.night_segments)
         for r in c.runners:
             self.relais_nuit[r] = []
-            for k, sizes in enumerate(c.runners_data[r].relais):
+            for k, spec in enumerate(c.runners_data[r].relais):
                 # Pour le calcul des starts possibles la nuit, on utilise la taille minimale
                 # du domaine (un relais court peut quand même commencer la nuit).
+                sizes = spec.size
                 sz_lo, sz_hi = min(sizes), max(sizes)
                 night_starts = sorted(
                     set(
@@ -119,8 +120,9 @@ class RelayModel:
 
         for r in c.runners:
             rd = c.runners_data[r]
-            if rd.nuit_max < len(rd.relais):
-                model.add(sum(self.relais_nuit[r]) <= rd.nuit_max)
+            nuit_max = c._resolved_nuit_max(rd)
+            if nuit_max < len(rd.relais):
+                model.add(sum(self.relais_nuit[r]) <= nuit_max)
 
     def _add_rest_constraints(self, constraints):
         """Repos minimum entre toute paire de relais d'un même coureur."""
@@ -131,6 +133,8 @@ class RelayModel:
             if n_relays < 2:
                 continue
             rd = c.runners_data[r]
+            repos_jour = c._resolved_repos_jour(rd)
+            repos_nuit = c._resolved_repos_nuit(rd)
             for k in range(n_relays):
                 for kp in range(k + 1, n_relays):
                     k_before_kp = model.new_bool_var(f"bef_{r}_{k}_{kp}")
@@ -140,50 +144,40 @@ class RelayModel:
                     model.add_bool_or([~k_before_kp, self.relais_nuit[r][k]]).only_enforce_if(~k_day_then_kp)
                     model.add_bool_and([k_before_kp, self.relais_nuit[r][k]]).only_enforce_if(k_night_then_kp)
                     model.add_bool_or([~k_before_kp, ~self.relais_nuit[r][k]]).only_enforce_if(~k_night_then_kp)
-                    model.add(self.end[r][k] + rd.repos_jour <= self.start[r][kp]).only_enforce_if(k_day_then_kp)
-                    model.add(self.end[r][k] + rd.repos_nuit <= self.start[r][kp]).only_enforce_if(k_night_then_kp)
+                    model.add(self.end[r][k] + repos_jour <= self.start[r][kp]).only_enforce_if(k_day_then_kp)
+                    model.add(self.end[r][k] + repos_nuit <= self.start[r][kp]).only_enforce_if(k_night_then_kp)
                     kp_day_then_k = model.new_bool_var(f"bkpd_{r}_{k}_{kp}")
                     kp_night_then_k = model.new_bool_var(f"bkpn_{r}_{k}_{kp}")
                     model.add_bool_and([~k_before_kp, ~self.relais_nuit[r][kp]]).only_enforce_if(kp_day_then_k)
                     model.add_bool_or([k_before_kp, self.relais_nuit[r][kp]]).only_enforce_if(~kp_day_then_k)
                     model.add_bool_and([~k_before_kp, self.relais_nuit[r][kp]]).only_enforce_if(kp_night_then_k)
                     model.add_bool_or([k_before_kp, ~self.relais_nuit[r][kp]]).only_enforce_if(~kp_night_then_k)
-                    model.add(self.end[r][kp] + rd.repos_jour <= self.start[r][k]).only_enforce_if(kp_day_then_k)
-                    model.add(self.end[r][kp] + rd.repos_nuit <= self.start[r][k]).only_enforce_if(kp_night_then_k)
+                    model.add(self.end[r][kp] + repos_jour <= self.start[r][k]).only_enforce_if(kp_day_then_k)
+                    model.add(self.end[r][kp] + repos_nuit <= self.start[r][k]).only_enforce_if(kp_night_then_k)
 
     def _add_availability(self, constraints):
-        """Applique les disponibilités partielles et affectations fixes"""
+        """Applique les fenêtres de placement par relais et les affectations fixes."""
         c = constraints
         model = self.model
+
+        # Fenêtres par relais : start+end dans l'un des intervalles.
         for r, coureur in c.runners_data.items():
-            if not coureur.dispo:
-                continue
-            for k in range(len(coureur.relais)):
-                # start[r][k] must fall within one of the availability windows
-                window_bools = []
-                for i, (avail_start, avail_end) in enumerate(coureur.dispo):
-                    b = model.new_bool_var(f"avail_{r}_{k}_{i}")
-                    model.add(self.start[r][k] >= avail_start).only_enforce_if(b)
-                    model.add(self.end[r][k] <= avail_end).only_enforce_if(b)
-                    window_bools.append(b)
-                model.add_bool_or(window_bools)
+            for k, spec in enumerate(coureur.relais):
+                if spec.window is None:
+                    continue
+                if len(spec.window) == 1:
+                    ws, we = spec.window[0]
+                    model.add(self.start[r][k] >= ws)
+                    model.add(self.end[r][k] <= we)
+                else:
+                    bools = []
+                    for i, (ws, we) in enumerate(spec.window):
+                        b = model.new_bool_var(f"win_{r}_{k}_{i}")
+                        model.add(self.start[r][k] >= ws).only_enforce_if(b)
+                        model.add(self.end[r][k] <= we).only_enforce_if(b)
+                        bools.append(b)
+                    model.add_bool_or(bools)
 
-        # Pinned binômes: force a pair to share a relay covering the window.
-        pair_relay_counters = {}
-        for r1, r2, window_start, window_end in c.binomes_pinned:
-            pair_key = (r1, r2)
-            idx = pair_relay_counters.get(pair_key, 0)
-            window_size = window_end - window_start
-
-            r1_relays = [k for k, s in enumerate(c.runners_data[r1].relais) if max(s) >= window_size]
-            r2_relays = [k for k, s in enumerate(c.runners_data[r2].relais) if max(s) >= window_size]
-            if idx < len(r1_relays) and idx < len(r2_relays):
-                k1, k2 = r1_relays[idx], r2_relays[idx]
-                req1 = max(c.runners_data[r1].relais[k1])
-                model.add(self.start[r1][k1] <= window_start)
-                model.add(self.start[r1][k1] >= window_end - req1)
-                model.add(self.start[r2][k2] == self.start[r1][k1])
-            pair_relay_counters[pair_key] = idx + 1
 
     def _add_same_relay(self, constraints):
         """Crée les variables same_relay pour les binômes potentiels.
@@ -195,14 +189,14 @@ class RelayModel:
         model = self.model
         n_runners = len(c.runners)
         for ri, r in enumerate(c.runners):
-            for k, sizes_r in enumerate(c.runners_data[r].relais):
-                lo_r, hi_r = min(sizes_r), max(sizes_r)
+            for k, spec_r in enumerate(c.runners_data[r].relais):
+                lo_r, hi_r = min(spec_r.size), max(spec_r.size)
                 for rpi in range(ri + 1, n_runners):
                     rp = c.runners[rpi]
                     if not c.is_compatible(r, rp):
                         continue
-                    for kp, sizes_rp in enumerate(c.runners_data[rp].relais):
-                        lo_rp, hi_rp = min(sizes_rp), max(sizes_rp)
+                    for kp, spec_rp in enumerate(c.runners_data[rp].relais):
+                        lo_rp, hi_rp = min(spec_rp.size), max(spec_rp.size)
                         # Domaines se chevauchent ?
                         overlap_lo = max(lo_r, lo_rp)
                         overlap_hi = min(hi_r, hi_rp)
@@ -285,7 +279,7 @@ class RelayModel:
         for r in c.runners:
             self.relais_solo[r] = []
             coureur = c.runners_data[r]
-            for k, sizes in enumerate(coureur.relais):
+            for k, spec in enumerate(coureur.relais):
                 partners = [
                     bv
                     for key, bv in self.same_relay.items()
@@ -298,9 +292,9 @@ class RelayModel:
                 else:
                     model.add(b == 1)
                 self.relais_solo[r].append(b)
-                req = max(sizes)
+                req = max(spec.size)
                 # Flexible en solo → taille nominale obligatoire
-                if len(sizes) > 1:
+                if len(spec.size) > 1:
                     model.add(self.size[r][k] == req).only_enforce_if(b)
                 # Solo interdit si taille nominale > solo_max_size
                 if req > c.solo_max_size:
@@ -311,36 +305,64 @@ class RelayModel:
             for k in range(len(c.relay_sizes[r])):
                 model.add(self.relais_solo[r][k] + self.relais_nuit[r][k] <= 1)
 
-    def _add_binomes_min_max(self, constraints):
-        """
-        ajoute les requetes de relais en binome once_min et once_max
-        """
-        # au moins un relais en binôme pour chaque paire obligatoire.
+    def _add_forced_pairings(self, constraints):
+        """Force les pairings explicites (same_relay == 1) déclarés via SharedRelay sans window."""
         model = self.model
-        for r1, r2 in constraints.binomes_once_min:
-            pair_vars = self._pair_vars(r1, r2)
-            if pair_vars:
-                model.add_bool_or(pair_vars)
+        runner_idx = {r: i for i, r in enumerate(constraints.runners)}
+        for r1, k1, r2, k2 in constraints.paired_relays:
+            key = (r1, k1, r2, k2) if runner_idx[r1] < runner_idx[r2] else (r2, k2, r1, k1)
+            bv = self.same_relay.get(key)
+            if bv is not None:
+                model.add(bv == 1)
             else:
-                print(f"AVERTISSEMENT: aucun binôme possible {r1}-{r2}")
+                print(f"AVERTISSEMENT: pas de variable same_relay pour {r1}[{k1}]-{r2}[{k2}]")
 
-        # au plus un relais en binôme pour chaque paire limitée
+
+    def _add_once_max(self, constraints):
+        """Au plus 1 binôme entre chaque paire déclarée via once_max."""
         model = self.model
-        for r1, r2 in constraints.binomes_once_max:
-            pair_vars = self._pair_vars(r1, r2)
+        for r1, r2, nb in constraints.once_max:
+            pair_vars = [
+                bv
+                for key, bv in self.same_relay.items()
+                if (key[0] == r1 and key[2] == r2) or (key[0] == r2 and key[2] == r1)
+            ]
             if pair_vars:
-                model.add(sum(pair_vars) <= 1)
+                model.add(sum(pair_vars) <= nb)
             else:
-                print(f"AVERTISSEMENT: aucun binôme possible {r1}-{r2}")
+                print(f"AVERTISSEMENT add_max_binomes: aucun binôme possible {r1}-{r2}")
 
+    def _add_max_same_partenaire(self, constraints):
+        """Limite le nombre de binômes entre chaque paire de coureurs.
 
-    def _pair_vars(self, r1, r2):
-        """Retourne les BoolVar same_relay pour la paire (r1, r2) dans les deux sens."""
-        return [
-            bv
-            for key, bv in self.same_relay.items()
-            if (key[0] == r1 and key[2] == r2) or (key[0] == r2 and key[2] == r1)
-        ]
+        La limite retenue pour une paire (r1, r2) est le min des limites individuelles
+        (surcharge par coureur via set_max_same_partenaire()) ou la limite globale par défaut.
+        Si aucune limite n'est définie pour la paire, aucune contrainte n'est ajoutée.
+        """
+        c = constraints
+        default = c.max_same_partenaire
+        model = self.model
+        seen: set[frozenset] = set()
+        for (r1, _, r2, _) in self.same_relay:
+            key = frozenset({r1, r2})
+            if key in seen:
+                continue
+            seen.add(key)
+            lim1 = c.runners_data[r1].max_same_partenaire
+            lim2 = c.runners_data[r2].max_same_partenaire
+            # Si au moins une surcharge individuelle est définie, elle prend le dessus sur le défaut.
+            # La limite effective est le min des surcharges présentes (le coureur le plus restrictif
+            # l'emporte), ou le défaut global si aucune surcharge n'est définie.
+            individual = [v for v in (lim1, lim2) if v is not None]
+            max_same = min(individual) if individual else default
+            if max_same is None:
+                continue
+            pair_vars = [
+                v for (a, _, b, _), v in self.same_relay.items()
+                if (a == r1 and b == r2) or (a == r2 and b == r1)
+            ]
+            if len(pair_vars) > max_same:
+                model.add(sum(pair_vars) <= max_same)
 
     def _weighted_binome_sum(self, constraints):
         """Somme pondérée des binômes actifs (poids = compat_score)."""
@@ -357,40 +379,6 @@ class RelayModel:
         """Contraint le score pondéré des binômes à être >= score."""
         self.model.add(self._weighted_binome_sum(constraints) >= score)
 
-    def fix_binome_config(self, active_keys):
-        """Fixe toutes les variables same_relay à la configuration donnée (phase 2)."""
-        for key, bv in self.same_relay.items():
-            if key in active_keys:
-                self.model.add(bv == 1)
-            else:
-                self.model.add(bv == 0)
-
-    def add_config_exclusion_cut(self, active_keys):
-        """Ajoute une coupure excluant la configuration de binômes courante (phase 1).
-
-        La prochaine solution devra différer sur au moins un binôme actif.
-        """
-        active_bvs = [bv for key, bv in self.same_relay.items() if key in active_keys]
-        self.model.add_bool_or([~b for b in active_bvs])
-
-    def add_schedule_exclusion_cut(self, solver, constraints):
-        """Ajoute une coupure excluant le placement courant (phase 2).
-
-        La prochaine solution devra différer sur au moins un start de relais.
-        """
-        cut_idx = self._cut_count
-        self._cut_count += 1
-        cut_lits = []
-        for r in constraints.runners:
-            for k in range(len(constraints.runners_data[r].relais)):
-                val = solver.value(self.start[r][k])
-                b = self.model.new_bool_var(f"cut_{cut_idx}_{r}_{k}")
-                self.model.add(self.start[r][k] != val).only_enforce_if(b)
-                self.model.add(self.start[r][k] == val).only_enforce_if(~b)
-                cut_lits.append(b)
-        self.model.add_bool_or(cut_lits)
-
-
 # ------------------------------------------------------------------
 # Factory functions
 # ------------------------------------------------------------------
@@ -401,18 +389,7 @@ def build_model(constraints):
     relay_model.build(constraints)
     return relay_model
 
-def build_model_fixed_config(active_keys, constraints=None):
-    """Construit un RelayModel avec les binômes fixés à la configuration donnée."""
-    relay_model = build_model(constraints)
-    for key, bv in relay_model.same_relay.items():
-        if key in active_keys:
-            relay_model.model.add(bv == 1)
-        else:
-            relay_model.model.add(bv == 0)
-    return relay_model
-
-
-# test unitaire
+# test de construction du modèle, sans résolution
 if __name__ == "__main__":
     from data import build_constraints
     c = build_constraints()

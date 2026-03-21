@@ -17,7 +17,7 @@ from ortools.sat.python import cp_model
 from data import build_constraints
 from model import build_model
 from solver import build_solution
-import analyze_solutions
+import utils.analyze_solutions as analyze_solutions
 
 OUTDIR = "enumerate_solutions"
 SCORE_MINIMAL = 42        # 0 = recherche automatique, int = valeur connue
