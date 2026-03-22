@@ -220,6 +220,7 @@ class RelayConstraints:
         nuit_fin: float = 6.0,
         max_same_partenaire: int | None = None,
         enable_flex: bool = True,
+        allow_flex_flex: bool = True,
     ):
         self.total_km = total_km
         self.nb_segments = nb_segments
@@ -242,6 +243,7 @@ class RelayConstraints:
         self.once_max: list[tuple[str, str, int]] = []
         self.max_same_partenaire: int | None = max_same_partenaire
         self.relay_types: dict[str, set[int]] = make_relay_types(nb_segments, total_km, enable_flex)
+        self.allow_flex_flex: bool = allow_flex_flex
 
         # Index des coureurs connus (pour validation dans new_runner)
         self._known_runners: set[str] = {name for pair in self.compat_matrix for name in pair}

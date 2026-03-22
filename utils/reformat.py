@@ -22,12 +22,13 @@ def load_relais_list_from_json(path, constraints):
     for row in rows:
         relais_list.append({
             "runner": row["coureur"],
-            "k": None,  # non utilisé par solution.py
+            "k": row["k"],
             "start": row["debut_seg"],
             "end": row["fin_seg"],
             "size": row["fin_seg"] - row["debut_seg"],
             "km": row["distance_km"],
             "flex": row["flex"],
+            "pinned": row["pinned"],
             "solo": row["solo"],
             "night": row["nuit"],
             "partner": row["partenaire"],

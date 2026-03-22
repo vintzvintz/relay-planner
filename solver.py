@@ -9,7 +9,10 @@ import queue
 import threading
 
 from ortools.sat.python import cp_model
-import solution
+from solution import RelaySolution
+from solution import STATS as level_stats
+
+
 
 # Paramètres solveur
 SOLVER_TIME_LIMIT = 5*3600.0  # secondes
@@ -18,7 +21,7 @@ SOLVER_NUM_WORKERS = 12
 _SENTINEL = object()
 
 
-def build_solution(model, constraints, solver) -> solution.RelaySolution:
+def build_solution(model, constraints, solver) -> RelaySolution:
     """Construit une RelaySolution à partir de l'état courant du solveur CP-SAT."""
     c = constraints
     segment_km = c.segment_km
@@ -48,7 +51,7 @@ def build_solution(model, constraints, solver) -> solution.RelaySolution:
                     "solo": bool(solver.value(model.relais_solo[r][k])),
                     "night": bool(solver.value(model.relais_nuit[r][k])),
                     "partner": partner,
-                    "fixe": spec.pinned is not None,
+                    "pinned": spec.pinned,
                 }
             )
     relais_list.sort(key=lambda x: (x["start"], x["runner"]))
@@ -68,7 +71,7 @@ def build_solution(model, constraints, solver) -> solution.RelaySolution:
             else:
                 rel["rest_h"] = None
 
-    return solution.RelaySolution(relais_list, c, score=solver.objective_value)
+    return RelaySolution(relais_list, c, score=solver.objective_value)
 
 
 class _SolveCallback(cp_model.CpSolverSolutionCallback):
@@ -96,9 +99,6 @@ class RelaySolver:
     def __init__(self, model, constraints):
         self.model = model
         self.constraints = constraints
-
-    def add_optimisation_func(self):
-        self.model.add_optimisation_func(self.constraints)
 
     def solve(self, timeout_sec=0, target_score=0, max_count=0, log_progress=True):
         """Itérateur streaming sur les solutions CP-SAT.
@@ -142,12 +142,11 @@ class RelaySolver:
 if __name__ == "__main__":
     from data import build_constraints
     from model import build_model
-    c = build_constraints()
-    m = build_model(c)
-    s = RelaySolver(m, c)
-    s.add_optimisation_func()
+    contraintes = build_constraints()
+    modele = build_model(contraintes).add_optimisation_func(contraintes)
+    solveur = RelaySolver(modele, contraintes)
 
-    for sol in s.solve(target_score=0, timeout_sec=SOLVER_TIME_LIMIT):
+    for solution in solveur.solve(target_score=0, timeout_sec=SOLVER_TIME_LIMIT):
         # enregistre toutes les solutions et loggue juste une ligne de stats
-        sol.save(verbose=solution.STATS) 
+        solution.save(verbose=level_stats) 
 

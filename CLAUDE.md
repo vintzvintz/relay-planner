@@ -37,7 +37,7 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, ~
 **`constraints.py`** — `RelayConstraints` class and supporting types (also defines relay-type constants):
 - Relay-type string constants: `R10`, `R15`, `R20`, `R30`, `R13_F`, `R15_F` — pass to `add_relay()` as `size`
 - `make_relay_types(nb_segments, total_km, enable_flex)` — computes segment-count sets per relay type; called internally by `RelayConstraints.__init__`
-- `RelayConstraints.__init__`: accepts `total_km`, `nb_segments`, `speed_kmh`, `start_hour`, `compat_matrix`, `solo_max_km`, `solo_max_default`, `nuit_max_default`, `repos_jour_heures`, `repos_nuit_heures`, `nuit_debut`, `nuit_fin`, `max_same_partenaire`, `enable_flex`
+- `RelayConstraints.__init__`: accepts `total_km`, `nb_segments`, `speed_kmh`, `start_hour`, `compat_matrix`, `solo_max_km`, `solo_max_default`, `nuit_max_default`, `repos_jour_heures`, `repos_nuit_heures`, `nuit_debut`, `nuit_fin`, `max_same_partenaire`, `enable_flex`, `allow_flex_flex` (default `True`; if `False`, two flex runners forming a binôme are each forced to their own nominal size — no reduction allowed)
 - `new_runner(name)` → `RunnerBuilder` (validates name against compat matrix; runner options set via `set_options()`)
 - `new_relay(size)` → `SharedRelay` (forced binôme between two runners)
 - `add_max_binomes(runner1, runner2, nb)`: limits to at most `nb` binômes between two runners across the whole planning (stored in `once_max`)
@@ -59,7 +59,7 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, ~
   - `relais_solo[r][k]`, `relais_nuit[r][k]` (BoolVar)
 - `build(constraints)`: calls `_add_variables`, `_add_fixed_relays`, `_add_night_relay`, `_add_rest_constraints`, `_add_availability`, `_add_same_relay`, `_add_coverage`, `_add_inter_runner_no_overlap`, `_add_solo_constraints`, `_add_forced_pairings`
 - `_add_fixed_relays`: enforces `pinned` entries as equality constraints on `start`; size domain comes from the relay's set
-- Objective: mixed — maximizes weighted binôme sum (`_weighted_binome_sum`) combined with a flex-km bonus term
+- Objective: mixed — maximizes weighted binôme sum (`_weighted_binome_sum`) minus a flex penalty (`sum(sz_max - size[r][k])` over flex relays); this penalty discourages two flex runners from pairing at a size below both their maxima (double-flex binôme), since both would be penalized
 - `build_model(constraints)`: factory returning a built `RelayModel`
 - `build_model_fixed_config(active_keys, constraints)`: builds a model with all `same_relay` vars fixed to the given configuration (used by the enumerator)
 - Public methods for enumeration: `add_optimisation_func(constraints)`, `add_min_score(constraints, score)`, `fix_binome_config(active_keys)`, `add_config_exclusion_cut(active_keys)`, `add_schedule_exclusion_cut(solver, constraints)`
@@ -104,7 +104,7 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, ~
 ## Key modeling details
 
 - Segments are 0-indexed; segment `s` covers km `s * segment_km` to `(s+1) * segment_km`
-- Two runners form a binôme if same effective relay size AND same start segment AND `compat_score > 0`: for flexible runners, their `size` CP-SAT var is constrained to match the partner's fixed size
+- Two runners form a binôme if same effective relay size AND same start segment AND `compat_score > 0`: both flex and fixed runners can pair together; when two flex runners pair, the model allows any size in the intersection of their domains, but the flex penalty in the objective penalizes each runner running below their nominal size, making double-flex binômes at sub-maximal size costly; with `allow_flex_flex=False`, each runner in a flex+flex binôme is instead hard-constrained to its own nominal size (`max` of its domain)
 - Incompatible pairs (or pairs with no `same_relay` var) are forced disjoint via `add_no_overlap`
 - Solo + night relays are mutually exclusive per relay (`relais_solo[r][k] + relais_nuit[r][k] <= 1`)
 - Flexible runners in solo are forced to the nominal size (`max` of their size set)

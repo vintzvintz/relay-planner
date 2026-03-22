@@ -8,7 +8,7 @@ API publique :
     .to_json(filename)
     .to_html(filename)
     .save(quiet=False)
-    .stats() -> (n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex)
+    .stats() -> (n_binomes, n_solos, km_solos, n_flex, n_pinned, km_flex)
 """
 
 import csv
@@ -49,11 +49,11 @@ class RelaySolution:
 
     @staticmethod
     def _chrono_tags(rel):
-        return [t for t, v in [("fixe", rel["fixe"]), ("solo", rel["solo"]), ("nuit", rel["night"])] if v]
+        return [t for t, v in [("fixe", (rel["pinned"] is not None)), ("solo", rel["solo"]), ("nuit", rel["night"])] if v]
 
     @staticmethod
     def _recap_tags(rel):
-        return [t for t, v in [("fixe", rel["fixe"]), ("nuit", rel["night"]), ("flex", rel["flex"])] if v]
+        return [t for t, v in [("fixe", (rel["pinned"] is not None)), ("nuit", rel["night"]), ("flex", rel["flex"])] if v]
 
     @staticmethod
     def _dedup_key(rel):
@@ -99,18 +99,18 @@ class RelaySolution:
     # ------------------------------------------------------------------
 
     def stats(self):
-        """Retourne (n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex)."""
+        """Retourne (n_binomes, n_solos, km_solos, n_flex, n_pinned, km_flex)."""
         c = self.constraints
         rl = self.relais_list
         n_binomes = sum(1 for x in rl if x["partner"]) // 2
         solos = [x for x in rl if x["solo"]]
         n_flex = sum(1 for x in rl if x["flex"])
-        n_fixes = sum(1 for x in rl if x["fixe"])
+        n_pinned = sum(1 for x in rl if x["pinned"] is not None)
         km_flex = sum(
             (max(c.runners_data[x["runner"]].relais[x["k"]].size) - x["size"]) * c.segment_km
             for x in rl if x["flex"]
         )
-        return n_binomes, len(solos), sum(x["km"] for x in solos), n_flex, n_fixes, km_flex
+        return n_binomes, len(solos), sum(x["km"] for x in solos), n_flex, n_pinned, km_flex
 
     def to_text(self) -> str:
         """Retourne le planning complet en texte (planning chrono + récap)."""
@@ -134,10 +134,11 @@ class RelaySolution:
             "debut_km": float(rel["start"] * c.segment_km),
             "fin_km": float(rel["end"] * c.segment_km),
             "distance_km": rel["km"],
+            "k": rel["k"],
             "solo": rel["solo"],
             "nuit": rel["night"],
             "flex": rel["flex"],
-            "fixe": rel["fixe"],
+            "pinned": rel.get("pinned"),
             "rest_h": rel["rest_h"],
         }
 
@@ -185,9 +186,9 @@ class RelaySolution:
             print(text)
             print(f"Solution sauvegardée     : {txt_fname}/csv/html")
         elif verbose==STATS:
-            n_binomes, n_solo, km_solo, n_flex, n_fixes, km_flex = self.stats()
+            n_binomes, n_solo, km_solo, n_flex, n_pinned, km_flex = self.stats()
             km_flex_str = f" ({km_flex:.1f} km)" if km_flex else ""
-            print( f"score:{self.score:.1f} binomes:{n_binomes} solos:{n_solo} ({km_solo:.1f} km) flex:{n_flex}{km_flex_str} fixes:{n_fixes}  --> planning_{ts}")
+            print( f"score:{self.score:.1f} binomes:{n_binomes} solos:{n_solo} ({km_solo:.1f} km) flex:{n_flex}{km_flex_str} pinned:{n_pinned}  --> planning_{ts}")
         else: # verbose==QUIET
             pass
 
@@ -200,16 +201,16 @@ class RelaySolution:
         c = self.constraints
         W = 74
         lines = []
-        n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex = self.stats()
+        n_binomes, n_solos, km_solos, n_flex, n_pinned, km_flex = self.stats()
         score_str = f"  Score:{self.score:.1f}" if self.score is not None else "  Score:<valeur>"
         flex_str = f"   Flex : {n_flex}" + (f" ({km_flex:.1f} km)" if km_flex else "")
-        fixes_str = f"   Fixes : {n_fixes}" if n_fixes else ""
+        pinned_str = f"   Pinned : {n_pinned}" if n_pinned else ""
         c._ensure_lp()
         lp_str = f" (LP ≤{c.lp_upper_bound})" if c.lp_upper_bound is not None else ""
         lines.append("=" * W)
         lines.append(f"  PLANNING  {c.total_km:.1f} km — {c.nb_segments} segments de {c.segment_km:.1f} km - Vitesse {c.speed_kmh:.1f} km/h")
         lines.append(
-            f"  Binômes : {n_binomes}{lp_str}  Solos : {n_solos} ({km_solos:.1f} km){flex_str}{fixes_str}{score_str}"
+            f"  Binômes : {n_binomes}{lp_str}  Solos : {n_solos} ({km_solos:.1f} km){flex_str}{pinned_str}{score_str}"
         )
         lines.append("=" * W)
 
@@ -293,7 +294,7 @@ class RelaySolution:
         rl = self.relais_list
 
         def row_class(rel):
-            if rel["fixe"]:
+            if (rel["pinned"] is not None):
                 return ' class="row-fixe"'
             if rel["solo"]:
                 return ' class="row-solo"'
@@ -444,10 +445,12 @@ class RelaySolution:
             while seg < c.nb_segments:
                 if seg in relais_by_start:
                     rel = relais_by_start[seg]
-                    if rel["fixe"]:
+                    if (rel["pinned"] is not None):
                         relay_typ = "relay_fixe"
                     elif rel["solo"]:
                         relay_typ = "relay_solo"
+                    elif rel["flex"] and rel["partner"]:
+                        relay_typ = "relay_flex"
                     else:
                         relay_typ = "relay_binome" if rel["partner"] else "relay_solo"
                     spans.append((seg, rel["end"], relay_typ, ""))
@@ -495,6 +498,8 @@ class RelaySolution:
                     css_class = f"seg-rest{mark_class}"
                 elif typ == "relay_binome":
                     css_class = f"seg-binome{mark_class}"
+                elif typ == "relay_flex":
+                    css_class = f"seg-flex{mark_class}"
                 elif typ == "relay_solo":
                     css_class = f"seg-solo{mark_class}"
                 elif typ == "relay_fixe":
@@ -532,7 +537,7 @@ class RelaySolution:
         h_end = c.segment_start_hour(c.nb_segments)
         day_end = DAY_NAMES[min(int(h_end // 24), 2)]
         hh_end, mm_end = int(h_end) % 24, int((h_end % 1) * 60)
-        n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex = self.stats()
+        n_binomes, n_solos, km_solos, n_flex, n_pinned, km_flex = self.stats()
         km_flex_str = f" ({km_flex:.1f} km)" if km_flex else ""
         c._ensure_lp()
         lp_str_html = f" (LP ≤{c.lp_upper_bound})" if c.lp_upper_bound is not None else ""
@@ -561,6 +566,7 @@ class RelaySolution:
   .seg-free    {{ color: #555; font-size: 10px; text-align: center; border: 1px solid #ccc; background: #ffffff; }}
   .seg-rest    {{ color: #555; font-size: 10px; text-align: center; border: 1px solid #ccc; background: #d0d0d0; }}
   .seg-binome  {{ background: #4caf50; color: #000; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #2e7d32; }}
+  .seg-flex    {{ background: #a5d6a7; color: #000; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #66bb6a; }}
   .seg-solo    {{ background: #f48fb1; color: #000; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #c2185b; }}
   .seg-fixe    {{ background: #2196f3; color: #fff; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #1565c0; }}
   .seg-unavail {{ background: #8b00ff; border: 1px solid #6a00cc; }}
@@ -592,11 +598,12 @@ class RelaySolution:
 <body>
 <h2>Planning {c.total_km:.1f} km — {c.nb_segments} segments de {c.segment_km:.1f} km — Vitesse {c.speed_kmh:.1f} km/h</h2>
 <p>Départ : {DAY_NAMES[0]} {int(c.start_hour):02d}h{int((c.start_hour % 1) * 60):02d} &nbsp;|&nbsp; Arrivée : {day_end} ~{hh_end:02d}h{mm_end:02d}</p>
-<p>Binômes : <strong>{n_binomes}</strong>{lp_str_html} &nbsp;|&nbsp; Solos : <strong>{n_solos}</strong> ({km_solos:.1f} km) &nbsp;|&nbsp; Flex : <strong>{n_flex}</strong>{km_flex_str} &nbsp;|&nbsp; Fixes : <strong>{n_fixes}</strong> &nbsp;|&nbsp; Score : <strong>{f"{self.score:.1f}" if self.score is not None else "—"}</strong></p>
+<p>Binômes : <strong>{n_binomes}</strong>{lp_str_html} &nbsp;|&nbsp; Solos : <strong>{n_solos}</strong> ({km_solos:.1f} km) &nbsp;|&nbsp; Flex : <strong>{n_flex}</strong>{km_flex_str} &nbsp;|&nbsp; Pinned : <strong>{n_pinned}</strong> &nbsp;|&nbsp; Score : <strong>{f"{self.score:.1f}" if self.score is not None else "—"}</strong></p>
 <p>
   <span style="background:#4caf50;padding:2px 8px;border:1px solid #2e7d32;">Relais binôme</span>&nbsp;
+  <span style="background:#a5d6a7;padding:2px 8px;border:1px solid #66bb6a;">Relais flex (binôme)</span>&nbsp;
   <span style="background:#f48fb1;padding:2px 8px;border:1px solid #c2185b;">Relais solo</span>&nbsp;
-  <span style="background:#2196f3;padding:2px 8px;border:1px solid #1565c0;color:#fff;">Relais fixe</span>&nbsp;
+  <span style="background:#2196f3;padding:2px 8px;border:1px solid #1565c0;color:#fff;">Relais pinned</span>&nbsp;
   <span style="background:#8b00ff;padding:2px 8px;border:1px solid #6a00cc;">&nbsp;&nbsp;&nbsp;</span> Indisponible
 </p>
 <div style="overflow-x:auto;">

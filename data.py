@@ -22,6 +22,7 @@ c = RelayConstraints(
     max_same_partenaire=2,  # nombre maximal de binômes entre deux mêmes coureurs
     compat_matrix=COMPAT_MATRIX,
     enable_flex=True,   # si False, ignore la flexibilité à la baisse
+    allow_flex_flex=True   # autorise un relais plus court que le max commun de deux flexibles (1ere solution plus rapide mais moins optimale)
 )
 
 # --- Déclaration des coureurs ---
