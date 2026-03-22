@@ -105,13 +105,18 @@ def generate_compat_py(runners: list[str], compat: dict[tuple[str, str], int]) -
         '"""',
         "",
         "# fmt: off",
+        f"RUNNERS: list[str] = {runners!r}",
+        "",
+        "# Triangle inférieur uniquement (clé canonique : (a, b) avec a < b selon RUNNERS).",
+        "# constraints.py reconstruit la symétrie à la lecture via compat_score().",
         "COMPAT_MATRIX: dict[tuple[str, str], int] = {",
     ]
 
+    idx = {name: i for i, name in enumerate(runners)}
     for r1 in runners:
         for r2 in runners:
-            if r1 == r2:
-                continue
+            if idx[r1] >= idx[r2]:
+                continue  # ne stocker que (r_petit_idx, r_grand_idx)
             val = compat.get((r1, r2), 0)
             lines.append(f'    ("{r1}", "{r2}"): {val},')
 

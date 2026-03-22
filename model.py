@@ -9,6 +9,10 @@ Ce module expose :
 
 from ortools.sat.python import cp_model
 
+# Poids des binômes vs pénalité flex dans l'objectif mixte.
+# binome_sum_max ≈ 47,  flex_penalty_max ≈ 51  → coef=2 donne ~2x plus de poids aux binômes.
+BINOME_WEIGHT = 2
+
 class RelayModel:
     """Modèle CP-SAT complet : variables, contraintes et formatage de solution."""
 
@@ -213,14 +217,16 @@ class RelayModel:
                         # Même taille effective (dans l'intersection des domaines)
                         model.add(self.size[r][k] == self.size[rp][kp]).only_enforce_if(b)
 
-                        # No-overlap quand ~b
-                        # La séparation minimale dépend de la taille minimale de chaque relais
-                        diff = model.new_int_var(-c.nb_segments, c.nb_segments, f"d_{r}_{k}_{rp}_{kp}")
-                        model.add(diff == self.start[r][k] - self.start[rp][kp])
-                        no_overlap_dom = cp_model.Domain(-c.nb_segments, -lo_r).union_with(
-                            cp_model.Domain(lo_rp, c.nb_segments)
-                        )
-                        model.add_linear_expression_in_domain(diff, no_overlap_dom).only_enforce_if(~b)
+                        # No-overlap quand ~b : utilise les tailles réelles (CP vars)
+                        order = model.new_bool_var(f"ord_{r}_{k}_{rp}_{kp}")
+                        # order=1 : r avant rp  → start[r][k] + size[r][k] <= start[rp][kp]
+                        model.add(
+                            self.start[r][k] + self.size[r][k] <= self.start[rp][kp]
+                        ).only_enforce_if([~b, order])
+                        # order=0 : rp avant r → start[rp][kp] + size[rp][kp] <= start[r][k]
+                        model.add(
+                            self.start[rp][kp] + self.size[rp][kp] <= self.start[r][k]
+                        ).only_enforce_if([~b, ~order])
 
 
     def _add_coverage(self, constraints):
@@ -366,15 +372,35 @@ class RelayModel:
 
     def _weighted_binome_sum(self, constraints):
         """Somme pondérée des binômes actifs (poids = compat_score)."""
-        return sum(
+        terms = [
             constraints.compat_score(r, rp) * var
             for (r, _k, rp, _kp), var in self.same_relay.items()
+        ]
+        return cp_model.LinearExpr.sum(terms) if terms else cp_model.LinearExpr.sum([])
+
+    def _alternate_score(self, constraints):
+        """Objectif mixte : BINOME_WEIGHT * binome_sum - flex_penalty.
+
+        flex_penalty = sum(sz_max - size[r][k]) sur les relais flex uniquement.
+        Pénalise les relais raccourcis, favorisant une couverture solo maximale
+        tout en préservant la priorité aux binômes bien pondérés.
+        """
+        binome_sum = self._weighted_binome_sum(constraints)
+        flex_penalty = sum(
+            max(spec.size) - self.size[r][k]
+            for r, coureur in constraints.runners_data.items()
+            for k, spec in enumerate(coureur.relais)
+            if len(spec.size) > 1
         )
+        return BINOME_WEIGHT * binome_sum - flex_penalty
 
     def add_optimisation_func(self, constraints):
         """Ajoute la fonction que le solveur va optimiser."""
-        self.model.maximize(self._weighted_binome_sum(constraints))
+        #self.model.maximize(self._weighted_binome_sum(constraints))
+        # expérimentation d'autres fonctions objectif
+        self.model.maximize(self._alternate_score(constraints))
 
+    # add_min_score() utilisé uniquement par enumerate.py
     def add_min_score(self, constraints, score):
         """Contraint le score pondéré des binômes à être >= score."""
         self.model.add(self._weighted_binome_sum(constraints) >= score)

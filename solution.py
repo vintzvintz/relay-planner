@@ -8,7 +8,7 @@ API publique :
     .to_json(filename)
     .to_html(filename)
     .save(quiet=False)
-    .stats() -> (n_binomes, n_solos, km_solos, n_flex)
+    .stats() -> (n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex)
 """
 
 import csv
@@ -99,13 +99,18 @@ class RelaySolution:
     # ------------------------------------------------------------------
 
     def stats(self):
-        """Retourne (n_binomes, n_solos, km_solos, n_flex, n_fixes)."""
+        """Retourne (n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex)."""
+        c = self.constraints
         rl = self.relais_list
         n_binomes = sum(1 for x in rl if x["partner"]) // 2
         solos = [x for x in rl if x["solo"]]
         n_flex = sum(1 for x in rl if x["flex"])
         n_fixes = sum(1 for x in rl if x["fixe"])
-        return n_binomes, len(solos), sum(x["km"] for x in solos), n_flex, n_fixes
+        km_flex = sum(
+            (max(c.runners_data[x["runner"]].relais[x["k"]].size) - x["size"]) * c.segment_km
+            for x in rl if x["flex"]
+        )
+        return n_binomes, len(solos), sum(x["km"] for x in solos), n_flex, n_fixes, km_flex
 
     def to_text(self) -> str:
         """Retourne le planning complet en texte (planning chrono + récap)."""
@@ -180,8 +185,9 @@ class RelaySolution:
             print(text)
             print(f"Solution sauvegardée     : {txt_fname}/csv/html")
         elif verbose==STATS:
-            n_binomes, n_solo, km_solo, n_flex, n_fixes = self.stats()
-            print( f"score:{self.score:.1f} binomes:{n_binomes} solos:{n_solo} ({km_solo:.1f} km) flex:{n_flex} fixes:{n_fixes}  --> planning_{ts}")
+            n_binomes, n_solo, km_solo, n_flex, n_fixes, km_flex = self.stats()
+            km_flex_str = f" ({km_flex:.1f} km)" if km_flex else ""
+            print( f"score:{self.score:.1f} binomes:{n_binomes} solos:{n_solo} ({km_solo:.1f} km) flex:{n_flex}{km_flex_str} fixes:{n_fixes}  --> planning_{ts}")
         else: # verbose==QUIET
             pass
 
@@ -194,14 +200,16 @@ class RelaySolution:
         c = self.constraints
         W = 74
         lines = []
-        n_binomes, n_solos, km_solos, n_flex, n_fixes = self.stats()
+        n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex = self.stats()
         score_str = f"  Score:{self.score:.1f}" if self.score is not None else "  Score:<valeur>"
-        flex_str = f"   Flex : {n_flex}"
+        flex_str = f"   Flex : {n_flex}" + (f" ({km_flex:.1f} km)" if km_flex else "")
         fixes_str = f"   Fixes : {n_fixes}" if n_fixes else ""
+        c._ensure_lp()
+        lp_str = f" (LP ≤{c.lp_upper_bound})" if c.lp_upper_bound is not None else ""
         lines.append("=" * W)
         lines.append(f"  PLANNING  {c.total_km:.1f} km — {c.nb_segments} segments de {c.segment_km:.1f} km - Vitesse {c.speed_kmh:.1f} km/h")
         lines.append(
-            f"  Binômes : {n_binomes}   Solos : {n_solos} ({km_solos:.1f} km){flex_str}{fixes_str}{score_str}"
+            f"  Binômes : {n_binomes}{lp_str}  Solos : {n_solos} ({km_solos:.1f} km){flex_str}{fixes_str}{score_str}"
         )
         lines.append("=" * W)
 
@@ -524,7 +532,10 @@ class RelaySolution:
         h_end = c.segment_start_hour(c.nb_segments)
         day_end = DAY_NAMES[min(int(h_end // 24), 2)]
         hh_end, mm_end = int(h_end) % 24, int((h_end % 1) * 60)
-        n_binomes, n_solos, km_solos, n_flex, n_fixes = self.stats()
+        n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex = self.stats()
+        km_flex_str = f" ({km_flex:.1f} km)" if km_flex else ""
+        c._ensure_lp()
+        lp_str_html = f" (LP ≤{c.lp_upper_bound})" if c.lp_upper_bound is not None else ""
 
         text_section = self._build_html_detail()
 
@@ -536,14 +547,15 @@ class RelaySolution:
 <style>
   body {{ font-family: sans-serif; font-size: 12px; margin: 16px; }}
   table {{ border-collapse: collapse; table-layout: fixed; }}
+  .gantt-table {{ width: 100%; }}
   th, td {{ padding: 2px; }}
 
   /* Gantt — header */
-  .th-seg-label {{ padding: 2px 6px; white-space: nowrap; font-size: 12px; }}
-  .th-seg {{ background: #90caf9; color: #000; font-size: 8px; padding: 1px; text-align: center; width: 10px; min-width: 10px; }}
+  .th-seg-label {{ padding: 2px 6px; white-space: nowrap; font-size: 12px; width: 120px; min-width: 120px; }}
+  .th-seg {{ background: #90caf9; color: #000; font-size: 8px; padding: 1px; text-align: center; }}
   .th-seg.seg-header-night {{ background: #1565c0; color: #fff; }}
   .th-seg.seg-mark-header {{ border-left: 2px solid #fff; }}
-  .th-runner {{ text-align: left; padding: 2px 6px; white-space: nowrap; font-size: 12px; }}
+  .th-runner {{ text-align: left; padding: 2px 6px; white-space: nowrap; font-size: 12px; width: 120px; min-width: 120px; }}
 
   /* Gantt — cellules segments */
   .seg-free    {{ color: #555; font-size: 10px; text-align: center; border: 1px solid #ccc; background: #ffffff; }}
@@ -580,7 +592,7 @@ class RelaySolution:
 <body>
 <h2>Planning {c.total_km:.1f} km — {c.nb_segments} segments de {c.segment_km:.1f} km — Vitesse {c.speed_kmh:.1f} km/h</h2>
 <p>Départ : {DAY_NAMES[0]} {int(c.start_hour):02d}h{int((c.start_hour % 1) * 60):02d} &nbsp;|&nbsp; Arrivée : {day_end} ~{hh_end:02d}h{mm_end:02d}</p>
-<p>Binômes : <strong>{n_binomes}</strong> &nbsp;|&nbsp; Solos : <strong>{n_solos}</strong> ({km_solos:.1f} km) &nbsp;|&nbsp; Flex : <strong>{n_flex}</strong> &nbsp;|&nbsp; Fixes : <strong>{n_fixes}</strong> &nbsp;|&nbsp; Score : <strong>{f"{self.score:.1f}" if self.score is not None else "—"}</strong></p>
+<p>Binômes : <strong>{n_binomes}</strong>{lp_str_html} &nbsp;|&nbsp; Solos : <strong>{n_solos}</strong> ({km_solos:.1f} km) &nbsp;|&nbsp; Flex : <strong>{n_flex}</strong>{km_flex_str} &nbsp;|&nbsp; Fixes : <strong>{n_fixes}</strong> &nbsp;|&nbsp; Score : <strong>{f"{self.score:.1f}" if self.score is not None else "—"}</strong></p>
 <p>
   <span style="background:#4caf50;padding:2px 8px;border:1px solid #2e7d32;">Relais binôme</span>&nbsp;
   <span style="background:#f48fb1;padding:2px 8px;border:1px solid #c2185b;">Relais solo</span>&nbsp;
@@ -588,7 +600,7 @@ class RelaySolution:
   <span style="background:#8b00ff;padding:2px 8px;border:1px solid #6a00cc;">&nbsp;&nbsp;&nbsp;</span> Indisponible
 </p>
 <div style="overflow-x:auto;">
-<table>
+<table class="gantt-table">
 {header_row}
 {"".join(rows_html)}
 </table>

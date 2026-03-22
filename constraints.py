@@ -2,6 +2,46 @@ from dataclasses import dataclass
 from collections import defaultdict
 import math
 
+# Noms des types de relais (clés du dict relay_types de RelayConstraints)
+R10   = "R10"
+R15   = "R15"
+R20   = "R20"
+R30   = "R30"
+R13_F = "R13_F"
+R15_F = "R15_F"
+
+
+def make_relay_types(nb_segments: int, total_km: float, enable_flex: bool) -> dict:
+    """
+    Retourne un dict de types de relais pour le nombre de segments donné.
+
+    Tailles nominales (en km) :
+      R10 = 10 km, R15 = 15 km, R20 = 20 km, R30 = 30 km
+      R13_F = R10..R13 km (flex), R15_F = R10..R15 km (flex)
+    """
+    seg_km = total_km / nb_segments
+
+    # calcul empirique du nombre de segment pour chaque type de relais.
+    r10 = round(10 / seg_km)
+    r13 = math.floor(13.9 / seg_km)
+    r15 = math.ceil(14.5 / seg_km)    # pas moins de 14,5km
+    r20 = round(20 / seg_km)
+    r30 = math.floor(30 / seg_km)   # pas plus de 30km
+
+    s10 = {r10}
+    s15 = {r15}
+    s20 = {r20}
+    s30 = {r30}
+
+    if enable_flex:
+        s13_f = set(range(r10, r13 + 1))
+        s15_f = set(range(r10, r15 + 1))
+    else:
+        s13_f = {r13}
+        s15_f = {r15}
+
+    return {R10: s10, R15: s15, R20: s20, R30: s30, R13_F: s13_f, R15_F: s15_f}
+
 
 @dataclass
 class RelaySpec:
@@ -99,14 +139,31 @@ class RunnerBuilder:
         self._coureur = coureur
         self._constraints = constraints
 
-    def set_max_same_partenaire(self, max_same: int) -> "RunnerBuilder":
-        """Surcharge la limite globale de binômes avec un même partenaire pour ce coureur."""
-        self._coureur.max_same_partenaire = max_same
+    def set_options(
+        self,
+        *,
+        solo_max: int | None = None,
+        nuit_max: int | None = None,
+        repos_jour: float | None = None,
+        repos_nuit: float | None = None,
+        max_same_partenaire: int | None = None,
+    ) -> "RunnerBuilder":
+        """Surcharge les options individuelles du coureur (remplace les kwargs de new_runner)."""
+        if solo_max is not None:
+            self._coureur.solo_max = solo_max
+        if nuit_max is not None:
+            self._coureur.nuit_max = nuit_max
+        if repos_jour is not None:
+            self._coureur.repos_jour = self._constraints.duration_to_segs(repos_jour)
+        if repos_nuit is not None:
+            self._coureur.repos_nuit = self._constraints.duration_to_segs(repos_nuit)
+        if max_same_partenaire is not None:
+            self._coureur.max_same_partenaire = max_same_partenaire
         return self
 
     def add_relay(
         self,
-        size: "set[int] | SharedRelay",
+        size: "str | SharedRelay",
         *,
         nb: int = 1,
         window: "RelayIntervals | tuple[int, int] | None" = None,
@@ -114,14 +171,20 @@ class RunnerBuilder:
     ) -> "RunnerBuilder":
         """Ajoute nb relais identiques au coureur et retourne self pour le chaînage.
 
-        size : set[int] ou SharedRelay (créé via constraints.new_relay()).
+        size : nom de type (str) ou SharedRelay (créé via constraints.new_relay()).
                Pour un SharedRelay, nb est ignoré.
         """
+        if not isinstance(size, (str, SharedRelay)):
+            raise TypeError(f"size doit être un nom de type (str) ou un SharedRelay, pas {type(size).__name__}.")
+
         window_list: list[tuple[int, int]] | None = None
         if isinstance(window, RelayIntervals):
             window_list = window.intervals
         elif isinstance(window, tuple):
             window_list = [window]
+
+        if isinstance(size, str):
+            size = self._constraints.relay_types[size]
 
         if isinstance(size, SharedRelay):
             if nb != 1:
@@ -156,12 +219,17 @@ class RelayConstraints:
         nuit_debut: float = 0.0,
         nuit_fin: float = 6.0,
         max_same_partenaire: int | None = None,
+        enable_flex: bool = True,
     ):
         self.total_km = total_km
         self.nb_segments = nb_segments
         self.speed_kmh = speed_kmh
         self.start_hour = start_hour
-        self.compat_matrix = compat_matrix
+        # Déplie le triangle inférieur en matrice symétrique complète
+        self.compat_matrix: dict[tuple[str, str], int] = {
+            **compat_matrix,
+            **{(b, a): v for (a, b), v in compat_matrix.items()},
+        }
         self.solo_max_size = int(solo_max_km * nb_segments / total_km)
         self.solo_max_default = solo_max_default
         self.nuit_max_default = nuit_max_default
@@ -173,34 +241,29 @@ class RelayConstraints:
         self.runners_data: dict[str, Coureur] = {}
         self.once_max: list[tuple[str, str, int]] = []
         self.max_same_partenaire: int | None = max_same_partenaire
+        self.relay_types: dict[str, set[int]] = make_relay_types(nb_segments, total_km, enable_flex)
+
+        # Index des coureurs connus (pour validation dans new_runner)
+        self._known_runners: set[str] = {name for pair in self.compat_matrix for name in pair}
+
+        # Résultats de la relaxation LP (remplis à la première demande via lp_bounds)
+        self._lp_computed: bool = False
+        self.lp_upper_bound: int | None = None
+        self.lp_upper_bound_exact: float | None = None
+        self.lp_solo_nb: float | None = None
+        self.lp_solo_km: float | None = None
 
     # ------------------------------------------------------------------
     # API déclarative
     # ------------------------------------------------------------------
 
-    def new_runner(
-        self,
-        name: str,
-        *,
-        solo_max: int | None = None,
-        nuit_max: int | None = None,
-        repos_jour: float | None = None,
-        repos_nuit: float | None = None,
-    ) -> RunnerBuilder:
+    def new_runner(self, name: str) -> RunnerBuilder:
         """Crée un nouveau coureur et retourne son RunnerBuilder."""
-        coureur = Coureur(
-            relais=[],
-            solo_max=solo_max,
-            nuit_max=nuit_max,
-            repos_jour=self.duration_to_segs(repos_jour) if repos_jour is not None else None,
-            repos_nuit=self.duration_to_segs(repos_nuit) if repos_nuit is not None else None,
-        )
+        if name not in self._known_runners:
+            raise ValueError(f"Coureur '{name}' absent de la matrice de compatibilité")
+        coureur = Coureur(relais=[])
         self.runners_data[name] = coureur
         return RunnerBuilder(name, coureur, self)
-
-    # Alias
-    def add_runner(self, name: str, **kwargs) -> RunnerBuilder:
-        return self.new_runner(name, **kwargs)
 
     def add_max_binomes(self, runner1: "RunnerBuilder", runner2: "RunnerBuilder", nb: int) -> None:
         """Limite à au plus nb binômes entre runner1 et runner2 sur tout le planning."""
@@ -208,10 +271,12 @@ class RelayConstraints:
 
     def new_relay(
         self,
-        size: set[int],
+        size: str,
     ) -> SharedRelay:
         """Crée un relais partagé à passer à add_relay() de deux coureurs pour les apparier."""
-        return SharedRelay(size=size)
+        if not isinstance(size, str):
+            raise TypeError(f"size doit être un nom de type (str), pas {type(size).__name__}.")
+        return SharedRelay(size=self.relay_types[size])
 
     def night_windows(self) -> RelayIntervals:
         """Retourne un RelayIntervals couvrant toutes les plages nocturnes (0h–6h)."""
@@ -305,6 +370,22 @@ class RelayConstraints:
         """Convertit une durée en heures en nombre de segments (arrondi au supérieur)."""
         return math.ceil(hours * self.speed_kmh * self.nb_segments / self.total_km)
 
+    def size_of(self, relay_name: str) -> int:
+        """Retourne la taille en segments du type de relais donné.
+
+        Lève ValueError si le type est flexible (plusieurs tailles possibles).
+        """
+        sizes = self.relay_types[relay_name]
+        if len(sizes) != 1:
+            raise ValueError(
+                f"Le type '{relay_name}' est flexible ({sorted(sizes)} segs) : utilisez relay_types[relay_name] directement."
+            )
+        return next(iter(sizes))
+
+    def km_to_seg(self, km: float) -> int:
+        """Convertit une distance en km en numéro de segment (arrondi au supérieur)."""
+        return math.floor(km * self.nb_segments / self.total_km)
+
     def hour_to_seg(self, hour: float, jour: int = 0) -> int:
         """Convertit une heure absolue (+ décalage en jours) en numéro de segment.
 
@@ -397,7 +478,6 @@ class RelayConstraints:
 
         status = solver.Solve()
         if status not in (pywraplp.Solver.OPTIMAL, pywraplp.Solver.FEASIBLE):
-            print("LP infaisable ou non borné")
             return 0
 
         bound = solver.Objective().Value()
@@ -420,9 +500,18 @@ class RelayConstraints:
         total_solo_nb = sum(solo_nb.values())
         total_solo_km = sum(solo_km.values())
 
-        print(f"\n  Majorant (relaxation LP) : {bound:.4f} → {int(bound)} binômes")
-        print(f"  Solos (borne basse LP)   : {total_solo_nb:.2f} relais  ({total_solo_km:.0f} km)")
-        return int(bound)
+        self.lp_upper_bound_exact = bound
+        self.lp_upper_bound = int(bound)
+        self.lp_solo_nb = total_solo_nb
+        self.lp_solo_km = total_solo_km
+        self._lp_computed = True
+
+        return self.lp_upper_bound
+
+    def _ensure_lp(self):
+        """Déclenche le calcul LP si ce n'est pas encore fait."""
+        if not self._lp_computed:
+            self.compute_upper_bound()
 
     def print_summary(self) -> None:
         """Affiche un résumé complet des données d'entrée du problème."""
@@ -439,6 +528,13 @@ class RelayConstraints:
         print(f"  Départ      : mercredi {self.start_hour}h00")
         print(f"  Repos jour  : {self.repos_jour_default} segments = {self.repos_jour_default * self.segment_duration:.1f}h")  # fmt: skip
         print(f"  Repos nuit  : {self.repos_nuit_default} segments = {self.repos_nuit_default * self.segment_duration:.1f}h")  # fmt: skip
+
+        print()
+        print("TYPES DE RELAIS")
+        print("-" * 60)
+        for name, segs in self.relay_types.items():
+            km_vals = sorted(s * self.segment_km for s in segs)
+            print(f"  {name:6s} : {sorted(segs)} segs  ({[round(v, 1) for v in km_vals]} km)")
 
         print()
         print("COUREURS")
@@ -480,7 +576,10 @@ class RelayConstraints:
         print(
             f"  {'TOTAL':12s}   {km_engages:.0f} km engagés  (minimum {2 * self.total_km - km_engages:.1f} km en solo)"
         )
-        self.compute_upper_bound()
+        self._ensure_lp()
+        if self.lp_upper_bound is not None:
+            print(f"\n  Majorant (relaxation LP) : {self.lp_upper_bound_exact:.4f} → {self.lp_upper_bound} binômes")
+            print(f"  Solos (borne basse LP)   : {self.lp_solo_nb:.2f} relais  ({self.lp_solo_km:.0f} km)")
 
         print()
         print("COMPATIBILITÉS (binômes possibles)")
@@ -489,17 +588,6 @@ class RelayConstraints:
             partners = sorted(r for r in self.runners if r != name and self.is_compatible(name, r))
             compat_str = ", ".join(partners) if partners else "— aucune"
             print(f"  {name:12s} : {compat_str}")
-        # if self.paired_relays:
-        #     print(f"  pairings : {', '.join(f'{r1}[{k1}]+{r2}[{k2}]' for r1, k1, r2, k2 in self.paired_relays)}")
-
-        # Vérifie que la matrice de compatibilité est symétrique
-        asymmetries = [
-            (a, b) for (a, b), v in self.compat_matrix.items() if v and not self.is_compatible(b, a)
-        ]
-        if asymmetries:
-            print("AVERTISSEMENT : compatible n'est pas symétrique :")
-            for a, b in asymmetries:
-                print(f"  {a} → {b} mais pas l'inverse")
 
         print()
         print("RELAIS EPINGLÉS")

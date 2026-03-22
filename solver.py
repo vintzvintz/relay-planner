@@ -147,7 +147,7 @@ if __name__ == "__main__":
     s = RelaySolver(m, c)
     s.add_optimisation_func()
 
-
     for sol in s.solve(target_score=0, timeout_sec=SOLVER_TIME_LIMIT):
-        sol.save(verbose=solution.STATS)
+        # enregistre toutes les solutions et loggue juste une ligne de stats
+        sol.save(verbose=solution.STATS) 
 

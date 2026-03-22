@@ -2,9 +2,9 @@
 
 Planificateur de course en relais par contraintes (CP-SAT).
 
-Problème : Lyon → Fessenheim, 440 km, 135 segments, vitesse ~9 km/h, départ mercredi 15h00.
-15 coureurs doivent couvrir chaque segment (1 ou 2 coureurs par segment).
-L'objectif est de maximiser la somme pondérée des relais courus en binôme (poids = score de compatibilité).
+Problème : Lyon → Fessenheim, 440 km, ~290 segments, vitesse ~9 km/h, départ mercredi 15h00.
+17 coureurs doivent couvrir chaque segment (1 ou 2 coureurs par segment).
+L'objectif est de maximiser un score mixte (binômes pondérés par compatibilité + bonus km flex).
 
 ## Prérequis
 
@@ -21,10 +21,10 @@ pip install -r requirements.txt
 Le problème est défini via une API déclarative dans `data.py` :
 
 ```python
-c = RelayConstraints(total_km=440, nb_segments=135, ...)
+c = RelayConstraints(total_km=440, nb_segments=290, ...)
 
 pierre = c.new_runner("Pierre")
-pierre.add_relay(R20).add_relay(R15_flex, nb=3)
+pierre.add_relay(R20).add_relay(R15_F, nb=3)
 
 nuit1 = c.new_relay(R30)           # relais partagé (binôme forcé)
 alexis.add_relay(nuit1, window=nuit1_30k)
@@ -37,7 +37,7 @@ Voir [CONSTRAINTS.md](CONSTRAINTS.md) pour la référence complète de l'API.
 
 ### `data.py`
 Déclare les paramètres globaux du parcours, les coureurs et leurs relais via l'API de `constraints.py`.
-Des constantes de types de relais sont prédéfinies : `R10`, `R15`, `R20`, `R30`, `R13_flex`, `R15_flex`.
+Les constantes de types de relais (`R10`, `R15`, `R20`, `R30`, `R13_F`, `R15_F`) sont définies dans `constraints.py` et importées ici.
 `build_constraints()` retourne l'objet `RelayConstraints` utilisé par le solveur.
 Exécuter directement pour afficher un résumé complet et le majorant LP.
 
@@ -47,26 +47,28 @@ python data.py
 
 ### `constraints.py`
 Classe `RelayConstraints` : accumule la déclaration des coureurs et relais, calcule les propriétés dérivées (segments nuit, borne supérieure LP, etc.) et expose `print_summary()`.
+Définit aussi les constantes de types de relais (`R10`, `R15`, `R20`, `R30`, `R13_F`, `R15_F`) et la fonction `make_relay_types()`.
 Types associés : `RunnerBuilder`, `SharedRelay`, `RelaySpec`, `Coureur`, `RelayIntervals`.
-Méthodes notables : `add_max_binomes(runner1, runner2, nb)` pour limiter les binômes entre deux coureurs ;
-`RunnerBuilder.set_max_same_partenaire(n)` pour surcharger la limite globale par coureur.
+Options coureur via `RunnerBuilder.set_options(solo_max, nuit_max, repos_jour, repos_nuit, max_same_partenaire)` ;
+`add_max_binomes(runner1, runner2, nb)` pour limiter les binômes entre deux coureurs.
+La borne LP est mémorisée dans `lp_upper_bound`/`lp_upper_bound_exact`/`lp_solo_nb`/`lp_solo_km` après le premier calcul.
 Pas destiné à être exécuté directement.
 
 ### `compat.py`
 `COMPAT_MATRIX` : scores de compatibilité (0, 1 ou 2) pour chaque paire de coureurs.
+Stocke uniquement le triangle inférieur (clé canonique) ; `RelayConstraints` reconstruit la symétrie à la lecture.
 Généré automatiquement depuis `compat_coureurs.xlsx` par `refresh_compat.py`.
 
 ### `model.py`
 Construction du modèle CP-SAT (`RelayModel`). Variables : `start/end/size` par relais,
-`same_relay` (binômes), `relais_solo`, `relais_nuit`. Objectif unique : maximiser la somme
-pondérée des binômes actifs (poids = score de compatibilité).
+`same_relay` (binômes), `relais_solo`, `relais_nuit`. Objectif mixte : somme pondérée des
+binômes (poids = score de compatibilité) + bonus km flex.
 Expose `build_model(constraints)` et des méthodes publiques pour le diagnostic
 (`add_min_score`, `fix_binome_config`, `add_config_exclusion_cut`, `add_schedule_exclusion_cut`).
 Pas destiné à être exécuté directement.
 
 ### `solver.py`
 `RelaySolver` : itérateur streaming sur les solutions CP-SAT (thread séparé).
-Objectif : maximiser la somme pondérée des `same_relay` (poids = score de compatibilité).
 Écrit le planning dans `plannings/` (`.txt`, `.csv`, `.json` et `.html`).
 
 ```bash
@@ -76,7 +78,7 @@ python solver.py
 ### `solution.py`
 `RelaySolution` : encapsule une solution avec vérification automatique et formatage.
 API : `to_text()`, `to_csv()`, `to_json()`, `to_html()`, `save(verbose=)`, `stats()`.
-`stats()` retourne `(n_binomes, n_solos, km_solos, n_flex, n_fixes)`.
+`stats()` retourne `(n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex)` (`km_flex` = km économisés par les relais flex).
 Le HTML inclut une grille Gantt par coureur (vert = binôme, rose = solo, bleu = relais fixe,
 gris = repos minimal, violet = indisponible) avec repères toutes les 6h. Coureurs triés alphabétiquement.
 

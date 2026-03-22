@@ -11,9 +11,9 @@ La déclaration se fait en trois étapes :
 3. Déclarer les relais de chaque coureur via `runner.add_relay()`
 
 ```python
-from constraints import RelayConstraints, RelayIntervals
+from constraints import RelayConstraints, RelayIntervals, R20, R15
 
-c = RelayConstraints(total_km=440, nb_segments=135, ...)
+c = RelayConstraints(total_km=440, nb_segments=290, ...)
 
 pierre = c.new_runner("Pierre")
 pierre.add_relay(R20).add_relay(R15, nb=3)
@@ -26,10 +26,10 @@ pierre.add_relay(R20).add_relay(R15, nb=3)
 ```python
 c = RelayConstraints(
     total_km=440,           # distance totale en km
-    nb_segments=135,        # nombre de segments (0-indexés)
+    nb_segments=290,        # nombre de segments (0-indexés) — valeurs courantes : 440=1k, 290=1k5, 220=2k, 135=3k3
     speed_kmh=9.0,          # vitesse de course en km/h
     start_hour=15.0,        # heure de départ (h depuis minuit, jour 0)
-    compat_matrix=COMPAT_MATRIX,  # dict[tuple[str,str], int] — scores 0/1/2
+    compat_matrix=COMPAT_MATRIX,  # dict[tuple[str,str], int] — scores 0/1/2 (triangle inférieur)
     solo_max_km=17,         # taille max d'un relais solo en km
     solo_max_default=1,     # nb max de solos par coureur (défaut)
     nuit_max_default=1,     # nb max de relais de nuit par coureur (défaut)
@@ -38,6 +38,7 @@ c = RelayConstraints(
     nuit_debut=0,           # heure de début de la plage nuit (défaut : 0h)
     nuit_fin=6,             # heure de fin de la plage nuit (défaut : 6h)
     max_same_partenaire=None,  # int | None — nb max de binômes avec un même partenaire (global)
+    enable_flex=True,       # si False, les types flex (R13_F, R15_F) sont traités comme fixes
 )
 ```
 
@@ -48,35 +49,32 @@ Les durées de repos sont converties en segments via `duration_to_segs()` (arron
 ## `c.new_runner()` — créer un coureur
 
 ```python
-runner = c.new_runner(
-    name,                   # str — identifiant unique du coureur
+runner = c.new_runner(name)   # str — identifiant unique du coureur (doit exister dans la matrice de compat)
+```
+
+Retourne un `RunnerBuilder`. Les options individuelles du coureur sont définies via `set_options()` (voir ci-dessous).
+
+### Méthode `set_options`
+
+```python
+runner.set_options(
     *,
     solo_max=None,          # int | None — surcharge solo_max_default
     nuit_max=None,          # int | None — surcharge nuit_max_default
     repos_jour=None,        # float | None — surcharge repos_jour en heures
     repos_nuit=None,        # float | None — surcharge repos_nuit en heures
-)
+    max_same_partenaire=None,  # int | None — surcharge la limite globale pour ce coureur
+) -> RunnerBuilder
 ```
 
-Retourne un `RunnerBuilder`. Alias disponible : `c.add_runner(name, **kwargs)`.
+Retourne `self` pour le chaînage.
 
 **Exemples :**
 ```python
-alexis   = c.new_runner("Alexis", nuit_max=5)
-vincent  = c.new_runner("Vincent", repos_jour=6, repos_nuit=8)
-leo      = c.new_runner("Leo", solo_max=0)   # interdit de solo
-```
-
-### Méthode `set_max_same_partenaire`
-
-```python
-runner.set_max_same_partenaire(max_same: int) -> RunnerBuilder
-```
-
-Surcharge la limite globale `max_same_partenaire` pour ce coureur uniquement. Retourne `self` pour le chaînage.
-
-```python
-alexis.set_max_same_partenaire(2)   # alexis court au max 2 fois avec le même partenaire
+alexis   = c.new_runner("Alexis").set_options(nuit_max=5)
+vincent  = c.new_runner("Vincent").set_options(repos_jour=6, repos_nuit=8)
+leo      = c.new_runner("Leo").set_options(solo_max=0)   # interdit de solo
+alexis.set_options(max_same_partenaire=2)   # alexis court au max 2 fois avec le même partenaire
 ```
 
 ---
@@ -85,7 +83,7 @@ alexis.set_max_same_partenaire(2)   # alexis court au max 2 fois avec le même p
 
 ```python
 runner.add_relay(
-    size,           # set[int] ou SharedRelay (voir ci-dessous)
+    size,           # str (constante de type : R10, R15, …) ou SharedRelay (voir ci-dessous)
     *,
     nb=1,           # int — nombre de relais identiques à ajouter (ignoré pour SharedRelay)
     window=None,    # RelayIntervals | tuple[int,int] | None — fenêtre de placement
@@ -97,19 +95,21 @@ Retourne `self` pour le chaînage.
 
 ### Paramètre `size`
 
-Un `set[int]` de tailles permises **en nombre de segments** :
+Un **nom de type** (`str`) importé de `constraints.py`, ou un `SharedRelay` :
 
-| Constante    | Valeur (flex off) | Valeur (flex on)  | Distance approx. |
-|--------------|-------------------|-------------------|------------------|
-| `R10 = {3}`  | `{3}`             | `{3}`             | ~10 km           |
-| `R15 = {5}`  | `{5}`             | `{5}`             | ~16 km           |
-| `R20 = {6}`  | `{6}`             | `{6}`             | ~19 km           |
-| `R30 = {9}`  | `{9}`             | `{9}`             | ~30 km           |
-| `R13_flex`   | `{4}`             | `{3, 4}`          | 10–13 km         |
-| `R15_flex`   | `{5}`             | `{3, 4, 5}`       | 10–16 km         |
+| Constante | Distance approx. | Segments (flex off) | Segments (flex on) |
+|-----------|------------------|---------------------|--------------------|
+| `R10`     | ~10 km           | `{3}`               | `{3}`              |
+| `R15`     | ~15 km           | `{5}`               | `{5}`              |
+| `R20`     | ~20 km           | `{6}`               | `{6}`              |
+| `R30`     | ~30 km           | `{9}`               | `{9}`              |
+| `R13_F`   | 10–13 km         | `{4}`               | `{3, 4}`           |
+| `R15_F`   | 10–15 km         | `{5}`               | `{3, 4, 5}`        |
 
-- **Singleton** `{n}` : taille fixe, le relais couvre exactement `n` segments.
-- **Multi-valeurs** `{a, b, c}` : relais flexible — le solveur choisit la taille dans l'ensemble. Le coureur partenaire impose sa taille dans le cas d'un binôme.
+Le nombre exact de segments dépend de `nb_segments` et `total_km` (calculé par `make_relay_types()`).
+
+- **Singleton** : taille fixe, le relais couvre exactement `n` segments.
+- **Multi-valeurs** (flex on) : relais flexible — le solveur choisit la taille dans l'ensemble. Le coureur partenaire impose sa taille dans le cas d'un binôme.
 
 ### Paramètre `window`
 
@@ -161,7 +161,7 @@ c.add_max_binomes(alexis, olivier, 1)   # au plus 1 binôme ensemble
 ## `c.new_relay()` — créer un relais partagé (binôme forcé)
 
 ```python
-shared = c.new_relay(size)   # size : set[int]
+shared = c.new_relay(size)   # size : str (constante de type, ex. R30)
 ```
 
 Crée un `SharedRelay` à passer à `add_relay()` de **deux coureurs** pour les forcer à courir ensemble sur ce relais.
@@ -246,12 +246,30 @@ c.compat_score(r1, r2) -> int     # 0, 1 ou 2
 | `c.paired_relays`      | `list[tuple[str,int,str,int]]`| Tous les pairings `(r1,k1,r2,k2)` déclarés      |
 | `c.solo_max_size`      | `int`                         | Taille max d'un solo en segments                 |
 
+### Conversions supplémentaires
+
+```python
+c.km_to_seg(km) -> int
+```
+Convertit une distance en km en numéro de segment (arrondi au bas).
+
+```python
+c.size_of(relay_name) -> int
+```
+Retourne la taille en segments du type de relais (lève `ValueError` si le type est flexible).
+
 ### Vérification et diagnostic
 
 ```python
-c.print_summary()          # Affiche le résumé complet (coureurs, compat, relais épinglés)
-c.compute_upper_bound()    # Calcule et affiche le majorant LP (nombre max de binômes)
+c.print_summary()          # Affiche le résumé complet (coureurs, compat, relais épinglés, borne LP)
+c.compute_upper_bound()    # Calcule le majorant LP (résultat mémorisé dans lp_upper_bound, etc.)
 ```
+
+La borne LP est calculée automatiquement lors du premier appel à `print_summary()`. Les résultats sont stockés dans :
+- `c.lp_upper_bound` (`int`) : borne supérieure arrondie
+- `c.lp_upper_bound_exact` (`float`) : valeur LP exacte
+- `c.lp_solo_nb` (`float`) : nombre de solos estimé par la relaxation LP
+- `c.lp_solo_km` (`float`) : km en solo estimés par la relaxation LP
 
 ---
 
@@ -290,14 +308,15 @@ class Coureur:
 ## Exemple complet minimal
 
 ```python
-from constraints import RelayConstraints, RelayIntervals
+from constraints import RelayConstraints, RelayIntervals, R20, R15, R15_F, R30
 from compat import COMPAT_MATRIX
 
 c = RelayConstraints(
-    total_km=440, nb_segments=135, speed_kmh=9.0, start_hour=15.0,
+    total_km=440, nb_segments=290, speed_kmh=9.0, start_hour=15.0,
     compat_matrix=COMPAT_MATRIX,
     solo_max_km=17, solo_max_default=1, nuit_max_default=1,
     repos_jour_heures=7, repos_nuit_heures=9,
+    enable_flex=True,
 )
 
 # Plages temporelles
@@ -305,17 +324,17 @@ j1   = RelayIntervals([(0, c.hour_to_seg(15.0, jour=1))])
 nuit = c.night_windows()
 
 # Relais partagé (binôme obligatoire)
-relay_nuit = c.new_relay({9})   # R30 : ~30 km
+relay_nuit = c.new_relay(R30)
 
 # Coureurs
-alice = c.new_runner("Alice", nuit_max=2)
-alice.add_relay({6}, nb=2).add_relay({3, 4, 5}, window=j1)
+alice = c.new_runner("Alice").set_options(nuit_max=2)
+alice.add_relay(R20, nb=2).add_relay(R15_F, window=j1)
 
-bob = c.new_runner("Bob", solo_max=0)
-bob.add_relay(relay_nuit, window=nuit).add_relay({5}, nb=3)
+bob = c.new_runner("Bob").set_options(solo_max=0)
+bob.add_relay(relay_nuit, window=nuit).add_relay(R15, nb=3)
 
 carol = c.new_runner("Carol")
-carol.add_relay(relay_nuit, window=nuit).add_relay({5}, pinned=0)
+carol.add_relay(relay_nuit, window=nuit).add_relay(R15, pinned=0)
 
 def build_constraints():
     return c

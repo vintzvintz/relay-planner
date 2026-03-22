@@ -20,6 +20,7 @@ def check(solution: list[dict], constraints: RelayConstraints, out=_NULL) -> boo
     ok &= _check_night_max(solution, constraints, out)
     ok &= _check_solo_max(solution, constraints, out)
     ok &= _check_solo_night(solution, out)
+    ok &= _check_no_overlap_between_runners(solution, out)
     ok &= _check_pairings(solution, constraints, out)
     ok &= _check_compatibility_matrix(solution, constraints, out)
 
@@ -141,6 +142,35 @@ def _check_solo_night(solution: list[dict], out) -> bool:
             ok = False
     if ok:
         print("Solo≠Nuit      : OK", file=out)
+    return ok
+
+
+def _check_no_overlap_between_runners(solution: list[dict], out) -> bool:
+    """Vérifie qu'aucun relais solo ne chevauche un relais d'un autre coureur.
+
+    Les binômes (partner != None) partagent intentionnellement les mêmes segments :
+    seuls les relais sans partenaire commun sont vérifiés.
+    """
+    ok = True
+    n = len(solution)
+    for i in range(n):
+        for j in range(i + 1, n):
+            a, b = solution[i], solution[j]
+            if a["runner"] == b["runner"]:
+                continue
+            # Binôme : les deux relais ont le même partenaire croisé
+            if a["partner"] == b["runner"] and b["partner"] == a["runner"]:
+                continue
+            # Chevauchement : [a_start, a_end[ ∩ [b_start, b_end[ ≠ ∅
+            if a["start"] < b["end"] and b["start"] < a["end"]:
+                print(
+                    f"  OVERLAP : {a['runner']}[{a['k']}]=[{a['start']},{a['end']}["
+                    f" chevauche {b['runner']}[{b['k']}]=[{b['start']},{b['end']}[",
+                    file=out,
+                )
+                ok = False
+    if ok:
+        print("No-overlap     : OK", file=out)
     return ok
 
 

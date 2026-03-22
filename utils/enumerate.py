@@ -66,8 +66,9 @@ def _collect_configs(constraints, min_score, max_configs, run_ts):
             configs.append(active_keys)
             config_idx = len(configs)
             relay_sol = build_solution(relay_model, constraints, solver)
-            n_binomes, n_solos, km_solos, n_flex = relay_sol.stats()
-            print(f"  Config {config_idx} trouvée — score:{relay_sol.score} binomes:{n_binomes} solos:{n_solos} ({km_solos:.1f} km) flex:{n_flex}")
+            n_binomes, n_solos, km_solos, n_flex, n_fixes, km_flex = relay_sol.stats()
+            km_flex_str = f" ({km_flex:.1f} km)" if km_flex else ""
+            print(f"  Config {config_idx} trouvée — score:{relay_sol.score} binomes:{n_binomes} solos:{n_solos} ({km_solos:.1f} km) flex:{n_flex}{km_flex_str}")
             _save(relay_sol, run_ts, config_idx, 0)
 
             if max_configs and len(configs) >= max_configs:
