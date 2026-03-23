@@ -35,8 +35,10 @@ c = RelayConstraints(
     nuit_max_default=1,     # nb max de relais de nuit par coureur (défaut)
     repos_jour_heures=7,    # repos minimum entre deux relais (hors nuit), en heures
     repos_nuit_heures=9,    # repos minimum après un relais de nuit, en heures
-    nuit_debut=0,           # heure de début de la plage nuit (défaut : 0h)
+    nuit_debut=0,           # heure de début de la plage nuit — détermine repos_nuit (défaut : 0h)
     nuit_fin=6,             # heure de fin de la plage nuit (défaut : 6h)
+    solo_autorise_debut=None,  # heure de début de la plage où les solos sont autorisés (défaut : None → égal à nuit_debut)
+    solo_autorise_fin=None,    # heure de fin de la plage où les solos sont autorisés (défaut : None → égal à nuit_fin)
     max_same_partenaire=None,  # int | None — nb max de binômes avec un même partenaire (global)
     enable_flex=True,       # si False, les types flex (R13_F, R15_F) sont traités comme fixes
 )

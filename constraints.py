@@ -218,6 +218,8 @@ class RelayConstraints:
         repos_nuit_heures: float,
         nuit_debut: float = 0.0,
         nuit_fin: float = 6.0,
+        solo_autorise_debut: float | None = None,
+        solo_autorise_fin: float | None = None,
         max_same_partenaire: int | None = None,
         enable_flex: bool = True,
         allow_flex_flex: bool = True,
@@ -236,6 +238,8 @@ class RelayConstraints:
         self.nuit_max_default = nuit_max_default
         self.nuit_debut = nuit_debut
         self.nuit_fin = nuit_fin
+        self.solo_autorise_debut: float = solo_autorise_debut
+        self.solo_autorise_fin: float = solo_autorise_fin
         self.repos_jour_default: int = self.duration_to_segs(repos_jour_heures)
         self.repos_nuit_default: int = self.duration_to_segs(repos_nuit_heures)
 
@@ -367,6 +371,20 @@ class RelayConstraints:
             return self.nuit_debut <= h < self.nuit_fin
         else:
             return h >= self.nuit_debut or h < self.nuit_fin
+
+    def is_solo_forbidden(self, seg: int) -> bool:
+        """Vrai si le segment est hors de la plage solo_autorise_debut/solo_autorise_fin (solos interdits)."""
+        if self.solo_autorise_debut is None:
+            return False
+        h = self.segment_start_hour(seg) % 24
+        if self.solo_autorise_debut <= self.solo_autorise_fin:
+            return not (self.solo_autorise_debut <= h < self.solo_autorise_fin)
+        else:
+            return not (h >= self.solo_autorise_debut or h < self.solo_autorise_fin)
+
+    @property
+    def solo_forbidden_segments(self) -> set[int]:
+        return set(s for s in range(self.nb_segments) if self.is_solo_forbidden(s))
 
     def duration_to_segs(self, hours: float) -> int:
         """Convertit une durée en heures en nombre de segments (arrondi au supérieur)."""
@@ -530,6 +548,8 @@ class RelayConstraints:
         print(f"  Départ      : mercredi {self.start_hour}h00")
         print(f"  Repos jour  : {self.repos_jour_default} segments = {self.repos_jour_default * self.segment_duration:.1f}h")  # fmt: skip
         print(f"  Repos nuit  : {self.repos_nuit_default} segments = {self.repos_nuit_default * self.segment_duration:.1f}h")  # fmt: skip
+        print(f"  Nuit (repos): {self.nuit_debut}h–{self.nuit_fin}h")
+        print(f"  Solo autorisé: {self.solo_autorise_debut}h–{self.solo_autorise_fin}h")
 
         print()
         print("TYPES DE RELAIS")

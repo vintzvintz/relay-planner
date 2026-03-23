@@ -28,8 +28,9 @@ class RelayModel:
         self.end = {}          # end[r][k]: IntVar
         self.size = {}         # size[r][k]: IntVar
         self.same_relay = {}   # same_relay[(r,k,rp,kp)]: BoolVar
-        self.relais_solo = {}  # relais_solo[r][k]: BoolVar
-        self.relais_nuit = {}  # relais_nuit[r][k]: BoolVar
+        self.relais_solo = {}         # relais_solo[r][k]: BoolVar
+        self.relais_nuit = {}         # relais_nuit[r][k]: BoolVar
+        self.relais_solo_interdit = {}  # relais_solo_interdit[r][k]: BoolVar (solo forbidden window)
         self._intervals_all = []  # [(r, k, sz_max, interval_var)]
 
     # ------------------------------------------------------------------
@@ -43,6 +44,7 @@ class RelayModel:
         self._add_variables(constraints)
         self._add_fixed_relays(constraints)
         self._add_night_relay(constraints)
+        self._add_solo_intervals(constraints)
         self._add_rest_constraints(constraints)
         self._add_availability(constraints)
         self._add_same_relay(constraints)
@@ -131,6 +133,47 @@ class RelayModel:
             nuit_max = c._resolved_nuit_max(rd)
             if nuit_max < len(rd.relais):
                 model.add(sum(self.relais_nuit[r]) <= nuit_max)
+
+    def _add_solo_intervals(self, constraints):
+        """Crée relais_solo_interdit[r][k] : vrai si le relais démarre hors de la plage solo autorisée."""
+        c = constraints
+        if c.solo_autorise_debut is None:
+            for r in c.runners:
+                self.relais_solo_interdit[r] = [
+                    self.model.new_constant(0) for _ in c.runners_data[r].relais
+                ]
+            return
+        model = self.model
+        seg_forbidden_list = sorted(c.solo_forbidden_segments)
+        for r in c.runners:
+            self.relais_solo_interdit[r] = []
+            for k, spec in enumerate(c.runners_data[r].relais):
+                sizes = spec.size
+                sz_lo, sz_hi = min(sizes), max(sizes)
+                forbidden_starts = sorted(
+                    set(
+                        n - off
+                        for n in seg_forbidden_list
+                        for off in range(sz_hi)
+                        if 0 <= n - off <= c.nb_segments - sz_lo
+                    )
+                )
+                rsi = model.new_bool_var(f"rsi_{r}_{k}")
+                if not forbidden_starts:
+                    model.add(rsi == 0)
+                else:
+                    fd = cp_model.Domain.from_values(forbidden_starts)
+                    dd = fd.complement().intersection_with(
+                        cp_model.Domain(0, c.nb_segments - sz_lo)
+                    )
+                    model.add_linear_expression_in_domain(self.start[r][k], fd).only_enforce_if(rsi)
+                    if not dd.is_empty():
+                        model.add_linear_expression_in_domain(
+                            self.start[r][k], dd
+                        ).only_enforce_if(~rsi)
+                    else:
+                        model.add(rsi == 1)
+                self.relais_solo_interdit[r].append(rsi)
 
     def _add_rest_constraints(self, constraints):
         """Repos minimum entre toute paire de relais d'un même coureur."""
@@ -319,7 +362,7 @@ class RelayModel:
         for r in c.runners:
             model.add(sum(self.relais_solo[r]) <= c.runner_solo_max[r])
             for k in range(len(c.relay_sizes[r])):
-                model.add(self.relais_solo[r][k] + self.relais_nuit[r][k] <= 1)
+                model.add(self.relais_solo[r][k] + self.relais_solo_interdit[r][k] <= 1)
 
     def _add_forced_pairings(self, constraints):
         """Force les pairings explicites (same_relay == 1) déclarés via SharedRelay sans window."""

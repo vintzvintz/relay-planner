@@ -19,7 +19,7 @@ def check(solution: list[dict], constraints: RelayConstraints, out=_NULL) -> boo
     ok &= _check_rest(solution, constraints, out)
     ok &= _check_night_max(solution, constraints, out)
     ok &= _check_solo_max(solution, constraints, out)
-    ok &= _check_solo_night(solution, out)
+    ok &= _check_solo_intervals(solution, constraints, out)
     ok &= _check_no_overlap_between_runners(solution, out)
     ok &= _check_pairings(solution, constraints, out)
     ok &= _check_compatibility_matrix(solution, constraints, out)
@@ -134,14 +134,15 @@ def _check_solo_max(solution: list[dict], constraints: RelayConstraints, out) ->
     return ok
 
 
-def _check_solo_night(solution: list[dict], out) -> bool:
+def _check_solo_intervals(solution: list[dict], constraints: RelayConstraints, out) -> bool:
+    forbidden = constraints.solo_forbidden_segments
     ok = True
     for rel in solution:
-        if rel["solo"] and rel["night"]:
-            print(f"  SOLO+NUIT       : {rel['runner']} relais k={rel['k']}", file=out)
+        if rel["solo"] and rel["start"] in forbidden:
+            print(f"  SOLO hors [{constraints.solo_autorise_debut}h–{constraints.solo_autorise_fin}h]: {rel['runner']} relais k={rel['k']}", file=out)
             ok = False
     if ok:
-        print("Solo≠Nuit      : OK", file=out)
+        print(f"Solo [{constraints.solo_autorise_debut}h–{constraints.solo_autorise_fin}h]: OK", file=out)
     return ok
 
 

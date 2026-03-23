@@ -17,12 +17,14 @@ c = RelayConstraints(
     nuit_max_default=1,  # 1 relais nocturne max par coureur
     repos_jour_heures=7,
     repos_nuit_heures=9,
-    nuit_debut=0,  # définition des relais nocturnes
-    nuit_fin=6,
+    nuit_debut=0.0,  # définition des relais nocturnes (repos nuit si au moins 1 segment dans cette plage)
+    nuit_fin=6.0,
+    solo_autorise_debut=8.0,  # plage d'autorisation des solos (indépendante de nuit_debut/nuit_fin)
+    solo_autorise_fin=22.0,
     max_same_partenaire=2,  # nombre maximal de binômes entre deux mêmes coureurs
     compat_matrix=COMPAT_MATRIX,
     enable_flex=True,   # si False, ignore la flexibilité à la baisse
-    allow_flex_flex=True   # autorise un relais plus court que le max commun de deux flexibles (1ere solution plus rapide mais moins optimale)
+    allow_flex_flex=True   # autorise un relais plus court que le max commun de deux flexibles (trouve plus vite une 1ere solution moins optimale)
 )
 
 # --- Déclaration des coureurs ---
@@ -150,14 +152,14 @@ girls_night = c.night_windows()
 c.add_max_binomes(gaelle, nelly, nb=1)
 
 (nelly
-    .set_options(solo_max=0)
+    #.set_options(solo_max=0)
     .add_relay(nelly_gaelle, window=girls_night)
     .add_relay(nelly_clem)
     .add_relay(R10, nb=2)
 )
 
 (gaelle
-    .set_options(solo_max=0)
+    #.set_options(solo_max=0)
     .add_relay(nelly_gaelle, window=girls_night)
     .add_relay(R13_F)
     .add_relay(R10, nb=2)
@@ -168,7 +170,7 @@ dispo_clemence = RelayIntervals([
     (0, c.hour_to_seg(23, jour=0)),   # deux intervalles
     (c.hour_to_seg(11, jour=2), c.nb_segments)])
 (clemence
-    .set_options(solo_max=0)
+    #.set_options(solo_max=0)
     .add_relay(nelly_clem, window=dispo_clemence)
     .add_relay(R10, window=dispo_clemence)
 )
@@ -177,11 +179,11 @@ dispo_clemence = RelayIntervals([
 # --- Alsaciens: 2 relais en bonus ---
 dispo_site = RelayIntervals([(c.hour_to_seg(6.5, jour=2), c.nb_segments)]) # de 6h30 jusqu'à la fin
 (alsacien_10
-    .set_options(solo_max=0)
+    #.set_options(solo_max=0)
     .add_relay(R10, window=dispo_site)
 )
 (alsacien_15
-    .set_options(solo_max=0)
+    #.set_options(solo_max=0)
     .add_relay(R15_F, window=dispo_site)
 )
 
