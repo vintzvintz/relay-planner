@@ -15,7 +15,7 @@ from solution import STATS as level_stats
 
 
 # Paramètres solveur
-SOLVER_TIME_LIMIT = 5*3600.0  # secondes
+SOLVER_TIME_LIMIT = 0   #  3600.0  # secondes
 SOLVER_NUM_WORKERS = 12
 
 _SENTINEL = object()

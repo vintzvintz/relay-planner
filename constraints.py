@@ -243,6 +243,11 @@ class RelayConstraints:
         self.repos_jour_default: int = self.duration_to_segs(repos_jour_heures)
         self.repos_nuit_default: int = self.duration_to_segs(repos_nuit_heures)
 
+        self.pause_hours: list[float] = []
+        self.pause_duration_hours: list[float] = []
+        self.pause_segments: list[int] = []
+        self.pause_seg_durations: list[int] = []
+
         self.runners_data: dict[str, Coureur] = {}
         self.once_max: list[tuple[str, str, int]] = []
         self.max_same_partenaire: int | None = max_same_partenaire
@@ -262,6 +267,24 @@ class RelayConstraints:
     # ------------------------------------------------------------------
     # API déclarative
     # ------------------------------------------------------------------
+
+    def add_pause(self, seg: int, duree: float) -> None:
+        """Déclare une pause à la frontière du segment seg, de durée duree heures.
+
+        seg  : numéro du segment (utilisez c.hour_to_seg() ou c.km_to_seg() pour convertir).
+        duree: durée de la pause en heures.
+
+        Les pauses doivent être déclarées dans l'ordre chronologique (avant new_runner).
+        """
+        assert not self.runners_data, "add_pause() doit être appelé avant new_runner()"
+        assert duree > 0, f"Durée de pause nulle ou négative : {duree}"
+        assert 0 < seg < self.nb_segments, f"Segment de pause hors bornes : {seg}"
+        D = sum(self.pause_duration_hours)
+        wall_clock_hour = self.start_hour + seg * self.segment_duration + D
+        self.pause_hours.append(wall_clock_hour)
+        self.pause_duration_hours.append(duree)
+        self.pause_segments.append(seg)
+        self.pause_seg_durations.append(self.duration_to_segs(duree))
 
     def new_runner(self, name: str) -> RunnerBuilder:
         """Crée un nouveau coureur et retourne son RunnerBuilder."""
@@ -347,6 +370,15 @@ class RelayConstraints:
         return {r: self._resolved_repos_nuit(cd) for r, cd in self.runners_data.items()}
 
     @property
+    def has_flex(self) -> bool:
+        """True si au moins un relais a une taille variable (domaine de taille > 1)."""
+        return any(
+            len(spec.size) > 1
+            for coureur in self.runners_data.values()
+            for spec in coureur.relais
+        )
+
+    @property
     def night_segments(self):
         return set(s for s in range(self.nb_segments) if self.is_night(s))
 
@@ -362,7 +394,23 @@ class RelayConstraints:
 
     def segment_start_hour(self, seg: int) -> float:
         """Heure de début du segment (0-indexé), en heures depuis minuit mercredi."""
-        return self.start_hour + seg * self.segment_duration
+        h = self.start_hour + seg * self.segment_duration
+        for i, ps in enumerate(self.pause_segments):
+            if ps <= seg:
+                h += self.pause_duration_hours[i]
+            else:
+                break
+        return h
+
+    def segment_end_hour(self, seg: int) -> float:
+        """Heure de fin d'un relais se terminant au segment seg (pauses débutant en seg exclues)."""
+        h = self.start_hour + seg * self.segment_duration
+        for i, ps in enumerate(self.pause_segments):
+            if ps < seg:
+                h += self.pause_duration_hours[i]
+            else:
+                break
+        return h
 
     def is_night(self, seg: int) -> bool:
         """Vrai si le segment démarre entre nuit_debut et nuit_fin (n'importe quel jour)."""
@@ -413,8 +461,16 @@ class RelayConstraints:
             hour_to_seg(23.5)        → segment correspondant à 23h30 le jour de départ
             hour_to_seg(4, jour=1)   → segment correspondant à 4h00 le lendemain
         """
-        hours_from_start = jour * 24 + hour - self.start_hour
-        return int(hours_from_start * self.speed_kmh * self.nb_segments / self.total_km)
+        h_abs = jour * 24 + hour
+        D = 0.0
+        for i, ps in enumerate(self.pause_segments):
+            pause_wall_start = self.start_hour + ps * self.segment_duration + sum(self.pause_duration_hours[:i])
+            if pause_wall_start <= h_abs:
+                D += self.pause_duration_hours[i]
+            else:
+                break
+        pure_race_hours = h_abs - self.start_hour - D
+        return int(pure_race_hours * self.speed_kmh * self.nb_segments / self.total_km)
 
     def is_compatible(self, coureur_1: str, coureur_2: str) -> bool:
         """Retourne True si coureur_1 et coureur_2 peuvent former un binôme."""
@@ -550,6 +606,18 @@ class RelayConstraints:
         print(f"  Repos nuit  : {self.repos_nuit_default} segments = {self.repos_nuit_default * self.segment_duration:.1f}h")  # fmt: skip
         print(f"  Nuit (repos): {self.nuit_debut}h–{self.nuit_fin}h")
         print(f"  Solo autorisé: {self.solo_autorise_debut}h–{self.solo_autorise_fin}h")
+
+        if self.pause_segments:
+            print()
+            print("PAUSES PLANIFIÉES")
+            print("-" * 60)
+            for i, ps in enumerate(self.pause_segments):
+                jour = int(self.pause_hours[i] // 24)
+                h_local = self.pause_hours[i] % 24
+                print(
+                    f"  Pause {i+1} : j{jour} {h_local:.2f}h, durée {self.pause_duration_hours[i]}h,"
+                    f" frontière seg {ps}"
+                )
 
         print()
         print("TYPES DE RELAIS")

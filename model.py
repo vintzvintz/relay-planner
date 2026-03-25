@@ -32,6 +32,7 @@ class RelayModel:
         self.relais_nuit = {}         # relais_nuit[r][k]: BoolVar
         self.relais_solo_interdit = {}  # relais_solo_interdit[r][k]: BoolVar (solo forbidden window)
         self._intervals_all = []  # [(r, k, sz_max, interval_var)]
+        self._iv_index = {}       # (r, k) -> interval_var
 
     # ------------------------------------------------------------------
     # Construction du modèle
@@ -48,6 +49,7 @@ class RelayModel:
         self._add_rest_constraints(constraints)
         self._add_availability(constraints)
         self._add_same_relay(constraints)
+        self._add_pause_constraints(constraints)
         self._add_coverage(constraints)
         self._add_inter_runner_no_overlap(constraints)
         self._add_solo_constraints(constraints)
@@ -87,6 +89,7 @@ class RelayModel:
                 self.end[r].append(e)
                 self.size[r].append(sz_var)
                 self._intervals_all.append((r, k, max(sizes), iv))
+                self._iv_index[(r, k)] = iv
                 runner_ivs.append(iv)
             if len(runner_ivs) > 1:
                 model.add_no_overlap(runner_ivs)
@@ -230,11 +233,43 @@ class RelayModel:
                     model.add_bool_or(bools)
 
 
+    @staticmethod
+    def _feasible_start_ranges(spec, nb_segments: int) -> list[tuple[int, int]]:
+        """Retourne la liste des plages de start possibles pour un relais.
+
+        Chaque plage est [ws, we - size_min] (un start valide doit laisser la place au relais).
+        Si window=None, une seule plage couvre tout le parcours.
+        Les plages vides (ws > we - size_min) sont ignorées.
+        """
+        size_min = min(spec.size)
+        if spec.window is None:
+            return [(0, nb_segments - size_min)]
+        return [
+            (ws, we - size_min)
+            for ws, we in spec.window
+            if ws <= we - size_min
+        ]
+
+    @staticmethod
+    def _ranges_overlap(ranges_a: list[tuple[int, int]], ranges_b: list[tuple[int, int]]) -> bool:
+        """Vérifie si deux listes de plages [lo, hi] ont un segment en commun."""
+        for lo_a, hi_a in ranges_a:
+            for lo_b, hi_b in ranges_b:
+                if max(lo_a, lo_b) <= min(hi_a, hi_b):
+                    return True
+        return False
+
     def _add_same_relay(self, constraints):
         """Crée les variables same_relay pour les binômes potentiels.
 
-        Deux relais (r,k) et (rp,kp) peuvent former un binôme si leurs domaines de taille
-        se chevauchent (intersection non vide). Quand b=1 : même start ET même taille effective.
+        Deux relais (r,k) et (rp,kp) peuvent former un binôme si :
+        - leurs domaines de taille se chevauchent (intersection non vide), ET
+        - leurs plages de start feasibles se chevauchent (compatibilité temporelle).
+        Quand b=1 : même start ET même taille effective.
+
+        Variante fixed : quand les deux relais ont une taille fixe, seuls ceux
+        de même taille peuvent former un binôme ; la contrainte size==size et
+        le bloc allow_flex_flex sont inutiles.
         """
         c = constraints
         model = self.model
@@ -242,16 +277,29 @@ class RelayModel:
         for ri, r in enumerate(c.runners):
             for k, spec_r in enumerate(c.runners_data[r].relais):
                 lo_r, hi_r = min(spec_r.size), max(spec_r.size)
+                fixed_r = lo_r == hi_r
+                starts_r = self._feasible_start_ranges(spec_r, c.nb_segments)
                 for rpi in range(ri + 1, n_runners):
                     rp = c.runners[rpi]
                     if not c.is_compatible(r, rp):
                         continue
                     for kp, spec_rp in enumerate(c.runners_data[rp].relais):
                         lo_rp, hi_rp = min(spec_rp.size), max(spec_rp.size)
-                        # Domaines se chevauchent ?
-                        overlap_lo = max(lo_r, lo_rp)
-                        overlap_hi = min(hi_r, hi_rp)
-                        if overlap_lo > overlap_hi:
+                        fixed_rp = lo_rp == hi_rp
+                        both_fixed = fixed_r and fixed_rp
+
+                        if both_fixed:
+                            # Tailles fixes différentes → binôme impossible
+                            if hi_r != hi_rp:
+                                continue
+                        else:
+                            # Domaines se chevauchent ?
+                            if max(lo_r, lo_rp) > min(hi_r, hi_rp):
+                                continue
+
+                        # Plages de start temporellement compatibles ?
+                        starts_rp = self._feasible_start_ranges(spec_rp, c.nb_segments)
+                        if not self._ranges_overlap(starts_r, starts_rp):
                             continue
 
                         key = (r, k, rp, kp)
@@ -261,26 +309,38 @@ class RelayModel:
                         # Même start
                         model.add(self.start[r][k] == self.start[rp][kp]).only_enforce_if(b)
 
-                        # Même taille effective (dans l'intersection des domaines)
-                        model.add(self.size[r][k] == self.size[rp][kp]).only_enforce_if(b)
+                        if not both_fixed:
+                            # Même taille effective (dans l'intersection des domaines)
+                            model.add(self.size[r][k] == self.size[rp][kp]).only_enforce_if(b)
 
-                        # Quand allow_flex_flex=False : binôme flex+flex forcé aux tailles max
-                        both_flex = lo_r < hi_r and lo_rp < hi_rp
-                        if both_flex and not c.allow_flex_flex:
-                            model.add(self.size[r][k] == hi_r).only_enforce_if(b)
-                            model.add(self.size[rp][kp] == hi_rp).only_enforce_if(b)
+                            # Quand allow_flex_flex=False : binôme flex+flex forcé aux tailles max
+                            both_flex = not fixed_r and not fixed_rp
+                            if both_flex and not c.allow_flex_flex:
+                                model.add(self.size[r][k] == hi_r).only_enforce_if(b)
+                                model.add(self.size[rp][kp] == hi_rp).only_enforce_if(b)
 
-                        # No-overlap quand ~b : utilise les tailles réelles (CP vars)
+                        # No-overlap quand ~b
                         order = model.new_bool_var(f"ord_{r}_{k}_{rp}_{kp}")
-                        # order=1 : r avant rp  → start[r][k] + size[r][k] <= start[rp][kp]
                         model.add(
                             self.start[r][k] + self.size[r][k] <= self.start[rp][kp]
                         ).only_enforce_if([~b, order])
-                        # order=0 : rp avant r → start[rp][kp] + size[rp][kp] <= start[r][k]
                         model.add(
                             self.start[rp][kp] + self.size[rp][kp] <= self.start[r][k]
                         ).only_enforce_if([~b, ~order])
 
+
+    def _add_pause_constraints(self, constraints):
+        """Interdit tout relais qui chevaucherait une pause (start < ps ET end > ps)."""
+        c = constraints
+        if not c.pause_segments:
+            return
+        model = self.model
+        for i, ps in enumerate(c.pause_segments):
+            for r in c.runners:
+                for k in range(len(c.runners_data[r].relais)):
+                    b = model.new_bool_var(f"pause_{i}_{r}_{k}")
+                    model.add(self.end[r][k] <= ps).only_enforce_if(b)
+                    model.add(self.start[r][k] >= ps).only_enforce_if(~b)
 
     def _add_coverage(self, constraints):
         """Contrainte de couverture : chaque segment couvert par 1 ou 2 relais."""
@@ -290,6 +350,36 @@ class RelayModel:
         all_demand = [1 for _ in self._intervals_all]
         model.add_cumulative(all_ivs, all_demand, 2)
 
+        if not c.has_flex:
+            self._add_coverage_fixed(constraints)
+        else:
+            self._add_coverage_flex(constraints)
+
+    def _add_coverage_fixed(self, constraints):
+        """Couverture quand toutes les tailles sont fixes.
+
+        sum(tailles) = nb_segments + sum(sz * same_relay) : combinée avec
+        cumulative <= 2, cette égalité garantit zéro trou et zéro triple.
+        """
+        c = constraints
+        model = self.model
+        total_sizes = sum(
+            max(spec.size)
+            for coureur in c.runners_data.values()
+            for spec in coureur.relais
+        )
+        binome_overlap = []
+        for (r, k, rp, kp), bv in self.same_relay.items():
+            sz = max(c.runners_data[r].relais[k].size)
+            binome_overlap.append(sz * bv)
+        model.add(
+            cp_model.LinearExpr.sum(binome_overlap) == total_sizes - c.nb_segments
+        )
+
+    def _add_coverage_flex(self, constraints):
+        """Couverture avec tailles variables : BoolVar par (relais, segment)."""
+        c = constraints
+        model = self.model
         for s in range(c.nb_segments):
             covers_s = []
             for r in c.runners:
@@ -313,15 +403,11 @@ class RelayModel:
         n_runners = len(c.runners)
         for ri, r in enumerate(c.runners):
             for k in range(len(c.runners_data[r].relais)):
-                iv_rk = self._intervals_all[
-                    [i for i, (rr, kk, _, _) in enumerate(self._intervals_all) if rr == r and kk == k][0]
-                ][3]
+                iv_rk = self._iv_index[(r, k)]
                 for rpi in range(ri + 1, n_runners):
                     rp = c.runners[rpi]
                     for kp in range(len(c.runners_data[rp].relais)):
-                        iv_rpkp = self._intervals_all[
-                            [i for i, (rr, kk, _, _) in enumerate(self._intervals_all) if rr == rp and kk == kp][0]
-                        ][3]
+                        iv_rpkp = self._iv_index[(rp, kp)]
                         key = (r, k, rp, kp)
                         key_rev = (rp, kp, r, k)
                         if key in self.same_relay or key_rev in self.same_relay:
@@ -462,8 +548,10 @@ class RelayModel:
             raise ValueError()                #TODO : add useful error message
 
 
-    def add_optimisation_func(self, constraints, name=OPTIM_FUNC_MIXTE):
+    def add_optimisation_func(self, constraints, name=None):
         """Ajoute la fonction que le solveur va optimiser."""
+        if name is None:
+            name = OPTIM_FUNC_BASIQUE if not constraints.has_flex else OPTIM_FUNC_MIXTE
         self.model.maximize(self._select_optim_func(constraints, name))
         return self
 

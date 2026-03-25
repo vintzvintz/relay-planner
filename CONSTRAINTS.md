@@ -26,7 +26,7 @@ pierre.add_relay(R20).add_relay(R15, nb=3)
 ```python
 c = RelayConstraints(
     total_km=440,           # distance totale en km
-    nb_segments=290,        # nombre de segments (0-indexés) — valeurs courantes : 440=1k, 290=1k5, 220=2k, 135=3k3
+    nb_segments=176,        # nombre de segments (0-indexés) — valeurs courantes : 440=1k, 290=1k5, 220=2k, 176=2k5, 135=3k3
     speed_kmh=9.0,          # vitesse de course en km/h
     start_hour=15.0,        # heure de départ (h depuis minuit, jour 0)
     compat_matrix=COMPAT_MATRIX,  # dict[tuple[str,str], int] — scores 0/1/2 (triangle inférieur)
@@ -41,10 +41,41 @@ c = RelayConstraints(
     solo_autorise_fin=None,    # heure de fin de la plage où les solos sont autorisés (défaut : None → égal à nuit_fin)
     max_same_partenaire=None,  # int | None — nb max de binômes avec un même partenaire (global)
     enable_flex=True,       # si False, les types flex (R13_F, R15_F) sont traités comme fixes
+    allow_flex_flex=True,   # si False, deux coureurs flex en binôme sont chacun forcés à leur taille nominale (pas de réduction double-flex)
 )
 ```
 
 Les durées de repos sont converties en segments via `duration_to_segs()` (arrondi au supérieur).
+
+---
+
+## `c.add_pause()` — déclarer une pause planifiée
+
+Permet de déclarer des **pauses planifiées** (arrêt complet de la course) pendant le parcours.
+Doit être appelé **avant** tout `new_runner()`.
+
+```python
+c.add_pause(
+    seg=c.hour_to_seg(16.0, jour=1),  # frontière de segment (utiliser hour_to_seg ou km_to_seg)
+    duree=1.5,                         # durée de la pause en heures
+)
+```
+
+Paramètres :
+- `seg` : numéro de segment (frontière) à partir duquel la course s'arrête
+- `duree` : durée de la pause en heures (doit être > 0)
+
+**Effets :**
+- Aucun relais ne peut chevaucher la frontière de segment (contrainte CP-SAT via `_add_pause_constraints`)
+- `segment_start_hour()` et `hour_to_seg()` tiennent compte des durées de pauses cumulées
+- `verifications.py` vérifie en post-résolution qu'aucun relais ne franchit une frontière de pause
+- `print_summary()` affiche toutes les pauses déclarées
+
+**Attributs exposés après construction :**
+- `c.pause_segments` : `list[int]` — indices de segment frontière (un par pause)
+- `c.pause_hours` : `list[float]` — heures mur de début de chaque pause
+- `c.pause_duration_hours` : `list[float]` — durée en heures de chaque pause
+- `c.pause_seg_durations` : `list[int]` — durée en segments de chaque pause
 
 ---
 
@@ -201,6 +232,8 @@ Utilisé pour les fenêtres de placement (`window=`) et les disponibilités cour
 c.hour_to_seg(hour, jour=0) -> int
 ```
 Convertit une heure absolue (+ décalage en jours) en numéro de segment (tronqué).
+Tient compte des pauses planifiées : les heures pendant une pause ou après une pause sont
+correctement converties en déduisant la durée cumulée des pauses écoulées.
 
 ```python
 c.hour_to_seg(23.5)          # 23h30 le jour de départ
@@ -217,6 +250,8 @@ Convertit une durée en heures en nombre de segments (arrondi au supérieur).
 c.segment_start_hour(seg) -> float
 ```
 Retourne l'heure de début du segment (en heures depuis minuit mercredi).
+Tient compte des pauses planifiées : ajoute la durée cumulée de toutes les pauses
+qui précèdent le segment.
 
 ### Fenêtres nocturnes
 
@@ -314,12 +349,15 @@ from constraints import RelayConstraints, RelayIntervals, R20, R15, R15_F, R30
 from compat import COMPAT_MATRIX
 
 c = RelayConstraints(
-    total_km=440, nb_segments=290, speed_kmh=9.0, start_hour=15.0,
+    total_km=440, nb_segments=176, speed_kmh=9.0, start_hour=15.0,
     compat_matrix=COMPAT_MATRIX,
     solo_max_km=17, solo_max_default=1, nuit_max_default=1,
     repos_jour_heures=7, repos_nuit_heures=9,
     enable_flex=True,
 )
+
+# Pause optionnelle (doit être déclarée avant new_runner)
+# c.add_pause(seg=c.hour_to_seg(16.0, jour=1), duree=1.5)  # j1 16h00, durée 1h30
 
 # Plages temporelles
 j1   = RelayIntervals([(0, c.hour_to_seg(15.0, jour=1))])

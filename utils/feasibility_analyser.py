@@ -86,6 +86,8 @@ class _PartialModel(RelayModel):
             only_for=only_night_for,
         )
 
+        self._add_solo_intervals(constraints)
+
         self._add_rest_partial(
             constraints,
             skip=skip_rest,
@@ -99,6 +101,8 @@ class _PartialModel(RelayModel):
         )
 
         self._add_same_relay(constraints)
+
+        self._add_pause_constraints(constraints)
 
         if not skip_coverage:
             self._add_coverage(constraints)
@@ -388,9 +392,11 @@ class FeasibilityAnalyser:
             m.model = cp_model.CpModel()
             m._add_variables(c)
             m._add_night_relay_partial(c, skip=False, only_for=None)
+            m._add_solo_intervals(c)
             m._add_rest_partial(c, skip=False, only_for=None)
             m._add_availability_partial(c, skip=False, only_for=None)
             m._add_same_relay(c)
+            m._add_pause_constraints(c)
             m._add_coverage(c)
             m._add_inter_runner_no_overlap(c)
             m._add_solo_constraints(c)

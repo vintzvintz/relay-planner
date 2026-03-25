@@ -2,8 +2,8 @@
 
 Planificateur de course en relais par contraintes (CP-SAT).
 
-Problème : Lyon → Fessenheim, 440 km, ~290 segments, vitesse ~9 km/h, départ mercredi 15h00.
-17 coureurs doivent couvrir chaque segment (1 ou 2 coureurs par segment).
+Problème : Lyon → Fessenheim, 440 km, ~176 segments (2,5 km/segment), vitesse ~9 km/h, départ mercredi 15h00.
+15 coureurs doivent couvrir chaque segment (1 ou 2 coureurs par segment).
 L'objectif est de maximiser un score mixte (binômes pondérés par compatibilité + bonus km flex).
 
 ## Prérequis
@@ -21,7 +21,7 @@ pip install -r requirements.txt
 Le problème est défini via une API déclarative dans `data.py` :
 
 ```python
-c = RelayConstraints(total_km=440, nb_segments=290, ...)
+c = RelayConstraints(total_km=440, nb_segments=176, ...)
 
 pierre = c.new_runner("Pierre")
 pierre.add_relay(R20).add_relay(R15_F, nb=3)
@@ -51,6 +51,9 @@ Définit aussi les constantes de types de relais (`R10`, `R15`, `R20`, `R30`, `R
 Types associés : `RunnerBuilder`, `SharedRelay`, `RelaySpec`, `Coureur`, `RelayIntervals`.
 Options coureur via `RunnerBuilder.set_options(solo_max, nuit_max, repos_jour, repos_nuit, max_same_partenaire)` ;
 `add_max_binomes(runner1, runner2, nb)` pour limiter les binômes entre deux coureurs.
+Méthode `add_pause(seg, duree)` : déclare une pause planifiée à la frontière `seg`, de durée `duree` heures —
+le modèle interdit tout relais qui chevaucherait cette frontière, et `segment_start_hour()`/`hour_to_seg()`
+tiennent compte des décalages cumulés. Doit être appelée avant tout `new_runner()`.
 La borne LP est mémorisée dans `lp_upper_bound`/`lp_upper_bound_exact`/`lp_solo_nb`/`lp_solo_km` après le premier calcul.
 Pas destiné à être exécuté directement.
 
@@ -61,10 +64,10 @@ Généré automatiquement depuis `compat_coureurs.xlsx` par `refresh_compat.py`.
 
 ### `model.py`
 Construction du modèle CP-SAT (`RelayModel`). Variables : `start/end/size` par relais,
-`same_relay` (binômes), `relais_solo`, `relais_nuit`. Objectif mixte : somme pondérée des
-binômes (poids = score de compatibilité) + bonus km flex.
-Expose `build_model(constraints)` et des méthodes publiques pour le diagnostic
-(`add_min_score`, `fix_binome_config`, `add_config_exclusion_cut`, `add_schedule_exclusion_cut`).
+`same_relay` (binômes), `relais_solo`, `relais_nuit`, `relais_solo_interdit`. Objectif mixte :
+somme pondérée des binômes (poids = score de compatibilité) moins une pénalité flex
+(relais flex raccourcis en dessous de leur taille nominale).
+Expose `build_model(constraints)`, `add_optimisation_func(constraints, name)` et `add_min_score(constraints, name, score)`.
 Pas destiné à être exécuté directement.
 
 ### `solver.py`
@@ -84,7 +87,7 @@ gris = repos minimal, violet = indisponible) avec repères toutes les 6h. Coureu
 
 ### `verifications.py`
 Suite de vérifications post-résolution : couverture, tailles des relais, contraintes de repos,
-limites nuit/solo, pairings et compatibilité.
+limites nuit/solo, pairings, compatibilité, et franchissement de frontières de pause.
 
 ### `refresh_compat.py`
 Relit `compat_coureurs.xlsx` et régénère `compat.py`. Valide la structure de la matrice

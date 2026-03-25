@@ -16,6 +16,7 @@ import io
 import json
 import os
 import sys
+from dataclasses import dataclass, field
 from datetime import datetime
 
 import verifications as verif
@@ -31,6 +32,66 @@ STATS  = 1
 DETAIL = 2
 
 
+# ------------------------------------------------------------------
+# Structures de données intermédiaires
+# ------------------------------------------------------------------
+
+@dataclass
+class ChronoRelay:
+    """Une ligne de relais dans le planning chronologique."""
+    kind: str = "relay"          # toujours "relay"
+    day_s: str = ""
+    hh: int = 0
+    mm: int = 0
+    hh_end: int = 0
+    mm_end: int = 0
+    seg_start: int = 0
+    km_start: float = 0.0
+    km_dist: float = 0.0
+    coureurs: str = ""
+    tags: list = field(default_factory=list)
+    rel: dict = field(default_factory=dict)  # dict brut pour row_class HTML
+
+
+@dataclass
+class ChronoPause:
+    """Une ligne de pause dans le planning chronologique."""
+    kind: str = "pause"          # toujours "pause"
+    dur_str: str = ""
+    ds: str = ""
+    hs: int = 0
+    ms: int = 0
+    de: str = ""
+    he: int = 0
+    me: int = 0
+
+
+@dataclass
+class RelaisLine:
+    """Une ligne de relais dans le récap par coureur."""
+    day_s: str = ""
+    hh: int = 0
+    mm: int = 0
+    hh_e: int = 0
+    mm_e: int = 0
+    km_dist: float = 0.0
+    partenaire: str = ""
+    repos_str: str = ""
+    tags: list = field(default_factory=list)
+    rel: dict = field(default_factory=dict)  # dict brut pour row_class HTML
+
+
+@dataclass
+class RunnerRecap:
+    """Le récap complet d'un coureur."""
+    name: str = ""
+    total_km: float = 0.0
+    n_relais: int = 0
+    n_solo: int = 0
+    n_nuit: int = 0
+    relais: list = field(default_factory=list)  # list[RelaisLine]
+
+
 class RelaySolution:
     """Encapsule une solution CP-SAT avec vérification et formatage."""
 
@@ -44,7 +105,7 @@ class RelaySolution:
             print(buf.getvalue(), file=sys.stderr)
 
     # ------------------------------------------------------------------
-    # Helpers privés
+    # Helpers privés bas niveau
     # ------------------------------------------------------------------
 
     @staticmethod
@@ -75,6 +136,13 @@ class RelaySolution:
         day, hh, mm = int(h // 24), int(h) % 24, int((h % 1) * 60)
         return DAY_SHORT[min(day, 2)], hh, mm
 
+    def _fmt_short_end(self, seg):
+        """Heure de fin d'un relais se terminant au segment seg (pause débutant en seg exclue)."""
+        c = self.constraints
+        h = c.segment_end_hour(seg)
+        day, hh, mm = int(h // 24), int(h) % 24, int((h % 1) * 60)
+        return DAY_SHORT[min(day, 2)], hh, mm
+
     def _chrono_coureurs_width(self):
         seen = set()
         w = 0
@@ -93,6 +161,95 @@ class RelaySolution:
             label = f"avec {rel['partner']}" if rel["partner"] else "seul"
             w = max(w, len(label))
         return w
+
+    def _pause_info(self, ps: int) -> ChronoPause:
+        """Calcule les champs de représentation d'une pause à la frontière du segment ps."""
+        c = self.constraints
+        ph_start = c.segment_end_hour(ps)
+        ph_end = c.segment_start_hour(ps)
+        d_start, d_end = int(ph_start // 24), int(ph_end // 24)
+        hs, ms = int(ph_start) % 24, int((ph_start % 1) * 60)
+        he, me = int(ph_end) % 24, int((ph_end % 1) * 60)
+        ds = DAY_SHORT[min(d_start, 2)]
+        de = DAY_SHORT[min(d_end, 2)]
+        dur = ph_end - ph_start
+        dur_h, dur_m = int(dur), int((dur % 1) * 60)
+        dur_str = f"{dur_h}h{dur_m:02d}" if dur_h else f"{dur_m}min"
+        return ChronoPause(dur_str=dur_str, ds=ds, hs=hs, ms=ms, de=de, he=he, me=me)
+
+    # ------------------------------------------------------------------
+    # Méthodes de données pures (partagées texte + HTML)
+    # ------------------------------------------------------------------
+
+    def _build_chrono_entries(self) -> list:
+        """Retourne la liste plate (ChronoRelay | ChronoPause) du planning chronologique."""
+        c = self.constraints
+        entries = []
+        seen = set()
+        pause_inserted = set()
+        for rel in self.relais_list:
+            dedup = self._dedup_key(rel)
+            if dedup in seen and rel["partner"]:
+                continue
+            seen.add(dedup)
+
+            day_s, hh, mm = self._fmt_short(rel["start"])
+            _, hh_end, mm_end = self._fmt_short_end(rel["end"])
+            coureurs = f"{rel['runner']} + {rel['partner']}" if rel["partner"] else rel["runner"]
+            entries.append(ChronoRelay(
+                day_s=day_s, hh=hh, mm=mm, hh_end=hh_end, mm_end=mm_end,
+                seg_start=rel["start"],
+                km_start=rel["start"] * c.segment_km,
+                km_dist=rel["km"],
+                coureurs=coureurs,
+                tags=self._chrono_tags(rel),
+                rel=rel,
+            ))
+
+            for ps in c.pause_segments:
+                if rel["end"] == ps and ps not in pause_inserted:
+                    pause_inserted.add(ps)
+                    entries.append(self._pause_info(ps))
+
+        return entries
+
+    def _build_runner_recaps(self) -> list:
+        """Retourne la liste de RunnerRecap, un par coureur trié."""
+        c = self.constraints
+        recaps = []
+        for r in sorted(c.runners):
+            r_rels = sorted(
+                [x for x in self.relais_list if x["runner"] == r], key=lambda x: x["start"]
+            )
+            total = sum(x["km"] for x in r_rels)
+            n_solo = sum(1 for x in r_rels if x["solo"])
+            n_nuit = sum(1 for x in r_rels if x["night"])
+
+            relais_lines = []
+            for rel in r_rels:
+                day_s, hh, mm = self._fmt_short(rel["start"])
+                _, hh_e, mm_e = self._fmt_short(rel["end"])
+                p = f"avec {rel['partner']}" if rel["partner"] else "seul"
+                rest_h = rel["rest_h"]
+                if rest_h is not None:
+                    rh, rm = int(rest_h), int((rest_h % 1) * 60)
+                    repos_str = f"repos {rh:2d}h{rm:02d}"
+                else:
+                    repos_str = ""
+                relais_lines.append(RelaisLine(
+                    day_s=day_s, hh=hh, mm=mm, hh_e=hh_e, mm_e=mm_e,
+                    km_dist=rel["km"],
+                    partenaire=p,
+                    repos_str=repos_str,
+                    tags=self._recap_tags(rel),
+                    rel=rel,
+                ))
+
+            recaps.append(RunnerRecap(
+                name=r, total_km=total, n_relais=len(r_rels),
+                n_solo=n_solo, n_nuit=n_nuit, relais=relais_lines,
+            ))
+        return recaps
 
     # ------------------------------------------------------------------
     # API publique
@@ -216,71 +373,48 @@ class RelaySolution:
 
         cw = self._chrono_coureurs_width()
         current_day = -1
-        seen = set()
-        for rel in self.relais_list:
-            day_s, hh, mm = self._fmt_short(rel["start"])
-            day = int(c.segment_start_hour(rel["start"]) // 24)
-
-            if day != current_day:
-                current_day = day
-                lines.append(f"\n▶ {DAY_NAMES[min(day, 2)].upper()}")
-
-            dedup = self._dedup_key(rel)
-            if dedup in seen and rel["partner"]:
-                continue
-            seen.add(dedup)
-
-            _, hh_end, mm_end = self._fmt_short(rel["end"])
-            debut = f"{day_s} {hh:02d}h{mm:02d}"
-            fin = f"{hh_end:02d}h{mm_end:02d}"
-            seg_dep = f"{rel['start']:>3}"
-            km_dep = f"{rel['start'] * c.segment_km:>6.1f} km"
-            coureurs = f"{rel['runner']} + {rel['partner']}" if rel["partner"] else rel["runner"]
-            tags = self._chrono_tags(rel)
-            flags = f"  [{' '.join(tags)}]" if tags else ""
-            lines.append(f"  {debut} → {fin}   {seg_dep}   {km_dep}   {rel['km']:>4.1f} km   {coureurs:<{cw}}{flags}")
+        for entry in self._build_chrono_entries():
+            if isinstance(entry, ChronoRelay):
+                day = int(c.segment_start_hour(entry.seg_start) // 24)
+                if day != current_day:
+                    current_day = day
+                    lines.append(f"\n▶ {DAY_NAMES[min(day, 2)].upper()}")
+                debut = f"{entry.day_s} {entry.hh:02d}h{entry.mm:02d}"
+                fin = f"{entry.hh_end:02d}h{entry.mm_end:02d}"
+                seg_dep = f"{entry.seg_start:>3}"
+                km_dep = f"{entry.km_start:>6.1f} km"
+                flags = f"  [{' '.join(entry.tags)}]" if entry.tags else ""
+                lines.append(f"  {debut} → {fin}   {seg_dep}   {km_dep}   {entry.km_dist:>4.1f} km   {entry.coureurs:<{cw}}{flags}")
+            else:  # ChronoPause
+                p = entry
+                lines.append(f"  {'─' * (W - 2)}")
+                lines.append(f"  ⏸  PAUSE {p.dur_str}   {p.ds} {p.hs:02d}h{p.ms:02d} → {p.de} {p.he:02d}h{p.me:02d}")
+                lines.append(f"  {'─' * (W - 2)}")
 
         return lines
 
     def _recap_coureurs_lines(self):
-        c = self.constraints
         W = 74
         lines = []
         lines.append(f"\n{'─' * W}")
         lines.append("  PAR COUREUR")
         lines.append(f"{'─' * W}")
         pw = self._recap_partenaire_width()
-        for r in sorted(c.runners):
-            r_rels = sorted(
-                [x for x in self.relais_list if x["runner"] == r], key=lambda x: x["start"]
-            )
-            total = sum(x["km"] for x in r_rels)
-            n_solo = sum(1 for x in r_rels if x["solo"])
-            n_nuit = sum(1 for x in r_rels if x["night"])
+        for recap in self._build_runner_recaps():
             flags = []
-            if n_solo:
-                flags.append(f"{n_solo} seul")
-            if n_nuit:
-                flags.append(f"{n_nuit} nuit")
+            if recap.n_solo:
+                flags.append(f"{recap.n_solo} seul")
+            if recap.n_nuit:
+                flags.append(f"{recap.n_nuit} nuit")
             lines.append(
-                f"\n{r:<12}  {total:>5.1f} km  {len(r_rels)} relais"
+                f"\n{recap.name:<12}  {recap.total_km:>5.1f} km  {recap.n_relais} relais"
                 + (f"  ({', '.join(flags)})" if flags else "")
             )
-            for rel in r_rels:
-                day_s, hh, mm = self._fmt_short(rel["start"])
-                _, hh_e, mm_e = self._fmt_short(rel["end"])
-                p = f"avec {rel['partner']}" if rel["partner"] else "seul"
-                rest_h = rel["rest_h"]
-                if rest_h is not None:
-                    rh, rm = int(rest_h), int((rest_h % 1) * 60)
-                    repos = f"repos {rh:2d}h{rm:02d}"
-                else:
-                    repos = ""
-                tags = self._recap_tags(rel)
-                flags = f"  [{' '.join(tags)}]" if tags else ""
+            for rl in recap.relais:
+                flags_rel = f"  [{' '.join(rl.tags)}]" if rl.tags else ""
                 lines.append(
-                    f"  {day_s} {hh:02d}h{mm:02d} → {hh_e:02d}h{mm_e:02d}"
-                    f"  {rel['km']:>4.1f} km  {p:<{pw}}  {repos:<11}{flags}"
+                    f"  {rl.day_s} {rl.hh:02d}h{rl.mm:02d} → {rl.hh_e:02d}h{rl.mm_e:02d}"
+                    f"  {rl.km_dist:>4.1f} km  {rl.partenaire:<{pw}}  {rl.repos_str:<11}{flags_rel}"
                 )
 
         return lines
@@ -290,11 +424,8 @@ class RelaySolution:
     # ------------------------------------------------------------------
 
     def _build_html_detail(self):
-        c = self.constraints
-        rl = self.relais_list
-
         def row_class(rel):
-            if (rel["pinned"] is not None):
+            if rel["pinned"] is not None:
                 return ' class="row-fixe"'
             if rel["solo"]:
                 return ' class="row-solo"'
@@ -304,28 +435,27 @@ class RelaySolution:
 
         # --- Planning chronologique ---
         chrono_rows = []
-        seen = set()
-        for rel in rl:
-            day_s, hh, mm = self._fmt_short(rel["start"])
-            dedup = self._dedup_key(rel)
-            if dedup in seen and rel["partner"]:
-                continue
-            seen.add(dedup)
-
-            _, hh_end, mm_end = self._fmt_short(rel["end"])
-            coureurs = f"{rel['runner']} + {rel['partner']}" if rel["partner"] else rel["runner"]
-            tags = self._chrono_tags(rel)
-            flags = ", ".join(tags)
-            chrono_rows.append(
-                f'<tr{row_class(rel)}>'
-                f'<td class="td-time td-nowrap">{day_s} {hh:02d}h{mm:02d} → {hh_end:02d}h{mm_end:02d}</td>'
-                f'<td class="td-time td-right">{rel["start"]}</td>'
-                f'<td class="td-time td-right">{rel["start"] * c.segment_km:.1f} km</td>'
-                f'<td class="td-time td-right">{rel["km"]:.1f} km</td>'
-                f'<td class="td-time td-bold">{coureurs}</td>'
-                f'<td class="td-time td-meta">{flags}</td>'
-                f'</tr>'
-            )
+        for entry in self._build_chrono_entries():
+            if isinstance(entry, ChronoRelay):
+                e = entry
+                flags = ", ".join(e.tags)
+                chrono_rows.append(
+                    f'<tr{row_class(e.rel)}>'
+                    f'<td class="td-time td-nowrap">{e.day_s} {e.hh:02d}h{e.mm:02d} → {e.hh_end:02d}h{e.mm_end:02d}</td>'
+                    f'<td class="td-time td-right">{e.seg_start}</td>'
+                    f'<td class="td-time td-right">{e.km_start:.1f} km</td>'
+                    f'<td class="td-time td-right">{e.km_dist:.1f} km</td>'
+                    f'<td class="td-time td-bold">{e.coureurs}</td>'
+                    f'<td class="td-time td-meta">{flags}</td>'
+                    f'</tr>'
+                )
+            else:  # ChronoPause
+                p = entry
+                chrono_rows.append(
+                    f'<tr class="row-pause">'
+                    f'<td class="td-pause td-nowrap" colspan="6">⏸&nbsp; PAUSE {p.dur_str} &nbsp;&mdash;&nbsp; {p.ds} {p.hs:02d}h{p.ms:02d} → {p.de} {p.he:02d}h{p.me:02d}</td>'
+                    f'</tr>'
+                )
 
         chrono_html = (
             '<h3 class="section-title">Planning chronologique</h3>'
@@ -344,46 +474,30 @@ class RelaySolution:
 
         # --- Récap par coureur ---
         recap_sections = []
-        for r in sorted(c.runners):
-            r_rels = sorted(
-                [x for x in rl if x["runner"] == r], key=lambda x: x["start"]
-            )
-            total = sum(x["km"] for x in r_rels)
-            n_solo = sum(1 for x in r_rels if x["solo"])
-            n_nuit = sum(1 for x in r_rels if x["night"])
+        for recap in self._build_runner_recaps():
             flags = []
-            if n_solo:
-                flags.append(f"{n_solo} seul")
-            if n_nuit:
-                flags.append(f"{n_nuit} nuit")
+            if recap.n_solo:
+                flags.append(f"{recap.n_solo} seul")
+            if recap.n_nuit:
+                flags.append(f"{recap.n_nuit} nuit")
             flags_str = f" &nbsp;({', '.join(flags)})" if flags else ""
 
             detail_rows = []
-            for rel in r_rels:
-                day_s, hh, mm = self._fmt_short(rel["start"])
-                _, hh_e, mm_e = self._fmt_short(rel["end"])
-                p = f"avec {rel['partner']}" if rel["partner"] else "seul"
-                rest_h = rel["rest_h"]
-                if rest_h is not None:
-                    rh, rm = int(rest_h), int((rest_h % 1) * 60)
-                    repos = f"repos {rh}h{rm:02d}"
-                else:
-                    repos = ""
-                tags = self._recap_tags(rel)
-                tags_str = ", ".join(tags)
+            for rl in recap.relais:
+                tags_str = ", ".join(rl.tags)
                 detail_rows.append(
-                    f'<tr{row_class(rel)}>'
-                    f'<td class="td-recap td-nowrap">{day_s} {hh:02d}h{mm:02d} → {hh_e:02d}h{mm_e:02d}</td>'
-                    f'<td class="td-recap td-right">{rel["km"]:.1f} km</td>'
-                    f'<td class="td-recap">{p}</td>'
-                    f'<td class="td-recap td-meta">{repos}</td>'
+                    f'<tr{row_class(rl.rel)}>'
+                    f'<td class="td-recap td-nowrap">{rl.day_s} {rl.hh:02d}h{rl.mm:02d} → {rl.hh_e:02d}h{rl.mm_e:02d}</td>'
+                    f'<td class="td-recap td-right">{rl.km_dist:.1f} km</td>'
+                    f'<td class="td-recap">{rl.partenaire}</td>'
+                    f'<td class="td-recap td-meta">{rl.repos_str}</td>'
                     f'<td class="td-recap td-meta">{tags_str}</td>'
                     f'</tr>'
                 )
 
             recap_sections.append(
-                f'<h4 class="runner-title">{r}'
-                f'<span class="runner-subtitle"> — {total:.1f} km, {len(r_rels)} relais{flags_str}</span></h4>'
+                f'<h4 class="runner-title">{recap.name}'
+                f'<span class="runner-subtitle"> — {recap.total_km:.1f} km, {recap.n_relais} relais{flags_str}</span></h4>'
                 '<table class="detail-table">'
                 '<tbody>' + "\n".join(detail_rows) + '</tbody>'
                 '</table>'
@@ -403,6 +517,13 @@ class RelaySolution:
         by_runner = {r: {} for r in c.runners}
         for rel in self.relais_list:
             by_runner[rel["runner"]][rel["start"]] = rel
+
+        # pause_segments[i] = frontière : la pause s'insère entre seg ps-1 et seg ps
+        pause_set = set(c.pause_segments)
+        # nombre de colonnes équivalentes par frontière de pause
+        pause_colspan_by_seg = {ps: c.pause_seg_durations[i] for i, ps in enumerate(c.pause_segments)}
+        # durée en heures par frontière (pour le label header)
+        pause_dur_by_seg = {ps: c.pause_duration_hours[i] for i, ps in enumerate(c.pause_segments)}
 
         def unavail_segs(runner):
             specs = c.runners_data[runner].relais
@@ -426,11 +547,29 @@ class RelaySolution:
         def split_spans(spans):
             result = []
             for s, e, typ, label in spans:
-                cuts = sorted(m for m in mark_segs if s < m < e)
+                cuts = sorted(m for m in mark_segs | pause_set if s < m < e)
                 boundaries = [s] + cuts + [e]
                 for i in range(len(boundaries) - 1):
                     result.append((boundaries[i], boundaries[i + 1], typ, label if i == 0 else ""))
             return result
+
+        def _typ_to_css(typ, mark_class):
+            if typ == "free":
+                return f"seg-free{mark_class}"
+            elif typ == "rest":
+                return f"seg-rest{mark_class}"
+            elif typ == "relay_binome":
+                return f"seg-binome{mark_class}"
+            elif typ == "relay_flex":
+                return f"seg-flex{mark_class}"
+            elif typ == "relay_solo":
+                return f"seg-solo{mark_class}"
+            elif typ == "relay_fixe":
+                return f"seg-fixe{mark_class}"
+            elif typ == "unavail":
+                return f"seg-unavail{mark_class}"
+            else:
+                return f"seg-free{mark_class}"
 
         rows_html = []
         for r in sorted(c.runners):
@@ -486,34 +625,45 @@ class RelaySolution:
 
             spans = split_spans(spans)
 
+            # Intercaler les pauses : construire une liste ordonnée (pause_at, ...)
+            # puis émettre chaque pause exactement une fois entre les spans qui l'entourent
+            pauses_sorted = sorted(c.pause_segments)
+            pause_idx = 0  # index dans pauses_sorted
+
             tds = []
             for s, e, typ, label in spans:
                 colspan = e - s
                 if colspan == 0:
                     continue
+                # Émettre toutes les pauses dont la frontière est <= s et pas encore émises
+                while pause_idx < len(pauses_sorted) and pauses_sorted[pause_idx] <= s:
+                    ps = pauses_sorted[pause_idx]
+                    cs = pause_colspan_by_seg[ps]
+                    tds.append(f'<td colspan="{cs}" class="seg-pause"></td>')
+                    pause_idx += 1
                 mark_class = " seg-mark" if s in mark_segs else ""
-                if typ == "free":
-                    css_class = f"seg-free{mark_class}"
-                elif typ == "rest":
-                    css_class = f"seg-rest{mark_class}"
-                elif typ == "relay_binome":
-                    css_class = f"seg-binome{mark_class}"
-                elif typ == "relay_flex":
-                    css_class = f"seg-flex{mark_class}"
-                elif typ == "relay_solo":
-                    css_class = f"seg-solo{mark_class}"
-                elif typ == "relay_fixe":
-                    css_class = f"seg-fixe{mark_class}"
-                elif typ == "unavail":
-                    css_class = f"seg-unavail{mark_class}"
-                else:
-                    css_class = f"seg-free{mark_class}"
+                css_class = _typ_to_css(typ, mark_class)
                 tds.append(f'<td colspan="{colspan}" class="{css_class}">{label}</td>')
+
+            # Pauses restantes après le dernier span
+            while pause_idx < len(pauses_sorted):
+                ps = pauses_sorted[pause_idx]
+                cs = pause_colspan_by_seg[ps]
+                tds.append(f'<td colspan="{cs}" class="seg-pause"></td>')
+                pause_idx += 1
 
             rows_html.append(f'<tr><th class="th-runner">{r}</th>\n{chr(10).join(tds)}\n</tr>')
 
         header_tds = ['<th class="th-seg-label"></th>']
         for seg in range(c.nb_segments):
+            # Insérer colonne pause avant ce segment si applicable
+            if seg in pause_set:
+                cs = pause_colspan_by_seg[seg]
+                dur = pause_dur_by_seg[seg]
+                dur_h = int(dur)
+                dur_m = int((dur % 1) * 60)
+                dur_str = f"{dur_h}h{dur_m:02d}" if dur_h else f"{dur_m}min"
+                header_tds.append(f'<th colspan="{cs}" class="th-pause">⏸ {dur_str}</th>')
             h = c.segment_start_hour(seg)
             is_mark = seg in mark_segs
             if is_mark:
@@ -525,6 +675,13 @@ class RelaySolution:
             night_class = " seg-header-night" if seg in c.night_segments else ""
             mark_class = " seg-mark-header" if is_mark else ""
             header_tds.append(f'<th class="th-seg{night_class}{mark_class}">{label}</th>')
+        if c.nb_segments in pause_set:
+            cs = pause_colspan_by_seg[c.nb_segments]
+            dur = pause_dur_by_seg[c.nb_segments]
+            dur_h = int(dur)
+            dur_m = int((dur % 1) * 60)
+            dur_str = f"{dur_h}h{dur_m:02d}" if dur_h else f"{dur_m}min"
+            header_tds.append(f'<th colspan="{cs}" class="th-pause">⏸ {dur_str}</th>')
         header_row = f'<tr>\n{chr(10).join(header_tds)}\n</tr>'
 
         return header_row, rows_html
@@ -571,6 +728,8 @@ class RelaySolution:
   .seg-fixe    {{ background: #2196f3; color: #fff; font-size: 10px; text-align: center; font-weight: bold; border: 1px solid #1565c0; }}
   .seg-unavail {{ background: #8b00ff; border: 1px solid #6a00cc; }}
   .seg-mark    {{ border-left: 2px solid #000; }}
+  .seg-pause   {{ background: #ff9800; border: 1px solid #e65100; }}
+  .th-pause    {{ background: #ff9800; color: #fff; font-size: 9px; text-align: center; padding: 1px; }}
 
   /* Tables de détail */
   .detail-table {{ border-collapse: collapse; font-size: 12px; table-layout: auto; }}
@@ -585,6 +744,8 @@ class RelaySolution:
   .row-solo   {{ background: #fff0f5; }}
   .row-binome {{ background: #f0fff4; }}
   .row-fixe   {{ background: #e3f2fd; }}
+  .row-pause  {{ background: #fff3e0; }}
+  .td-pause   {{ color: #e65100; font-weight: bold; padding: 4px 8px; }}
 
   /* Cellules de détail */
   .td-time   {{ padding: 3px 8px; }}
@@ -604,7 +765,8 @@ class RelaySolution:
   <span style="background:#a5d6a7;padding:2px 8px;border:1px solid #66bb6a;">Relais flex (binôme)</span>&nbsp;
   <span style="background:#f48fb1;padding:2px 8px;border:1px solid #c2185b;">Relais solo</span>&nbsp;
   <span style="background:#2196f3;padding:2px 8px;border:1px solid #1565c0;color:#fff;">Relais pinned</span>&nbsp;
-  <span style="background:#8b00ff;padding:2px 8px;border:1px solid #6a00cc;">&nbsp;&nbsp;&nbsp;</span> Indisponible
+  <span style="background:#8b00ff;padding:2px 8px;border:1px solid #6a00cc;">&nbsp;&nbsp;&nbsp;</span> Indisponible&nbsp;
+  <span style="background:#ff9800;padding:2px 8px;border:1px solid #e65100;color:#fff;">⏸</span> Pause
 </p>
 <div style="overflow-x:auto;">
 <table class="gantt-table">

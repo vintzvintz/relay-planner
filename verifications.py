@@ -15,6 +15,7 @@ def check(solution: list[dict], constraints: RelayConstraints, out=_NULL) -> boo
 
     ok = True
     ok &= _check_coverage(solution, constraints, out)
+    ok &= _check_pauses(solution, constraints, out)
     ok &= _check_relay_sizes(solution, constraints, out)
     ok &= _check_rest(solution, constraints, out)
     ok &= _check_night_max(solution, constraints, out)
@@ -53,6 +54,22 @@ def _active_pairs(solution: list[dict]) -> list[tuple[str, str]]:
 # ------------------------------------------------------------------
 # Vérifications post-résolution
 # ------------------------------------------------------------------
+
+def _check_pauses(solution: list[dict], constraints: RelayConstraints, out) -> bool:
+    ok = True
+    for rel in solution:
+        for ps in constraints.pause_segments:
+            if rel["start"] < ps < rel["end"]:
+                print(
+                    f"  PAUSE FRANCHIE : {rel['runner']}[{rel['k']}]=[{rel['start']},{rel['end']}["
+                    f" franchit la frontière de pause seg {ps}",
+                    file=out,
+                )
+                ok = False
+    if ok:
+        print("Pauses         : OK", file=out)
+    return ok
+
 
 def _check_relay_sizes(solution: list[dict], constraints: RelayConstraints, out) -> bool:
     ok = True

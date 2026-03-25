@@ -9,7 +9,7 @@ from compat import COMPAT_MATRIX
 # --- Données générales de la course ---
 c = RelayConstraints(
     total_km=440,
-    nb_segments=290, # valeurs typiques  : 440=1k, 290=1k5 220=2k, 135=3k3, 88=5k
+    nb_segments=176, # valeurs typiques  : 440=1k, 290=1k5 220=2k, 176=2k5 135=3k3, 88=5k
     speed_kmh=9.0,
     start_hour=15.0,  # départ à 15 heures pile
     solo_max_km=17,  # pas de solo sur 17km et plus
@@ -17,15 +17,19 @@ c = RelayConstraints(
     nuit_max_default=1,  # 1 relais nocturne max par coureur
     repos_jour_heures=7,
     repos_nuit_heures=9,
-    nuit_debut=0.0,  # définition des relais nocturnes (repos nuit si au moins 1 segment dans cette plage)
+    nuit_debut=23.5,  # définition des relais nocturnes (repos nuit si au moins 1 segment dans cette plage)
     nuit_fin=6.0,
-    solo_autorise_debut=8.0,  # plage d'autorisation des solos (indépendante de nuit_debut/nuit_fin)
-    solo_autorise_fin=22.0,
+    solo_autorise_debut=6.5,  # plage d'autorisation des solos (indépendante de nuit_debut/nuit_fin)
+    solo_autorise_fin=23.0,
     max_same_partenaire=2,  # nombre maximal de binômes entre deux mêmes coureurs
     compat_matrix=COMPAT_MATRIX,
     enable_flex=True,   # si False, ignore la flexibilité à la baisse
-    allow_flex_flex=True   # autorise un relais plus court que le max commun de deux flexibles (trouve plus vite une 1ere solution moins optimale)
+    allow_flex_flex=True,  # autorise un relais plus court que le max commun de deux flexibles (trouve plus vite une 1ere solution moins optimale)
 )
+
+# Exempe de pause : jeudi 19h00 pour la pasta party
+c.add_pause(seg=c.km_to_seg(250), duree=2)  # placement géographique plutot que horaire
+#c.add_pause(seg=c.hour_to_seg(19.0, jour=1), duree=2)  # jeudi 15h00 (mercredi 15h + 24h), durée 1h30
 
 # --- Déclaration des coureurs ---
 # ils doivent aussi exister dans la matrice de compatibilité 
@@ -44,21 +48,21 @@ nelly = c.new_runner("Nelly")
 gaelle = c.new_runner("Gaelle")
 clemence = c.new_runner("Clemence")
 leo = c.new_runner("Leo")
-alsacien_10 = c.new_runner("Alsacien_10")
-alsacien_15 = c.new_runner("Alsacien_15")
+#alsacien_10 = c.new_runner("Alsacien_10")
+#alsacien_15 = c.new_runner("Alsacien_15")
 
 
 # --- Relais ---
 
 (ludovic
     .add_relay(R20)
-    .add_relay(R15, nb=3)
+    .add_relay(R15_F, nb=3)
 )
 
 (pierre
     # pinned = test de relais fixé après un premier 10km
-    .add_relay( R20, pinned=c.size_of(R10))
-    #.add_relay(R20)
+    #.add_relay( R20, pinned=c.size_of(R10))
+    .add_relay(R20)
     .add_relay(R15_F, nb=3)
 )
 
@@ -72,14 +76,16 @@ alsacien_15 = c.new_runner("Alsacien_15")
 )
 
 (antoine
-    .add_relay(R15, nb=2)
+    .add_relay(R15_F, nb=2)
     .add_relay(R15_F)
     .add_relay(R13_F)
 )
 
+leo_clem = c.new_relay(R10)
 (leo
-    .set_options(solo_max=0)
+    .set_options(solo_max=1)
     .add_relay(R10, nb=4)
+    #.add_relay(leo_clem)
 )
 
 (vincent
@@ -103,7 +109,7 @@ dispo_guillaume = RelayIntervals([(0, c.hour_to_seg(15.0, jour=1))])
 dispo_eric = RelayIntervals([(0, c.hour_to_seg(17.0, jour=1))])
 (eric
     # .set_options( max_same_partenaire=1)        # decommenter pour forcer des binomes différents
-    .add_relay(R15, nb=2, window=dispo_eric)
+    .add_relay(R15_F, nb=2, window=dispo_eric)
 )
 
 dispo_yacine = RelayIntervals([(0, c.hour_to_seg(17.0, jour=1))])
@@ -118,9 +124,9 @@ dispo_yacine = RelayIntervals([(0, c.hour_to_seg(17.0, jour=1))])
 # --- coureurs elite - pairing imposé sur les 30km avec placement nuit ---
 alexis_olivier_1 = c.new_relay(R30)
 alexis_olivier_2 = c.new_relay(R30)
-# entre 23h30 et 4h
-nuit1_30k = RelayIntervals( [(c.hour_to_seg(23.5, jour=0), c.hour_to_seg(4, jour=1))] )
-nuit2_30k = RelayIntervals( [(c.hour_to_seg(23.5, jour=1), c.hour_to_seg(4, jour=2))] )  
+# entre 22h30 et 3h
+nuit1_30k = RelayIntervals( [(c.hour_to_seg(23, jour=0), c.hour_to_seg(3, jour=1))] )
+nuit2_30k = RelayIntervals( [(c.hour_to_seg(23, jour=1), c.hour_to_seg(3, jour=2))] )  
 
 (alexis
     # max_same_partenaire = 3 correspond à 2x30 + 1x10 avec olivier.
@@ -138,8 +144,8 @@ nuit2_30k = RelayIntervals( [(c.hour_to_seg(23.5, jour=1), c.hour_to_seg(4, jour
     .add_relay(alexis_olivier_1, window=nuit1_30k)
     .add_relay(alexis_olivier_2, window=nuit2_30k)
     .add_relay(R10, nb=2)
-    .add_relay(R10, pinned=c.nb_segments - c.size_of(R10))  # forcé sur derniers segments
-    #.add_relay(R10)   # relais libre
+    #.add_relay(R10, pinned=c.nb_segments - c.size_of(R10))  # forcé sur derniers segments
+    .add_relay(R10)   # relais libre
 )
 
 
@@ -149,18 +155,24 @@ nelly_clem = c.new_relay(R10)
 # segments nuit selon heures de début/fin de nuit passés à RelayConstraints
 girls_night = c.night_windows()
 
+#fixe un nombre max de relais entre 2 courreurs
 c.add_max_binomes(gaelle, nelly, nb=1)
+c.add_max_binomes(gaelle, leo, nb=1)
 
 (nelly
     #.set_options(solo_max=0)
-    .add_relay(nelly_gaelle, window=girls_night)
+    #.add_relay(nelly_gaelle, window=girls_night)
+    .set_options(nuit_max=0)  # pas de nuit
     .add_relay(nelly_clem)
+    .add_relay(nelly_gaelle)
     .add_relay(R10, nb=2)
 )
 
 (gaelle
     #.set_options(solo_max=0)
-    .add_relay(nelly_gaelle, window=girls_night)
+    #.add_relay(nelly_gaelle, window=girls_night)
+    .set_options(nuit_max=0)  # pas de nuit
+    .add_relay(nelly_gaelle)
     .add_relay(R13_F)
     .add_relay(R10, nb=2)
 )
@@ -168,7 +180,7 @@ c.add_max_binomes(gaelle, nelly, nb=1)
 
 dispo_clemence = RelayIntervals([ 
     (0, c.hour_to_seg(23, jour=0)),   # deux intervalles
-    (c.hour_to_seg(11, jour=2), c.nb_segments)])
+    (c.hour_to_seg(9, jour=2), c.nb_segments)])
 (clemence
     #.set_options(solo_max=0)
     .add_relay(nelly_clem, window=dispo_clemence)
@@ -178,14 +190,15 @@ dispo_clemence = RelayIntervals([
 
 # --- Alsaciens: 2 relais en bonus ---
 dispo_site = RelayIntervals([(c.hour_to_seg(6.5, jour=2), c.nb_segments)]) # de 6h30 jusqu'à la fin
-(alsacien_10
-    #.set_options(solo_max=0)
-    .add_relay(R10, window=dispo_site)
-)
-(alsacien_15
-    #.set_options(solo_max=0)
-    .add_relay(R15_F, window=dispo_site)
-)
+
+# (alsacien_10
+#     #.set_options(solo_max=0)
+#     .add_relay(R10, window=dispo_site)
+# )
+# (alsacien_15
+#     #.set_options(solo_max=0)
+#     .add_relay(R15_F, window=dispo_site)
+# )
 
 
 ##################################################################################
