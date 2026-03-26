@@ -11,7 +11,7 @@ R13_F = "R13_F"
 R15_F = "R15_F"
 
 
-def make_relay_types(nb_segments: int, total_km: float, enable_flex: bool) -> dict:
+def make_relay_types_old(nb_segments: int, total_km: float, enable_flex: bool) -> dict:
     """
     Retourne un dict de types de relais pour le nombre de segments donné.
 
@@ -41,6 +41,39 @@ def make_relay_types(nb_segments: int, total_km: float, enable_flex: bool) -> di
         s15_f = {r15}
 
     return {R10: s10, R15: s15, R20: s20, R30: s30, R13_F: s13_f, R15_F: s15_f}
+
+
+def make_relay_types(nb_segments: int, total_km: float, enable_flex: bool) -> dict:
+    """
+    Retourne un dict de types de relais pour le nombre de segments donné.
+
+    Tailles nominales (en km) :
+      R10 = 10 km, R15 = 15 km, R20 = 20 km, R30 = 30 km
+      R13_F = R10..R13 km (flex), R15_F = R10..R15 km (flex)
+    """
+    seg_km = total_km / nb_segments
+
+    # calcul empirique du nombre de segment pour chaque type de relais.
+    r10 = round(10 / seg_km)
+    r13 = math.floor(12.5 / seg_km)
+    r15 = math.ceil(15 / seg_km)    # pas moins de 14,5km
+    r20 = round(20 / seg_km)
+    r30 = math.floor(30 / seg_km)   # pas plus de 30km
+
+    s10 = {r10}
+    s15 = {r15}
+    s20 = {r20}
+    s30 = {r30}
+
+    if enable_flex:
+        s13_f = set(range(r10, r13 + 1))
+        s15_f = set(range(r10, r15 + 1))
+    else:
+        s13_f = {r13}
+        s15_f = {r15}
+
+    return {R10: s10, R15: s15, R20: s20, R30: s30, R13_F: s13_f, R15_F: s15_f}
+
 
 
 @dataclass

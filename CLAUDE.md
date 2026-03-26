@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Running tests
 
 ```bash
-source venv/bin/activate
+source venv/Scripts/activate
 pytest tests/
 ```
 
@@ -16,7 +16,7 @@ The solver integration tests (`TestSolverRespects*`) use a short `timeout_sec` a
 ## Running the solver
 
 ```bash
-source venv/bin/activate
+source venv/Scripts/activate
 python solver.py
 ```
 

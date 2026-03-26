@@ -9,7 +9,7 @@ from compat import COMPAT_MATRIX
 # --- Données générales de la course ---
 c = RelayConstraints(
     total_km=440,
-    nb_segments=176, # valeurs typiques  : 440=1k, 290=1k5 220=2k, 176=2k5 135=3k3, 88=5k
+    nb_segments=176, # valeurs typiques  : 440=1k, 290=1k5 220=2k, 176=2k5 135=3k3, 88=5k
     speed_kmh=9.0,
     start_hour=15.0,  # départ à 15 heures pile
     solo_max_km=17,  # pas de solo sur 17km et plus
@@ -32,7 +32,7 @@ c.add_pause(seg=c.km_to_seg(250), duree=2)  # placement géographique plutot que
 #c.add_pause(seg=c.hour_to_seg(19.0, jour=1), duree=2)  # jeudi 15h00 (mercredi 15h + 24h), durée 1h30
 
 # --- Déclaration des coureurs ---
-# ils doivent aussi exister dans la matrice de compatibilité 
+# ils doivent aussi exister dans la matrice de compatibilité
 pierre = c.new_runner("Pierre")
 alexis = c.new_runner("Alexis")
 olivier = c.new_runner("Olivier")
@@ -92,7 +92,7 @@ leo_clem = c.new_relay(R10)
     # test de surcharge des temps de repos
     .set_options(repos_jour=6, repos_nuit=8)
     .add_relay(R13_F, nb=2)# 2x3km en 'upside' sur le 10km demandé, comme certains aiment le dire :)
-    .add_relay(R10, nb=2)  
+    .add_relay(R10, nb=2)
 )
 
 # --- participants avec dispo partielle  ---
@@ -126,7 +126,7 @@ alexis_olivier_1 = c.new_relay(R30)
 alexis_olivier_2 = c.new_relay(R30)
 # entre 22h30 et 3h
 nuit1_30k = RelayIntervals( [(c.hour_to_seg(23, jour=0), c.hour_to_seg(3, jour=1))] )
-nuit2_30k = RelayIntervals( [(c.hour_to_seg(23, jour=1), c.hour_to_seg(3, jour=2))] )  
+nuit2_30k = RelayIntervals( [(c.hour_to_seg(23, jour=1), c.hour_to_seg(3, jour=2))] )
 
 (alexis
     # max_same_partenaire = 3 correspond à 2x30 + 1x10 avec olivier.
@@ -178,7 +178,7 @@ c.add_max_binomes(gaelle, leo, nb=1)
 )
 
 
-dispo_clemence = RelayIntervals([ 
+dispo_clemence = RelayIntervals([
     (0, c.hour_to_seg(23, jour=0)),   # deux intervalles
     (c.hour_to_seg(9, jour=2), c.nb_segments)])
 (clemence

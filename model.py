@@ -7,6 +7,8 @@ Ce module expose :
 - build_model_fixed_config(active_keys, optimal_score, constraints) : idem avec binômes fixés
 """
 
+import math
+
 from ortools.sat.python import cp_model
 
 OPTIM_FUNC_BASIQUE = "compat"
@@ -43,6 +45,7 @@ class RelayModel:
         self.model = cp_model.CpModel()
 
         self._add_variables(constraints)
+        self._add_symmetry_breaking(constraints)
         self._add_fixed_relays(constraints)
         self._add_night_relay(constraints)
         self._add_solo_intervals(constraints)
@@ -57,6 +60,45 @@ class RelayModel:
         self._add_once_max(constraints)
         self._add_max_same_partenaire(constraints)
         return self
+
+    def _add_symmetry_breaking(self, constraints):
+        """Brise la symétrie par permutation des relais identiques d'un même coureur.
+
+        Pour chaque groupe de relais partageant exactement le même descripteur
+        (size, window, non pinnés, non partagés), impose start[r][k] <= start[r][k']
+        pour toute paire consécutive k < k' au sein du groupe.
+        """
+        c = constraints
+        model = self.model
+        sym_lines = []
+        for r in c.runners:
+            eligible_groups: dict[tuple, list[int]] = {}
+            for k, spec in enumerate(c.runners_data[r].relais):
+                if spec.pinned is not None or spec.paired_with is not None:
+                    continue
+                window_key = (
+                    tuple(tuple(iv) for iv in spec.window)
+                    if spec.window is not None
+                    else None
+                )
+                key = (frozenset(spec.size), window_key)
+                eligible_groups.setdefault(key, []).append(k)
+
+            factor = math.prod(
+                math.factorial(len(v)) for v in eligible_groups.values() if len(v) >= 2
+            )
+            if factor > 1:
+                sym_lines.append((r, factor))
+            for indices in eligible_groups.values():
+                for i in range(len(indices) - 1):
+                    k, kp = indices[i], indices[i + 1]
+                    model.add(self.start[r][k] <= self.start[r][kp])
+        if sym_lines:
+            total = math.prod(f for _, f in sym_lines)
+            print("Symétries brisées (facteur de réduction) :")
+            for r, f in sym_lines:
+                print(f"  {r} : ×{f}")
+            print(f"  total : ×{total}")
 
     def _add_fixed_relays(self, constraints):
         """Fixe start et size des relais dont pinned[k] n'est pas None."""
