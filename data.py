@@ -28,7 +28,7 @@ c = RelayConstraints(
 )
 
 # Exempe de pause : jeudi 19h00 pour la pasta party
-c.add_pause(seg=c.km_to_seg(250), duree=2)  # placement géographique plutot que horaire
+c.add_pause(seg=c.km_to_seg(250), duree=1.8)  # placement géographique plutot que horaire
 #c.add_pause(seg=c.hour_to_seg(19.0, jour=1), duree=2)  # jeudi 15h00 (mercredi 15h + 24h), durée 1h30
 
 # --- Déclaration des coureurs ---
@@ -134,6 +134,7 @@ nuit2_30k = RelayIntervals( [(c.hour_to_seg(23, jour=1), c.hour_to_seg(3, jour=2
     .set_options(nuit_max=5, max_same_partenaire=3)
     .add_relay(alexis_olivier_1, window=nuit1_30k)
     .add_relay(alexis_olivier_2, window=nuit2_30k)
+    #.add_relay(alexis_olivier_2, window=nuit2_30k, pinned=c.km_to_seg(270))  # test : pinned sur point kilometrique
     .add_relay(R10, pinned=0)   # premier relais forcé
     #.add_relay(R10)   # placement libre
     .add_relay(R10, nb=2)  # 2 relais de 10km contraints uniquement par le repos
@@ -144,7 +145,7 @@ nuit2_30k = RelayIntervals( [(c.hour_to_seg(23, jour=1), c.hour_to_seg(3, jour=2
     .add_relay(alexis_olivier_1, window=nuit1_30k)
     .add_relay(alexis_olivier_2, window=nuit2_30k)
     .add_relay(R10, nb=2)
-    #.add_relay(R10, pinned=c.nb_segments - c.size_of(R10))  # forcé sur derniers segments
+    #.add_relay(R10, pinned=c.last_active_seg - c.size_of(R10))  # forcé sur derniers segments
     .add_relay(R10)   # relais libre
 )
 
@@ -177,19 +178,18 @@ c.add_max_binomes(gaelle, leo, nb=1)
     .add_relay(R10, nb=2)
 )
 
-
-dispo_clemence = RelayIntervals([
-    (0, c.hour_to_seg(23, jour=0)),   # deux intervalles
-    (c.hour_to_seg(9, jour=2), c.nb_segments)])
+# Astuce : 1 relais par intervalle est plus performant que 2 relais sur l'union de 2 intervalles
+dispo_clemence1 = RelayIntervals([(0, c.hour_to_seg(23, jour=0))])
+dispo_clemence2 = RelayIntervals([(c.hour_to_seg(9, jour=2), c.last_active_seg)])
 (clemence
     #.set_options(solo_max=0)
-    .add_relay(nelly_clem, window=dispo_clemence)
-    .add_relay(R10, window=dispo_clemence)
+    .add_relay(nelly_clem, window=dispo_clemence1)
+    .add_relay(R10, window=dispo_clemence2)
 )
 
 
 # --- Alsaciens: 2 relais en bonus ---
-dispo_site = RelayIntervals([(c.hour_to_seg(6.5, jour=2), c.nb_segments)]) # de 6h30 jusqu'à la fin
+dispo_site = RelayIntervals([(c.hour_to_seg(6.5, jour=2), c.last_active_seg)]) # de 6h30 jusqu'à la fin
 
 # (alsacien_10
 #     #.set_options(solo_max=0)

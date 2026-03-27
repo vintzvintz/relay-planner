@@ -57,15 +57,17 @@ def _active_pairs(solution: list[dict]) -> list[tuple[str, str]]:
 
 def _check_pauses(solution: list[dict], constraints: RelayConstraints, out) -> bool:
     ok = True
+    inactive = constraints.inactive_segments
     for rel in solution:
-        for ps in constraints.pause_segments:
-            if rel["start"] < ps < rel["end"]:
+        for s in range(rel["start"], rel["end"]):
+            if s in inactive:
                 print(
                     f"  PAUSE FRANCHIE : {rel['runner']}[{rel['k']}]=[{rel['start']},{rel['end']}["
-                    f" franchit la frontière de pause seg {ps}",
+                    f" couvre le segment inactif {s}",
                     file=out,
                 )
                 ok = False
+                break
     if ok:
         print("Pauses         : OK", file=out)
     return ok
@@ -94,7 +96,8 @@ def _check_coverage(solution: list[dict], constraints: RelayConstraints, out) ->
     for rel in solution:
         for seg in range(rel["start"], rel["end"]):
             coverage[seg] += 1
-    gaps = [s for s in range(constraints.nb_segments) if coverage[s] == 0]
+    active = constraints.active_segments
+    gaps = [s for s in active if coverage[s] == 0]
     over = [s for s in range(constraints.nb_segments) if coverage[s] > 2]
     ok = not gaps and not over
     print(
@@ -106,17 +109,19 @@ def _check_coverage(solution: list[dict], constraints: RelayConstraints, out) ->
 
 def _check_rest(solution: list[dict], constraints: RelayConstraints, out) -> bool:
     relais = _relais_by_runner(solution)
+    sd = constraints.segment_duration  # heures par quantum de temps
     ok = True
     for r, rels in relais.items():
-        repos_jour = constraints._resolved_repos_jour(constraints.runners_data[r])
-        repos_nuit = constraints._resolved_repos_nuit(constraints.runners_data[r])
+        repos_jour_h = constraints._resolved_repos_jour(constraints.runners_data[r]) * sd
+        repos_nuit_h = constraints._resolved_repos_nuit(constraints.runners_data[r]) * sd
         sorted_relais = sorted(rels, key=lambda x: x["start"])
         for i in range(len(sorted_relais) - 1):
             prev, nxt = sorted_relais[i], sorted_relais[i + 1]
-            required = repos_nuit if prev["night"] else repos_jour
-            gap = nxt["start"] - prev["end"]
-            if gap < required:
-                print(f"  REPOS {r}: gap={gap} < {required}", file=out)
+            required_h = repos_nuit_h if prev["night"] else repos_jour_h
+            # Dans le modèle espace-temps, le gap inclut automatiquement les pauses.
+            gap_h = (nxt["start"] - prev["end"]) * sd
+            if gap_h < required_h - 1e-9:
+                print(f"  REPOS {r}: gap={gap_h:.2f}h < {required_h:.2f}h", file=out)
                 ok = False
     if ok:
         print("Repos          : OK", file=out)

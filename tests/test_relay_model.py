@@ -438,7 +438,7 @@ class TestObjective:
     def test_add_min_score_feasible(self, c2):
         m = build_model(c2)
         m.add_optimisation_func(c2)
-        m.add_min_score(c2, "compat_et_flex", 0)
+        m.add_min_score(c2, 0)
         solver = cp_model.CpSolver()
         solver.parameters.max_time_in_seconds = 10
         status = solver.solve(m.model)
@@ -447,7 +447,7 @@ class TestObjective:
     def test_add_min_score_infeasible_if_too_high(self, c_incompatible):
         """Score min > 0 impossible avec 2 coureurs incompatibles."""
         m = build_model(c_incompatible)
-        m.add_min_score(c_incompatible, "compat_et_flex", 1)
+        m.add_min_score(c_incompatible, 1)
         solver = cp_model.CpSolver()
         solver.parameters.max_time_in_seconds = 5
         status = solver.solve(m.model)

@@ -64,10 +64,7 @@ def build_solution(model, constraints, solver) -> RelaySolution:
         r_rels.sort(key=lambda x: x["start"])
         for i, rel in enumerate(r_rels):
             if i < len(r_rels) - 1:
-                rel["rest_h"] = (
-                    c.segment_start_hour(r_rels[i + 1]["start"])
-                    - c.segment_start_hour(rel["end"])
-                )
+                rel["rest_h"] = (r_rels[i + 1]["start"] - rel["end"]) * c.segment_duration
             else:
                 rel["rest_h"] = None
 

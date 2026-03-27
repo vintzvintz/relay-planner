@@ -11,10 +11,7 @@ import math
 
 from ortools.sat.python import cp_model
 
-OPTIM_FUNC_BASIQUE = "compat"
-OPTIM_FUNC_MIXTE = "compat_et_flex"
-
-# Poids des binômes vs pénalité flex dans l'objectif mixte.
+# Poids des binômes vs pénalité flex dans l'objectif.
 # binome_sum_max ≈ 47,  flex_penalty_max ≈ 51  → coef=2 donne ~2x plus de poids aux binômes.
 BINOME_WEIGHT = 2
 
@@ -133,8 +130,6 @@ class RelayModel:
                 self._intervals_all.append((r, k, max(sizes), iv))
                 self._iv_index[(r, k)] = iv
                 runner_ivs.append(iv)
-            if len(runner_ivs) > 1:
-                model.add_no_overlap(runner_ivs)
 
     def _add_night_relay(self, constraints):
         """Crée les variables night_relay[r][k] et applique la contrainte au plus 1 nuit."""
@@ -221,35 +216,32 @@ class RelayModel:
                 self.relais_solo_interdit[r].append(rsi)
 
     def _add_rest_constraints(self, constraints):
-        """Repos minimum entre toute paire de relais d'un même coureur."""
+        """Repos minimum entre relais consécutifs d'un même coureur.
+
+        Dans le modèle espace-temps, les pauses sont encodées comme des segments inactifs.
+        Le gap entre end[ka] et start[kb] inclut automatiquement les pauses intercalées,
+        donc la contrainte est simplement : end[ka] + repos <= start[kb].
+
+        La disjonction (k avant k') OU (k' avant k) est gérée par un BoolVar d'ordre.
+        """
         c = constraints
         model = self.model
         for r in c.runners:
-            n_relays = len(c.runners_data[r].relais)
-            if n_relays < 2:
-                continue
             rd = c.runners_data[r]
             repos_jour = c._resolved_repos_jour(rd)
             repos_nuit = c._resolved_repos_nuit(rd)
-            for k in range(n_relays):
-                for kp in range(k + 1, n_relays):
-                    k_before_kp = model.new_bool_var(f"bef_{r}_{k}_{kp}")
-                    k_day_then_kp = model.new_bool_var(f"bkd_{r}_{k}_{kp}")
-                    k_night_then_kp = model.new_bool_var(f"bkn_{r}_{k}_{kp}")
-                    model.add_bool_and([k_before_kp, ~self.relais_nuit[r][k]]).only_enforce_if(k_day_then_kp)
-                    model.add_bool_or([~k_before_kp, self.relais_nuit[r][k]]).only_enforce_if(~k_day_then_kp)
-                    model.add_bool_and([k_before_kp, self.relais_nuit[r][k]]).only_enforce_if(k_night_then_kp)
-                    model.add_bool_or([~k_before_kp, ~self.relais_nuit[r][k]]).only_enforce_if(~k_night_then_kp)
-                    model.add(self.end[r][k] + repos_jour <= self.start[r][kp]).only_enforce_if(k_day_then_kp)
-                    model.add(self.end[r][k] + repos_nuit <= self.start[r][kp]).only_enforce_if(k_night_then_kp)
-                    kp_day_then_k = model.new_bool_var(f"bkpd_{r}_{k}_{kp}")
-                    kp_night_then_k = model.new_bool_var(f"bkpn_{r}_{k}_{kp}")
-                    model.add_bool_and([~k_before_kp, ~self.relais_nuit[r][kp]]).only_enforce_if(kp_day_then_k)
-                    model.add_bool_or([k_before_kp, self.relais_nuit[r][kp]]).only_enforce_if(~kp_day_then_k)
-                    model.add_bool_and([~k_before_kp, self.relais_nuit[r][kp]]).only_enforce_if(kp_night_then_k)
-                    model.add_bool_or([k_before_kp, ~self.relais_nuit[r][kp]]).only_enforce_if(~kp_night_then_k)
-                    model.add(self.end[r][kp] + repos_jour <= self.start[r][k]).only_enforce_if(kp_day_then_k)
-                    model.add(self.end[r][kp] + repos_nuit <= self.start[r][k]).only_enforce_if(kp_night_then_k)
+            delta = repos_nuit - repos_jour
+            n = len(rd.relais)
+            for k in range(n):
+                for kp in range(k + 1, n):
+                    order = model.new_bool_var(f"ord_{r}_{k}_{kp}")
+
+                    for ka, kb in [(k, kp), (kp, k)]:
+                        b_fwd = order if (ka == k) else ~order
+                        repos = repos_jour + delta * self.relais_nuit[r][ka]
+                        model.add(
+                            self.end[r][ka] + repos <= self.start[r][kb]
+                        ).only_enforce_if(b_fwd)
 
     def _add_availability(self, constraints):
         """Applique les fenêtres de placement par relais et les affectations fixes."""
@@ -372,57 +364,36 @@ class RelayModel:
 
 
     def _add_pause_constraints(self, constraints):
-        """Interdit tout relais qui chevaucherait une pause (start < ps ET end > ps)."""
+        """Interdit tout relais qui chevaucherait une plage inactive (pause).
+
+        Pour chaque plage inactive [a, b) et chaque relais : end <= a OU start >= b.
+        """
         c = constraints
-        if not c.pause_segments:
+        if not c.inactive_ranges:
             return
         model = self.model
-        for i, ps in enumerate(c.pause_segments):
+        for i, (a, b) in enumerate(c.inactive_ranges):
             for r in c.runners:
                 for k in range(len(c.runners_data[r].relais)):
-                    b = model.new_bool_var(f"pause_{i}_{r}_{k}")
-                    model.add(self.end[r][k] <= ps).only_enforce_if(b)
-                    model.add(self.start[r][k] >= ps).only_enforce_if(~b)
+                    bv = model.new_bool_var(f"pause_{i}_{r}_{k}")
+                    model.add(self.end[r][k] <= a).only_enforce_if(bv)
+                    model.add(self.start[r][k] >= b).only_enforce_if(~bv)
 
     def _add_coverage(self, constraints):
-        """Contrainte de couverture : chaque segment couvert par 1 ou 2 relais."""
+        """Contrainte de couverture : chaque segment couvert par 1 ou 2 relais.
+
+        Formulation étendue : un BoolVar par (relais, segment actif) indique si le
+        relais couvre ce segment.  Plus verbeuse qu'une contrainte globale sur les
+        tailles, mais fournit une relaxation LP bien plus serrée qui guide
+        efficacement la recherche — même quand toutes les tailles sont fixes.
+        """
         c = constraints
         model = self.model
         all_ivs = [iv for _, _, _, iv in self._intervals_all]
         all_demand = [1 for _ in self._intervals_all]
         model.add_cumulative(all_ivs, all_demand, 2)
 
-        if not c.has_flex:
-            self._add_coverage_fixed(constraints)
-        else:
-            self._add_coverage_flex(constraints)
-
-    def _add_coverage_fixed(self, constraints):
-        """Couverture quand toutes les tailles sont fixes.
-
-        sum(tailles) = nb_segments + sum(sz * same_relay) : combinée avec
-        cumulative <= 2, cette égalité garantit zéro trou et zéro triple.
-        """
-        c = constraints
-        model = self.model
-        total_sizes = sum(
-            max(spec.size)
-            for coureur in c.runners_data.values()
-            for spec in coureur.relais
-        )
-        binome_overlap = []
-        for (r, k, rp, kp), bv in self.same_relay.items():
-            sz = max(c.runners_data[r].relais[k].size)
-            binome_overlap.append(sz * bv)
-        model.add(
-            cp_model.LinearExpr.sum(binome_overlap) == total_sizes - c.nb_segments
-        )
-
-    def _add_coverage_flex(self, constraints):
-        """Couverture avec tailles variables : BoolVar par (relais, segment)."""
-        c = constraints
-        model = self.model
-        for s in range(c.nb_segments):
+        for s in c.active_segments:
             covers_s = []
             for r in c.runners:
                 for k in range(len(c.runners_data[r].relais)):
@@ -555,23 +526,19 @@ class RelayModel:
     # Fonctions d'évaluation des solutions
     # ------------------------------------------------------------------
 
-    def _weighted_binome_sum(self, constraints):
-        """Somme pondérée des binômes actifs (poids = compat_score)."""
-        terms = [
+    def _objective_expr(self, constraints):
+        """BINOME_WEIGHT * binome_sum - flex_penalty.
+
+        binome_sum  = somme pondérée des binômes actifs (poids = compat_score).
+        flex_penalty = sum(sz_max - size[r][k]) sur les relais flex uniquement.
+        Sans relais flex, la pénalité est nulle et l'objectif se réduit à la
+        somme pondérée des binômes.
+        """
+        binome_terms = [
             constraints.compat_score(r, rp) * var
             for (r, _k, rp, _kp), var in self.same_relay.items()
         ]
-        return cp_model.LinearExpr.sum(terms) if terms else cp_model.LinearExpr.sum([])
-
-
-    def _binome_et_flex_score(self, constraints):
-        """Objectif mixte : BINOME_WEIGHT * binome_sum - flex_penalty.
-
-        flex_penalty = sum(sz_max - size[r][k]) sur les relais flex uniquement.
-        Pénalise les relais raccourcis, favorisant la réduction des solos
-        tout en préservant la priorité aux binômes bien pondérés.
-        """
-        binome_sum = self._weighted_binome_sum(constraints)
+        binome_sum = cp_model.LinearExpr.sum(binome_terms)
         flex_penalty = sum(
             max(spec.size) - self.size[r][k]
             for r, coureur in constraints.runners_data.items()
@@ -580,27 +547,14 @@ class RelayModel:
         )
         return BINOME_WEIGHT * binome_sum - flex_penalty
 
-
-    def _select_optim_func(self, constraints, name):
-        if( name==OPTIM_FUNC_MIXTE):
-            return self._binome_et_flex_score(constraints)
-        elif( name==OPTIM_FUNC_BASIQUE):
-            return self._weighted_binome_sum(constraints)
-        else:
-            raise ValueError()                #TODO : add useful error message
-
-
-    def add_optimisation_func(self, constraints, name=None):
+    def add_optimisation_func(self, constraints):
         """Ajoute la fonction que le solveur va optimiser."""
-        if name is None:
-            name = OPTIM_FUNC_BASIQUE if not constraints.has_flex else OPTIM_FUNC_MIXTE
-        self.model.maximize(self._select_optim_func(constraints, name))
+        self.model.maximize(self._objective_expr(constraints))
         return self
 
-
-    def add_min_score(self, constraints, name, score):
-        """Contraint le score pondéré des binômes à être >= score."""
-        self.model.add(self._select_optim_func(constraints, name) >= score)
+    def add_min_score(self, constraints, score):
+        """Contraint le score à être >= score."""
+        self.model.add(self._objective_expr(constraints) >= score)
         return self
 
 

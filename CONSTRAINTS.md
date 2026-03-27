@@ -52,30 +52,37 @@ Les durées de repos sont converties en segments via `duration_to_segs()` (arron
 ## `c.add_pause()` — déclarer une pause planifiée
 
 Permet de déclarer des **pauses planifiées** (arrêt complet de la course) pendant le parcours.
-Doit être appelé **avant** tout `new_runner()`.
+Doit être appelé **avant** tout `new_runner()`, et dans l'ordre croissant de `seg`.
 
 ```python
 c.add_pause(
-    seg=c.hour_to_seg(16.0, jour=1),  # frontière de segment (utiliser hour_to_seg ou km_to_seg)
+    seg=c.hour_to_seg(16.0, jour=1),  # index de segment ACTIF après lequel la course s'arrête
     duree=1.5,                         # durée de la pause en heures
 )
 ```
 
 Paramètres :
-- `seg` : numéro de segment (frontière) à partir duquel la course s'arrête
+- `seg` : index de segment **actif** (0 à `nb_active_segments - 1`) après lequel la course s'arrête; utiliser `hour_to_seg()` ou `km_to_seg()` **avant** toute déclaration de pause
 - `duree` : durée de la pause en heures (doit être > 0)
 
+**Modèle espace-temps :**
+La pause est encodée comme une plage de segments **inactifs** insérée dans la timeline.
+`nb_segments` (total espace-temps) augmente ; `nb_active_segments` reste fixe.
+Le gap entre `end[ka]` et `start[kb]` inclut automatiquement les pauses intercalées,
+ce qui simplifie les contraintes de repos (aucun crédit de pause nécessaire).
+
 **Effets :**
-- Aucun relais ne peut chevaucher la frontière de segment (contrainte CP-SAT via `_add_pause_constraints`)
-- `segment_start_hour()` et `hour_to_seg()` tiennent compte des durées de pauses cumulées
-- `verifications.py` vérifie en post-résolution qu'aucun relais ne franchit une frontière de pause
-- `print_summary()` affiche toutes les pauses déclarées
+- Aucun relais ne peut chevaucher une plage inactive (contrainte CP-SAT via `_add_pause_constraints`)
+- `segment_start_hour(seg)` est purement linéaire dans l'espace-temps (`start_hour + seg * segment_duration`)
+- `hour_to_seg()` et `km_to_seg()` retournent des **indices actifs** — la conversion actif→temps est faite en interne par `add_relay()`
+- `verifications.py` vérifie en post-résolution qu'aucun relais ne couvre un segment inactif
 
 **Attributs exposés après construction :**
-- `c.pause_segments` : `list[int]` — indices de segment frontière (un par pause)
-- `c.pause_hours` : `list[float]` — heures mur de début de chaque pause
-- `c.pause_duration_hours` : `list[float]` — durée en heures de chaque pause
-- `c.pause_seg_durations` : `list[int]` — durée en segments de chaque pause
+- `c.inactive_ranges` : `list[tuple[int, int]]` — plages `[time_start, time_end)` de segments inactifs
+- `c.inactive_segments` : `set[int]` — ensemble de tous les indices de segments inactifs
+- `c.active_segments` : `list[int]` — liste ordonnée des indices de segments actifs (course)
+- `c.nb_active_segments` : `int` — nombre de segments actifs (fixe)
+- `c.nb_segments` : `int` — nombre total de segments espace-temps (actifs + inactifs)
 
 ---
 
@@ -146,14 +153,18 @@ Le nombre exact de segments dépend de `nb_segments` et `total_km` (calculé par
 
 ### Paramètre `window`
 
-Restreint le segment de départ à une ou plusieurs plages :
+Restreint le segment de départ à une ou plusieurs plages, exprimées en **indices de segments actifs** :
 
 ```python
-# Fenêtre prédéfinie
+# Fenêtre prédéfinie — hour_to_seg() retourne un index actif
 j1 = RelayIntervals([(0, c.hour_to_seg(15.0, jour=1))])
 runner.add_relay(R20, window=j1)
 
-# Fenêtre calculée automatiquement (toutes les nuits)
+# Borne "jusqu'à la fin" — utiliser last_active_seg (pas nb_segments)
+fin = RelayIntervals([(c.hour_to_seg(9, jour=2), c.last_active_seg)])
+runner.add_relay(R10, window=fin)
+
+# Fenêtre calculée automatiquement (toutes les nuits) — retourne aussi des indices actifs
 girls_night = c.night_windows()
 runner.add_relay(R10, window=girls_night)
 
@@ -161,15 +172,19 @@ runner.add_relay(R10, window=girls_night)
 runner.add_relay(R10, window=(0, 20))
 ```
 
+`add_relay()` convertit les bornes en indices espace-temps en interne avant stockage dans `RelaySpec`.
+
 ### Paramètre `pinned`
 
-Fixe le segment de départ exactement :
+Fixe le segment de départ exactement, en **index de segment actif** :
 
 ```python
-alexis.add_relay(R10, pinned=0)                      # premier relais
-olivier.add_relay(R10, pinned=c.nb_segments - 3)     # dernier relais
+alexis.add_relay(R10, pinned=0)                              # premier relais (seg actif 0)
+olivier.add_relay(R10, pinned=c.last_active_seg - c.size_of(R10))  # dernier relais
+pierre.add_relay(R20, pinned=c.size_of(R10))                 # après un premier 10 km
 ```
 
+`add_relay()` convertit l'index actif en index espace-temps en interne.
 Incompatible avec un `size` flexible (`len(size) > 1`).
 
 ---
@@ -231,14 +246,14 @@ Utilisé pour les fenêtres de placement (`window=`) et les disponibilités cour
 ```python
 c.hour_to_seg(hour, jour=0) -> int
 ```
-Convertit une heure absolue (+ décalage en jours) en numéro de segment (tronqué).
-Tient compte des pauses planifiées : les heures pendant une pause ou après une pause sont
-correctement converties en déduisant la durée cumulée des pauses écoulées.
+Convertit une heure absolue (+ décalage en jours) en index de **segment actif** (tronqué).
+La conversion passe par l'espace-temps linéaire puis applique `time_seg_to_active()`.
+L'index retourné est utilisable directement dans `window=` ou `pinned=`.
 
 ```python
-c.hour_to_seg(23.5)          # 23h30 le jour de départ
-c.hour_to_seg(4, jour=1)     # 4h00 le lendemain
-c.hour_to_seg(11, jour=2)    # 11h00 deux jours après le départ
+c.hour_to_seg(23.5)          # seg actif correspondant à 23h30 le jour de départ
+c.hour_to_seg(4, jour=1)     # seg actif correspondant à 4h00 le lendemain
+c.hour_to_seg(11, jour=2)    # seg actif correspondant à 11h00 deux jours après le départ
 ```
 
 ```python
@@ -249,9 +264,9 @@ Convertit une durée en heures en nombre de segments (arrondi au supérieur).
 ```python
 c.segment_start_hour(seg) -> float
 ```
-Retourne l'heure de début du segment (en heures depuis minuit mercredi).
-Tient compte des pauses planifiées : ajoute la durée cumulée de toutes les pauses
-qui précèdent le segment.
+Retourne l'heure de début du quantum de temps `seg` (index **espace-temps**, en heures depuis minuit mercredi).
+Dans le modèle espace-temps, chaque quantum représente une durée fixe ; la conversion est purement linéaire :
+`start_hour + seg * segment_duration`. Les segments inactifs (pauses) contribuent à la progression du temps.
 
 ### Fenêtres nocturnes
 
@@ -269,26 +284,43 @@ c.compat_score(r1, r2) -> int     # 0, 1 ou 2
 
 ### Propriétés dérivées
 
-| Propriété              | Type                          | Description                                      |
-|------------------------|-------------------------------|--------------------------------------------------|
-| `c.runners`            | `list[str]`                   | Noms des coureurs dans l'ordre de déclaration    |
-| `c.relay_sizes`        | `dict[str, list[int]]`        | Taille nominale (`max(size)`) de chaque relais   |
-| `c.runner_nuit_max`    | `dict[str, int]`              | Nb max de relais de nuit par coureur (résolu)    |
-| `c.runner_solo_max`    | `dict[str, int]`              | Nb max de solos par coureur (résolu)             |
-| `c.runner_repos_jour`  | `dict[str, int]`              | Repos jour en segments (résolu)                  |
-| `c.runner_repos_nuit`  | `dict[str, int]`              | Repos nuit en segments (résolu)                  |
-| `c.night_segments`     | `set[int]`                    | Ensemble des segments de nuit                    |
-| `c.segment_km`         | `float`                       | Longueur d'un segment en km                      |
-| `c.segment_duration`   | `float`                       | Durée d'un segment en heures                     |
-| `c.paired_relays`      | `list[tuple[str,int,str,int]]`| Tous les pairings `(r1,k1,r2,k2)` déclarés      |
-| `c.solo_max_size`      | `int`                         | Taille max d'un solo en segments                 |
+| Propriété              | Type                          | Description                                                     |
+|------------------------|-------------------------------|-----------------------------------------------------------------|
+| `c.runners`            | `list[str]`                   | Noms des coureurs dans l'ordre de déclaration                   |
+| `c.relay_sizes`        | `dict[str, list[int]]`        | Taille nominale (`max(size)`) de chaque relais                  |
+| `c.runner_nuit_max`    | `dict[str, int]`              | Nb max de relais de nuit par coureur (résolu)                   |
+| `c.runner_solo_max`    | `dict[str, int]`              | Nb max de solos par coureur (résolu)                            |
+| `c.runner_repos_jour`  | `dict[str, int]`              | Repos jour en segments (résolu)                                 |
+| `c.runner_repos_nuit`  | `dict[str, int]`              | Repos nuit en segments (résolu)                                 |
+| `c.night_segments`     | `set[int]`                    | Ensemble des segments de nuit (indices espace-temps)            |
+| `c.segment_km`         | `float`                       | Longueur d'un segment en km                                     |
+| `c.segment_duration`   | `float`                       | Durée d'un segment en heures                                    |
+| `c.paired_relays`      | `list[tuple[str,int,str,int]]`| Tous les pairings `(r1,k1,r2,k2)` déclarés                     |
+| `c.solo_max_size`      | `int`                         | Taille max d'un solo en segments                                |
+| `c.last_active_seg`    | `int`                         | Borne supérieure des segments actifs (= `nb_active_segments`) — à utiliser comme borne de `RelayIntervals` en remplacement de `nb_segments` |
 
 ### Conversions supplémentaires
 
 ```python
 c.km_to_seg(km) -> int
 ```
-Convertit une distance en km en numéro de segment (arrondi au bas).
+Convertit une distance en km en index de **segment actif** (arrondi au bas).
+Utilisable directement dans `add_pause(seg=...)`, `window=` ou `pinned=`.
+
+```python
+c.active_to_time_seg(active_idx) -> int
+```
+Convertit un index de segment actif en index de segment espace-temps (décale de la somme des segments inactifs insérés avant `active_idx`).
+
+```python
+c.time_seg_to_active(seg) -> int
+```
+Convertit un index de segment espace-temps en index de segment actif (soustrait le nombre de segments inactifs stritement avant `seg`).
+
+```python
+c.is_active(seg) -> bool
+```
+Retourne `True` si le segment espace-temps `seg` est un segment actif (course en cours).
 
 ```python
 c.size_of(relay_name) -> int
@@ -357,11 +389,13 @@ c = RelayConstraints(
 )
 
 # Pause optionnelle (doit être déclarée avant new_runner)
+# hour_to_seg() et km_to_seg() retournent des indices ACTIFS, utilisables directement ici
 # c.add_pause(seg=c.hour_to_seg(16.0, jour=1), duree=1.5)  # j1 16h00, durée 1h30
 
-# Plages temporelles
-j1   = RelayIntervals([(0, c.hour_to_seg(15.0, jour=1))])
-nuit = c.night_windows()
+# Plages temporelles — indices actifs
+j1       = RelayIntervals([(0, c.hour_to_seg(15.0, jour=1))])
+fin      = RelayIntervals([(c.hour_to_seg(9, jour=2), c.last_active_seg)])  # jusqu'à la fin
+nuit     = c.night_windows()  # aussi en indices actifs
 
 # Relais partagé (binôme obligatoire)
 relay_nuit = c.new_relay(R30)

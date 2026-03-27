@@ -41,7 +41,7 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, ~
 - Relay-type string constants imported from `constraints.py`: `R10`, `R15`, `R20`, `R30`, `R13_F`, `R15_F`
 - Declarative API: `c = RelayConstraints(...)`, then `c.new_runner(name)` → `RunnerBuilder`, then `runner.set_options(...)` and `runner.add_relay(size, nb=, window=, pinned=)`
 - `c.new_relay(size)` → `SharedRelay`: pass to two runners' `add_relay()` to force a binôme
-- `RelayIntervals([(start, end), ...])`: named availability/window objects; `c.hour_to_seg(h, jour=)` converts hours to segment index; `c.night_windows()` returns all nocturnal intervals
+- `RelayIntervals([(start, end), ...])`: named availability/window objects in **active** segment indices; `c.hour_to_seg(h, jour=)` and `c.km_to_seg(km)` return active segment indices; `c.last_active_seg` is the upper bound for "until the end"; `c.night_windows()` returns all nocturnal intervals in active indices
 - `build_constraints()`: returns the module-level `RelayConstraints` object; `python data.py` prints a full summary
 - See [CONSTRAINTS.md](CONSTRAINTS.md) for the full constraint declaration API reference
 
@@ -49,18 +49,18 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, ~
 - Relay-type string constants: `R10`, `R15`, `R20`, `R30`, `R13_F`, `R15_F` — pass to `add_relay()` as `size`
 - `make_relay_types(nb_segments, total_km, enable_flex)` — computes segment-count sets per relay type; called internally by `RelayConstraints.__init__`
 - `RelayConstraints.__init__`: accepts `total_km`, `nb_segments`, `speed_kmh`, `start_hour`, `compat_matrix`, `solo_max_km`, `solo_max_default`, `nuit_max_default`, `repos_jour_heures`, `repos_nuit_heures`, `nuit_debut`, `nuit_fin`, `solo_autorise_debut`, `solo_autorise_fin`, `max_same_partenaire`, `enable_flex`, `allow_flex_flex` (default `True`; if `False`, two flex runners forming a binôme are each forced to their own nominal size — no reduction allowed); `solo_autorise_debut`/`solo_autorise_fin` define the time window (hours) in which solo relays are permitted — segments outside this window set `relais_solo_interdit[r][k]=1`; pauses are declared via `add_pause()` (not via constructor); `segment_start_hour()` and `hour_to_seg()` account for cumulative pause offsets
-- `add_pause(seg, duree)`: declares a planned race halt at segment boundary `seg` (int) with duration `duree` hours; must be called before `new_runner()`; computes and appends to `pause_segments`, `pause_hours`, `pause_duration_hours`, `pause_seg_durations`; also exposes `segment_end_hour(seg)` which excludes pauses starting at `seg`
+- `add_pause(seg, duree)`: declares a planned race halt after active segment `seg` (int), with duration `duree` hours; raises `RuntimeError` if called after `new_runner()` (runtime check, not assert); inserts inactive segments into the time-space timeline; exposes `inactive_ranges`, `inactive_segments`, `active_segments`; `nb_segments` grows with each call (total time-space segments); `nb_active_segments` stays fixed
 - `new_runner(name)` → `RunnerBuilder` (validates name against compat matrix; runner options set via `set_options()`)
 - `new_relay(size)` → `SharedRelay` (forced binôme between two runners)
 - `add_max_binomes(runner1, runner2, nb)`: limits to at most `nb` binômes between two runners across the whole planning (stored in `once_max`)
-- `night_windows()` → `RelayIntervals` covering all nocturnal segments
-- `RunnerBuilder.add_relay(size, *, nb, window, pinned)` → `self` (chainable; `size` is a relay-type string or `SharedRelay`)
+- `night_windows()` → `RelayIntervals` covering all nocturnal segments, in **active** segment indices
+- `RunnerBuilder.add_relay(size, *, nb, window, pinned)` → `self` (chainable; `size` is a relay-type string or `SharedRelay`; `window` and `pinned` accept **active** segment indices and are converted to time-space indices internally)
 - `RunnerBuilder.set_options(*, solo_max, nuit_max, repos_jour, repos_nuit, max_same_partenaire)` → `self`: sets per-runner overrides (replaces former kwargs on `new_runner`)
 - `RelaySpec` dataclass: `size`, `paired_with`, `window`, `pinned`
 - `Coureur` dataclass: `relais`, `repos_jour`, `repos_nuit`, `solo_max`, `nuit_max`, `max_same_partenaire`
 - `RelayIntervals` dataclass: `intervals: list[tuple[int,int]]`
-- Properties: `runners`, `relay_sizes`, `relay_types`, `runner_nuit_max`, `runner_solo_max`, `runner_repos_jour`, `runner_repos_nuit`, `night_segments`, `segment_km`, `segment_duration`, `paired_relays`, `solo_max_size`
-- Methods: `segment_start_hour(seg)`, `is_night(seg)`, `is_compatible(r1, r2)`, `compat_score(r1, r2)`, `hour_to_seg(h, jour=0)`, `duration_to_segs(hours)`, `km_to_seg(km)`, `size_of(relay_name)`, `compute_upper_bound()` (LP relaxation via GLOP — result memoized in `lp_upper_bound`, `lp_upper_bound_exact`, `lp_solo_nb`, `lp_solo_km`), `print_summary()`
+- Properties: `runners`, `relay_sizes`, `relay_types`, `runner_nuit_max`, `runner_solo_max`, `runner_repos_jour`, `runner_repos_nuit`, `night_segments`, `segment_km`, `segment_duration`, `paired_relays`, `solo_max_size`, `has_flex`, `solo_forbidden_segments`, `last_active_seg` (= `nb_active_segments` — upper bound for `RelayIntervals`, replaces `nb_segments` in the declarative API)
+- Methods: `segment_start_hour(seg)` (purely linear in the time-space model), `is_night(seg)`, `is_active(seg)`, `is_compatible(r1, r2)`, `compat_score(r1, r2)`, `hour_to_seg(h, jour=0)` (returns **active** segment index — converts via `time_seg_to_active()`), `km_to_seg(km)` (returns **active** segment index directly), `active_to_time_seg(active_idx)`, `time_seg_to_active(seg)`, `duration_to_segs(hours)`, `size_of(relay_name)`, `compute_upper_bound()` (LP relaxation via GLOP — result memoized in `lp_upper_bound`, `lp_upper_bound_exact`, `lp_solo_nb`, `lp_solo_km`), `print_summary()`
 
 **`compat.py`** — `COMPAT_MATRIX: dict[tuple[str, str], int]` — compatibility scores (0, 1, or 2) for every runner pair. Stores only the lower triangle (canonical key order from `RUNNERS`); `RelayConstraints` reconstructs full symmetry at load time. Auto-generated by `refresh_compat.py` from `compat_coureurs.xlsx`; do not edit manually.
 
@@ -69,10 +69,11 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, ~
   - `start[r][k]`, `end[r][k]`, `size[r][k]` (IntVar); for flexible runners `size` has a domain including compatible partner sizes
   - `same_relay[(r,k,rp,kp)]` (BoolVar): 1 if the pair forms a binôme (same start + same effective size)
   - `relais_solo[r][k]`, `relais_nuit[r][k]`, `relais_solo_interdit[r][k]` (BoolVar)
-- `build(constraints)`: calls `_add_variables`, `_add_fixed_relays`, `_add_night_relay`, `_add_solo_intervals`, `_add_rest_constraints`, `_add_availability`, `_add_same_relay`, `_add_pause_constraints`, `_add_coverage`, `_add_inter_runner_no_overlap`, `_add_solo_constraints`, `_add_forced_pairings`, `_add_once_max`, `_add_max_same_partenaire`
-- `_add_pause_constraints`: for each pause boundary `ps` in `constraints.pause_segments`, forbids any relay that spans it (enforces `end[r][k] <= ps` OR `start[r][k] >= ps` via a BoolVar disjunction)
+- `build(constraints)`: calls `_add_variables`, `_add_symmetry_breaking`, `_add_fixed_relays`, `_add_night_relay`, `_add_solo_intervals`, `_add_rest_constraints`, `_add_availability`, `_add_same_relay`, `_add_pause_constraints`, `_add_coverage`, `_add_inter_runner_no_overlap`, `_add_solo_constraints`, `_add_forced_pairings`, `_add_once_max`, `_add_max_same_partenaire`
+- `_add_symmetry_breaking`: for each runner, groups identical non-pinned non-shared relays and enforces `start[r][k] <= start[r][k']` for consecutive indices — reduces search space by a factorial factor
+- `_add_pause_constraints`: for each inactive range `(a, b)` in `constraints.inactive_ranges`, forbids any relay that overlaps it (enforces `end[r][k] <= a` OR `start[r][k] >= b` via a BoolVar disjunction)
 - `_add_same_relay`: now also filters out pairs whose feasible start ranges don't overlap (temporal pre-filter before building BoolVars); for two fixed-size relays, only creates a `same_relay` var if they share the exact same size; `_feasible_start_ranges(spec, nb_segments)` and `_ranges_overlap()` are static helpers
-- `_add_coverage`: dispatches to `_add_coverage_fixed` (sum of sizes = nb_segments + overlap; exact, fast) when all relay sizes are fixed; otherwise falls back to `_add_coverage_flex` (BoolVar per relay×segment)
+- `_add_coverage`: dispatches to `_add_coverage_fixed` (sum of sizes = `nb_active_segments` + overlap; exact, fast) when all relay sizes are fixed; otherwise falls back to `_add_coverage_flex` (BoolVar per relay×active segment)
 - `_iv_index`: dict `(r, k) → interval_var` for O(1) lookup (replaces linear scans in `_add_inter_runner_no_overlap`)
 - `add_optimisation_func(constraints, name=None)`: when `name` is `None`, defaults to `OPTIM_FUNC_BASIQUE` if `enable_flex=False`, else `OPTIM_FUNC_MIXTE`
 - `_add_fixed_relays`: enforces `pinned` entries as equality constraints on `start`; size domain comes from the relay's set
@@ -119,11 +120,14 @@ The project solves a relay race scheduling problem: Lyon→Fessenheim, 440 km, ~
 
 ## Key modeling details
 
-- Segments are 0-indexed; segment `s` covers km `s * segment_km` to `(s+1) * segment_km`
+- **Time-space model**: the segment timeline mixes active segments (race) and inactive segments (pauses). `nb_segments` is the total time-space length; `nb_active_segments` is the fixed count of race segments. All CP-SAT variables (`start`, `end`) use time-space indices; coverage constraints iterate over `active_segments` only.
+- Segments are 0-indexed; active segment `s` covers km `time_seg_to_active(s) * segment_km`; `segment_start_hour(seg)` is purely linear (`start_hour + seg * segment_duration`) in the time-space model
+- Pauses are encoded as `inactive_ranges`: contiguous blocks of inactive segments inserted into the timeline. Rest constraints need no pause credit — the gap `end[ka]` to `start[kb]` in time-space automatically spans any intervening pause.
 - Two runners form a binôme if same effective relay size AND same start segment AND `compat_score > 0`: both flex and fixed runners can pair together; when two flex runners pair, the model allows any size in the intersection of their domains, but the flex penalty in the objective penalizes each runner running below their nominal size, making double-flex binômes at sub-maximal size costly; with `allow_flex_flex=False`, each runner in a flex+flex binôme is instead hard-constrained to its own nominal size (`max` of its domain)
 - Incompatible pairs (or pairs with no `same_relay` var) are forced disjoint via `add_no_overlap`
 - Solo relays are forbidden outside the `solo_autorise_debut`/`solo_autorise_fin` time window: `_add_solo_intervals` sets `relais_solo_interdit[r][k]=1` for segments outside this window, and `_add_solo_constraints` enforces `relais_solo[r][k] + relais_solo_interdit[r][k] <= 1`
 - Flexible runners in solo are forced to the nominal size (`max` of their size set)
+- Symmetry breaking: for identical non-pinned relays of the same runner, `start[r][k] <= start[r][k']` is enforced, reducing the search space by a factorial factor
 - Solver time limit: 5h (solver.py) / configurable per phase in enumerate.py
 
 ## Commit instructions

@@ -210,26 +210,40 @@ class RunnerBuilder:
         if not isinstance(size, (str, SharedRelay)):
             raise TypeError(f"size doit être un nom de type (str) ou un SharedRelay, pas {type(size).__name__}.")
 
+        c = self._constraints
+
         window_list: list[tuple[int, int]] | None = None
         if isinstance(window, RelayIntervals):
             window_list = window.intervals
         elif isinstance(window, tuple):
             window_list = [window]
 
+        # Convertir les bornes de window (indices actifs) en indices temps
+        if window_list is not None:
+            window_list = [
+                (c.active_to_time_seg(s), c.active_to_time_seg(e))
+                for s, e in window_list
+            ]
+
+        # Convertir pinned (index actif) en index temps
+        time_pinned: int | None = None
+        if pinned is not None:
+            time_pinned = c.active_to_time_seg(pinned)
+
         if isinstance(size, str):
-            size = self._constraints.relay_types[size]
+            size = c.relay_types[size]
 
         if isinstance(size, SharedRelay):
             if nb != 1:
                 raise ValueError("nb>1 n'est pas compatible avec un SharedRelay.")
             idx = len(self._coureur.relais)
-            spec = RelaySpec(size=size.size, window=window_list, pinned=pinned)
+            spec = RelaySpec(size=size.size, window=window_list, pinned=time_pinned)
             self._coureur.relais.append(spec)
             size._register(RelayHandle(self.name, idx, spec))
             return self
 
         for _ in range(nb):
-            self._coureur.relais.append(RelaySpec(size=size, window=window_list, pinned=pinned))
+            self._coureur.relais.append(RelaySpec(size=size, window=window_list, pinned=time_pinned))
         return self
 
 
@@ -258,7 +272,10 @@ class RelayConstraints:
         allow_flex_flex: bool = True,
     ):
         self.total_km = total_km
-        self.nb_segments = nb_segments
+        # nb_segments (paramètre) = nombre de segments ACTIFS (course).
+        # nb_active_segments est fixe ; nb_segments grandit à chaque add_pause().
+        self.nb_active_segments: int = nb_segments
+        self.nb_segments: int = nb_segments  # espace-temps ; augmente avec les pauses
         self.speed_kmh = speed_kmh
         self.start_hour = start_hour
         # Déplie le triangle inférieur en matrice symétrique complète
@@ -276,10 +293,13 @@ class RelayConstraints:
         self.repos_jour_default: int = self.duration_to_segs(repos_jour_heures)
         self.repos_nuit_default: int = self.duration_to_segs(repos_nuit_heures)
 
-        self.pause_hours: list[float] = []
-        self.pause_duration_hours: list[float] = []
-        self.pause_segments: list[int] = []
-        self.pause_seg_durations: list[int] = []
+        # Pauses : plages de segments inactifs dans l'espace-temps.
+        # inactive_ranges[i] = (time_start, time_end) — segment inactifs [start, end)
+        # _pause_active_segs[i] = index du segment actif où la pause s'insère (arg. de add_pause)
+        self.inactive_ranges: list[tuple[int, int]] = []
+        self.inactive_segments: set[int] = set()
+        self.active_segments: list[int] = list(range(nb_segments))
+        self._pause_active_segs: list[int] = []
 
         self.runners_data: dict[str, Coureur] = {}
         self.once_max: list[tuple[str, str, int]] = []
@@ -302,22 +322,35 @@ class RelayConstraints:
     # ------------------------------------------------------------------
 
     def add_pause(self, seg: int, duree: float) -> None:
-        """Déclare une pause à la frontière du segment seg, de durée duree heures.
+        """Déclare une pause après le segment actif seg, de durée duree heures.
 
-        seg  : numéro du segment (utilisez c.hour_to_seg() ou c.km_to_seg() pour convertir).
-        duree: durée de la pause en heures.
+        seg  : index de segment ACTIF (0..nb_active_segments-1).
+               Utiliser c.km_to_seg() ou c.hour_to_seg() pour convertir depuis km ou heures.
+        duree: durée de la pause en heures (> 0).
 
-        Les pauses doivent être déclarées dans l'ordre chronologique (avant new_runner).
+        Doit être appelé avant new_runner() et add_relay(), dans l'ordre croissant de seg.
         """
-        assert not self.runners_data, "add_pause() doit être appelé avant new_runner()"
+        if self.runners_data:
+            raise RuntimeError(
+                "add_pause() doit être appelé avant new_runner() — "
+                "des coureurs ont déjà été déclarés."
+            )
         assert duree > 0, f"Durée de pause nulle ou négative : {duree}"
-        assert 0 < seg < self.nb_segments, f"Segment de pause hors bornes : {seg}"
-        D = sum(self.pause_duration_hours)
-        wall_clock_hour = self.start_hour + seg * self.segment_duration + D
-        self.pause_hours.append(wall_clock_hour)
-        self.pause_duration_hours.append(duree)
-        self.pause_segments.append(seg)
-        self.pause_seg_durations.append(self.duration_to_segs(duree))
+        assert 0 < seg < self.nb_active_segments, f"Segment de pause hors bornes : {seg}"
+
+        pause_seg_dur = self.duration_to_segs(duree)
+        # Conversion index actif → index temps : décaler par les segments inactifs déjà insérés.
+        total_inactive_so_far = self.nb_segments - self.nb_active_segments
+        time_start = seg + total_inactive_so_far
+        time_end = time_start + pause_seg_dur
+
+        self._pause_active_segs.append(seg)
+        self.inactive_ranges.append((time_start, time_end))
+        for s in range(time_start, time_end):
+            self.inactive_segments.add(s)
+        self.nb_segments += pause_seg_dur
+        # Reconstruire active_segments dans l'ordre
+        self.active_segments = [s for s in range(self.nb_segments) if s not in self.inactive_segments]
 
     def new_runner(self, name: str) -> RunnerBuilder:
         """Crée un nouveau coureur et retourne son RunnerBuilder."""
@@ -341,26 +374,36 @@ class RelayConstraints:
         return SharedRelay(size=self.relay_types[size])
 
     def night_windows(self) -> RelayIntervals:
-        """Retourne un RelayIntervals couvrant toutes les plages nocturnes (0h–6h)."""
+        """Retourne un RelayIntervals couvrant toutes les plages nocturnes, en indices ACTIFS."""
         intervals: list[tuple[int, int]] = []
         in_night = False
         seg_start = 0
-        for s in range(self.nb_segments):
+        for s in self.active_segments:
+            active_idx = self.time_seg_to_active(s)
             if self.is_night(s):
                 if not in_night:
-                    seg_start = s
+                    seg_start = active_idx
                     in_night = True
             else:
                 if in_night:
-                    intervals.append((seg_start, s - 1))
+                    intervals.append((seg_start, active_idx - 1))
                     in_night = False
         if in_night:
-            intervals.append((seg_start, self.nb_segments - 1))
+            intervals.append((seg_start, self.nb_active_segments - 1))
         return RelayIntervals(intervals)
 
     # ------------------------------------------------------------------
     # Propriétés et méthodes utilitaires
     # ------------------------------------------------------------------
+
+    @property
+    def last_active_seg(self) -> int:
+        """Borne supérieure exclusive des segments actifs (= nb_active_segments).
+
+        À utiliser dans RelayIntervals pour exprimer "jusqu'à la fin de la course",
+        en remplacement de c.nb_segments qui est un index espace-temps.
+        """
+        return self.nb_active_segments
 
     @property
     def paired_relays(self) -> list[tuple[str, int, str, int]]:
@@ -417,33 +460,45 @@ class RelayConstraints:
 
     @property
     def segment_km(self) -> float:
-        """longueur d'un segment en km"""
-        return self.total_km / self.nb_segments
+        """longueur d'un segment ACTIF en km"""
+        return self.total_km / self.nb_active_segments
 
     @property
     def segment_duration(self) -> float:
-        """durée d'un segment en heures"""
+        """durée d'un quantum de temps (segment) en heures"""
         return self.segment_km / self.speed_kmh
 
     def segment_start_hour(self, seg: int) -> float:
-        """Heure de début du segment (0-indexé), en heures depuis minuit mercredi."""
-        h = self.start_hour + seg * self.segment_duration
-        for i, ps in enumerate(self.pause_segments):
-            if ps <= seg:
-                h += self.pause_duration_hours[i]
-            else:
-                break
-        return h
+        """Heure de début du quantum de temps seg (index dans l'espace-temps), en heures depuis minuit mercredi.
 
-    def segment_end_hour(self, seg: int) -> float:
-        """Heure de fin d'un relais se terminant au segment seg (pauses débutant en seg exclues)."""
-        h = self.start_hour + seg * self.segment_duration
-        for i, ps in enumerate(self.pause_segments):
-            if ps < seg:
-                h += self.pause_duration_hours[i]
-            else:
-                break
-        return h
+        Dans le nouveau modèle, chaque segment (actif ou inactif) représente un quantum
+        de temps fixe : segment_start_hour est simplement linéaire.
+        """
+        return self.start_hour + seg * self.segment_duration
+
+    def active_to_time_seg(self, active_idx: int) -> int:
+        """Convertit un index de segment actif en index de segment temps.
+
+        Le décalage est la somme des durées (en segs) de toutes les pauses
+        qui s'insèrent avant ou à active_idx.
+        """
+        shift = 0
+        for i, ps in enumerate(self._pause_active_segs):
+            if ps <= active_idx:
+                a, b = self.inactive_ranges[i]
+                shift += b - a
+        return active_idx + shift
+
+    def time_seg_to_active(self, seg: int) -> int:
+        """Convertit un index de segment temps en index de segment actif.
+
+        Compte le nombre de segments inactifs strictement avant seg.
+        """
+        return seg - sum(1 for s in self.inactive_segments if s < seg)
+
+    def is_active(self, seg: int) -> bool:
+        """Retourne True si le segment temps seg est un segment actif (course en cours)."""
+        return seg not in self.inactive_segments
 
     def is_night(self, seg: int) -> bool:
         """Vrai si le segment démarre entre nuit_debut et nuit_fin (n'importe quel jour)."""
@@ -468,8 +523,8 @@ class RelayConstraints:
         return set(s for s in range(self.nb_segments) if self.is_solo_forbidden(s))
 
     def duration_to_segs(self, hours: float) -> int:
-        """Convertit une durée en heures en nombre de segments (arrondi au supérieur)."""
-        return math.ceil(hours * self.speed_kmh * self.nb_segments / self.total_km)
+        """Convertit une durée en heures en nombre de segments temps (arrondi au supérieur)."""
+        return math.ceil(hours / self.segment_duration)
 
     def size_of(self, relay_name: str) -> int:
         """Retourne la taille en segments du type de relais donné.
@@ -484,26 +539,19 @@ class RelayConstraints:
         return next(iter(sizes))
 
     def km_to_seg(self, km: float) -> int:
-        """Convertit une distance en km en numéro de segment (arrondi au supérieur)."""
-        return math.floor(km * self.nb_segments / self.total_km)
+        """Convertit une distance en km en index de segment ACTIF."""
+        return math.floor(km * self.nb_active_segments / self.total_km)
 
     def hour_to_seg(self, hour: float, jour: int = 0) -> int:
-        """Convertit une heure absolue (+ décalage en jours) en numéro de segment.
+        """Convertit une heure absolue (+ décalage en jours) en index de segment ACTIF.
 
         Exemples :
-            hour_to_seg(23.5)        → segment correspondant à 23h30 le jour de départ
-            hour_to_seg(4, jour=1)   → segment correspondant à 4h00 le lendemain
+            hour_to_seg(23.5)        → segment actif correspondant à 23h30 le jour de départ
+            hour_to_seg(4, jour=1)   → segment actif correspondant à 4h00 le lendemain
         """
         h_abs = jour * 24 + hour
-        D = 0.0
-        for i, ps in enumerate(self.pause_segments):
-            pause_wall_start = self.start_hour + ps * self.segment_duration + sum(self.pause_duration_hours[:i])
-            if pause_wall_start <= h_abs:
-                D += self.pause_duration_hours[i]
-            else:
-                break
-        pure_race_hours = h_abs - self.start_hour - D
-        return int(pure_race_hours * self.speed_kmh * self.nb_segments / self.total_km)
+        time_seg = int((h_abs - self.start_hour) / self.segment_duration)
+        return self.time_seg_to_active(time_seg)
 
     def is_compatible(self, coureur_1: str, coureur_2: str) -> bool:
         """Retourne True si coureur_1 et coureur_2 peuvent former un binôme."""
@@ -542,7 +590,7 @@ class RelayConstraints:
 
         req_sizes = {r: [max(spec.size) for spec in cd.relais] for r, cd in self.runners_data.items()}
         total_segs_engaged = sum(sum(sizes) for sizes in req_sizes.values())
-        surplus = total_segs_engaged - self.nb_segments
+        surplus = total_segs_engaged - self.nb_active_segments
 
         solver = pywraplp.Solver.CreateSolver("GLOP")
 
@@ -628,8 +676,9 @@ class RelayConstraints:
         print("=" * 60)
         print("RÉSUMÉ DES DONNÉES D'ENTRÉE")
         print("=" * 60)
+        nb_total_str = f" ({self.nb_segments} en tout avec pauses)" if self.inactive_ranges else ""
         print(
-            f"  Parcours    : {self.total_km:.1f} km, {self.nb_segments} segments de {self.segment_km:.1f} km"
+            f"  Parcours    : {self.total_km:.1f} km, {self.nb_active_segments} segments actifs de {self.segment_km:.1f} km{nb_total_str}"
         )
         print(
             f"  Vitesse     : {self.speed_kmh} km/h → {self.segment_duration * 60:.1f} min/segment"
@@ -640,16 +689,20 @@ class RelayConstraints:
         print(f"  Nuit (repos): {self.nuit_debut}h–{self.nuit_fin}h")
         print(f"  Solo autorisé: {self.solo_autorise_debut}h–{self.solo_autorise_fin}h")
 
-        if self.pause_segments:
+        if self.inactive_ranges:
             print()
             print("PAUSES PLANIFIÉES")
             print("-" * 60)
-            for i, ps in enumerate(self.pause_segments):
-                jour = int(self.pause_hours[i] // 24)
-                h_local = self.pause_hours[i] % 24
+            for i, (a, b) in enumerate(self.inactive_ranges):
+                h_start = self.segment_start_hour(a)
+                h_end = self.segment_start_hour(b)
+                dur_h = h_end - h_start
+                jour = int(h_start // 24)
+                h_local = h_start % 24
+                ps = self._pause_active_segs[i]
                 print(
-                    f"  Pause {i+1} : j{jour} {h_local:.2f}h, durée {self.pause_duration_hours[i]}h,"
-                    f" frontière seg {ps}"
+                    f"  Pause {i+1} : j{jour} {h_local:.2f}h, durée {dur_h:.2f}h,"
+                    f" frontière seg actif {ps}, segs temps [{a}, {b})"
                 )
 
         print()

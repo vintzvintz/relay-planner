@@ -51,9 +51,15 @@ Définit aussi les constantes de types de relais (`R10`, `R15`, `R20`, `R30`, `R
 Types associés : `RunnerBuilder`, `SharedRelay`, `RelaySpec`, `Coureur`, `RelayIntervals`.
 Options coureur via `RunnerBuilder.set_options(solo_max, nuit_max, repos_jour, repos_nuit, max_same_partenaire)` ;
 `add_max_binomes(runner1, runner2, nb)` pour limiter les binômes entre deux coureurs.
-Méthode `add_pause(seg, duree)` : déclare une pause planifiée à la frontière `seg`, de durée `duree` heures —
-le modèle interdit tout relais qui chevaucherait cette frontière, et `segment_start_hour()`/`hour_to_seg()`
-tiennent compte des décalages cumulés. Doit être appelée avant tout `new_runner()`.
+Méthode `add_pause(seg, duree)` : déclare une pause planifiée après le segment actif `seg`, de durée `duree` heures —
+insère des segments **inactifs** dans la timeline espace-temps ; le modèle interdit tout relais couvrant ces segments.
+`nb_segments` (espace-temps) augmente ; `nb_active_segments` reste fixe. Les contraintes de repos n'ont pas besoin
+de crédit de pause : le gap entre deux relais inclut automatiquement les pauses intercalées.
+Lève `RuntimeError` si appelée après `new_runner()`.
+**API publique unifiée en segments actifs :** `hour_to_seg()`, `km_to_seg()` et `night_windows()` retournent tous des
+indices de segments actifs. `add_relay(window=, pinned=)` accepte des indices actifs et fait la conversion
+actif→temps en interne. Utiliser `c.last_active_seg` (= `nb_active_segments`) comme borne supérieure
+dans `RelayIntervals` (et non `c.nb_segments` qui est un index espace-temps).
 La borne LP est mémorisée dans `lp_upper_bound`/`lp_upper_bound_exact`/`lp_solo_nb`/`lp_solo_km` après le premier calcul.
 Pas destiné à être exécuté directement.
 
@@ -67,6 +73,8 @@ Construction du modèle CP-SAT (`RelayModel`). Variables : `start/end/size` par 
 `same_relay` (binômes), `relais_solo`, `relais_nuit`, `relais_solo_interdit`. Objectif mixte :
 somme pondérée des binômes (poids = score de compatibilité) moins une pénalité flex
 (relais flex raccourcis en dessous de leur taille nominale).
+Brise-symétrie automatique pour les relais identiques non pinnés d'un même coureur.
+Pauses encodées comme plages de segments inactifs dans la timeline espace-temps.
 Expose `build_model(constraints)`, `add_optimisation_func(constraints, name)` et `add_min_score(constraints, name, score)`.
 Pas destiné à être exécuté directement.
 

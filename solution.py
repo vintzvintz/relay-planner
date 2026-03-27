@@ -45,7 +45,8 @@ class ChronoRelay:
     mm: int = 0
     hh_end: int = 0
     mm_end: int = 0
-    seg_start: int = 0
+    seg_start: int = 0       # index de segment actif (pour affichage km)
+    time_seg_start: int = 0  # index de segment temps (pour segment_start_hour)
     km_start: float = 0.0
     km_dist: float = 0.0
     coureurs: str = ""
@@ -137,9 +138,9 @@ class RelaySolution:
         return DAY_SHORT[min(day, 2)], hh, mm
 
     def _fmt_short_end(self, seg):
-        """Heure de fin d'un relais se terminant au segment seg (pause débutant en seg exclue)."""
+        """Heure de fin d'un relais se terminant au segment temps seg."""
         c = self.constraints
-        h = c.segment_end_hour(seg)
+        h = c.segment_start_hour(seg)
         day, hh, mm = int(h // 24), int(h) % 24, int((h % 1) * 60)
         return DAY_SHORT[min(day, 2)], hh, mm
 
@@ -162,11 +163,11 @@ class RelaySolution:
             w = max(w, len(label))
         return w
 
-    def _pause_info(self, ps: int) -> ChronoPause:
-        """Calcule les champs de représentation d'une pause à la frontière du segment ps."""
+    def _pause_info(self, time_start: int, time_end: int) -> ChronoPause:
+        """Calcule les champs de représentation d'une pause couvrant [time_start, time_end)."""
         c = self.constraints
-        ph_start = c.segment_end_hour(ps)
-        ph_end = c.segment_start_hour(ps)
+        ph_start = c.segment_start_hour(time_start)
+        ph_end = c.segment_start_hour(time_end)
         d_start, d_end = int(ph_start // 24), int(ph_end // 24)
         hs, ms = int(ph_start) % 24, int((ph_start % 1) * 60)
         he, me = int(ph_end) % 24, int((ph_end % 1) * 60)
@@ -198,18 +199,19 @@ class RelaySolution:
             coureurs = f"{rel['runner']} + {rel['partner']}" if rel["partner"] else rel["runner"]
             entries.append(ChronoRelay(
                 day_s=day_s, hh=hh, mm=mm, hh_end=hh_end, mm_end=mm_end,
-                seg_start=rel["start"],
-                km_start=rel["start"] * c.segment_km,
+                seg_start=c.time_seg_to_active(rel["start"]),
+                time_seg_start=rel["start"],
+                km_start=c.time_seg_to_active(rel["start"]) * c.segment_km,
                 km_dist=rel["km"],
                 coureurs=coureurs,
                 tags=self._chrono_tags(rel),
                 rel=rel,
             ))
 
-            for ps in c.pause_segments:
-                if rel["end"] == ps and ps not in pause_inserted:
-                    pause_inserted.add(ps)
-                    entries.append(self._pause_info(ps))
+            for a, b in c.inactive_ranges:
+                if rel["end"] == a and a not in pause_inserted:
+                    pause_inserted.add(a)
+                    entries.append(self._pause_info(a, b))
 
         return entries
 
@@ -288,8 +290,8 @@ class RelaySolution:
             "fin_seg": rel["end"],
             "debut_heure": round(c.segment_start_hour(rel["start"]), 4),
             "fin_heure": round(c.segment_start_hour(rel["end"]), 4),
-            "debut_km": float(rel["start"] * c.segment_km),
-            "fin_km": float(rel["end"] * c.segment_km),
+            "debut_km": float(c.time_seg_to_active(rel["start"]) * c.segment_km),
+            "fin_km": float(c.time_seg_to_active(rel["end"]) * c.segment_km),
             "distance_km": rel["km"],
             "k": rel["k"],
             "solo": rel["solo"],
@@ -365,7 +367,7 @@ class RelaySolution:
         c._ensure_lp()
         lp_str = f" (LP ≤{c.lp_upper_bound})" if c.lp_upper_bound is not None else ""
         lines.append("=" * W)
-        lines.append(f"  PLANNING  {c.total_km:.1f} km — {c.nb_segments} segments de {c.segment_km:.1f} km - Vitesse {c.speed_kmh:.1f} km/h")
+        lines.append(f"  PLANNING  {c.total_km:.1f} km — {c.nb_active_segments} segments de {c.segment_km:.1f} km - Vitesse {c.speed_kmh:.1f} km/h")
         lines.append(
             f"  Binômes : {n_binomes}{lp_str}  Solos : {n_solos} ({km_solos:.1f} km){flex_str}{pinned_str}{score_str}"
         )
@@ -375,7 +377,7 @@ class RelaySolution:
         current_day = -1
         for entry in self._build_chrono_entries():
             if isinstance(entry, ChronoRelay):
-                day = int(c.segment_start_hour(entry.seg_start) // 24)
+                day = int(c.segment_start_hour(entry.time_seg_start) // 24)
                 if day != current_day:
                     current_day = day
                     lines.append(f"\n▶ {DAY_NAMES[min(day, 2)].upper()}")
@@ -518,12 +520,8 @@ class RelaySolution:
         for rel in self.relais_list:
             by_runner[rel["runner"]][rel["start"]] = rel
 
-        # pause_segments[i] = frontière : la pause s'insère entre seg ps-1 et seg ps
-        pause_set = set(c.pause_segments)
-        # nombre de colonnes équivalentes par frontière de pause
-        pause_colspan_by_seg = {ps: c.pause_seg_durations[i] for i, ps in enumerate(c.pause_segments)}
-        # durée en heures par frontière (pour le label header)
-        pause_dur_by_seg = {ps: c.pause_duration_hours[i] for i, ps in enumerate(c.pause_segments)}
+        # inactive_range_starts[a] = b : plage inactive [a, b) dans l'espace-temps
+        inactive_range_starts = {a: b for a, b in c.inactive_ranges}
 
         def unavail_segs(runner):
             specs = c.runners_data[runner].relais
@@ -547,7 +545,7 @@ class RelaySolution:
         def split_spans(spans):
             result = []
             for s, e, typ, label in spans:
-                cuts = sorted(m for m in mark_segs | pause_set if s < m < e)
+                cuts = sorted(m for m in mark_segs if s < m < e)
                 boundaries = [s] + cuts + [e]
                 for i in range(len(boundaries) - 1):
                     result.append((boundaries[i], boundaries[i + 1], typ, label if i == 0 else ""))
@@ -582,6 +580,10 @@ class RelaySolution:
             seg = 0
             last_repos_end = None  # seg index jusqu'où le repos minimal court
             while seg < c.nb_segments:
+                if seg in inactive_range_starts:
+                    # Segment inactif (pause) — sauter toute la plage sans créer de span
+                    seg = inactive_range_starts[seg]
+                    continue
                 if seg in relais_by_start:
                     rel = relais_by_start[seg]
                     if (rel["pinned"] is not None):
@@ -598,7 +600,7 @@ class RelaySolution:
                     seg = rel["end"]
                 elif seg in unavail:
                     end = seg + 1
-                    while end < c.nb_segments and end in unavail and end not in relais_by_start:
+                    while end < c.nb_segments and end in unavail and end not in relais_by_start and end not in inactive_range_starts:
                         end += 1
                     spans.append((seg, end, "unavail", ""))
                     seg = end
@@ -611,6 +613,11 @@ class RelaySolution:
                     for us in sorted(unavail):
                         if us > seg:
                             next_event = min(next_event, us)
+                            break
+                    # Stopper aussi à la prochaine plage inactive
+                    for a in sorted(inactive_range_starts):
+                        if a > seg:
+                            next_event = min(next_event, a)
                             break
                     end = next_event
                     # Découpe la zone libre en repos minimal (gris) + libre (blanc)
@@ -625,63 +632,61 @@ class RelaySolution:
 
             spans = split_spans(spans)
 
-            # Intercaler les pauses : construire une liste ordonnée (pause_at, ...)
-            # puis émettre chaque pause exactement une fois entre les spans qui l'entourent
-            pauses_sorted = sorted(c.pause_segments)
-            pause_idx = 0  # index dans pauses_sorted
-
+            # Construire les <td> en intercalant les cellules pause aux bons endroits
             tds = []
+            inactive_sorted = sorted(inactive_range_starts.items())  # [(a, b), ...]
+            inactive_idx = 0
             for s, e, typ, label in spans:
+                # Émettre toutes les pauses dont le début est avant s (et pas encore émises)
+                while inactive_idx < len(inactive_sorted) and inactive_sorted[inactive_idx][0] <= s:
+                    a, b = inactive_sorted[inactive_idx]
+                    cs = b - a
+                    tds.append(f'<td colspan="{cs}" class="seg-pause"></td>')
+                    inactive_idx += 1
                 colspan = e - s
                 if colspan == 0:
                     continue
-                # Émettre toutes les pauses dont la frontière est <= s et pas encore émises
-                while pause_idx < len(pauses_sorted) and pauses_sorted[pause_idx] <= s:
-                    ps = pauses_sorted[pause_idx]
-                    cs = pause_colspan_by_seg[ps]
-                    tds.append(f'<td colspan="{cs}" class="seg-pause"></td>')
-                    pause_idx += 1
                 mark_class = " seg-mark" if s in mark_segs else ""
                 css_class = _typ_to_css(typ, mark_class)
                 tds.append(f'<td colspan="{colspan}" class="{css_class}">{label}</td>')
 
             # Pauses restantes après le dernier span
-            while pause_idx < len(pauses_sorted):
-                ps = pauses_sorted[pause_idx]
-                cs = pause_colspan_by_seg[ps]
+            while inactive_idx < len(inactive_sorted):
+                a, b = inactive_sorted[inactive_idx]
+                cs = b - a
                 tds.append(f'<td colspan="{cs}" class="seg-pause"></td>')
-                pause_idx += 1
+                inactive_idx += 1
 
             rows_html.append(f'<tr><th class="th-runner">{r}</th>\n{chr(10).join(tds)}\n</tr>')
 
+        night_segs = c.night_segments
         header_tds = ['<th class="th-seg-label"></th>']
-        for seg in range(c.nb_segments):
-            # Insérer colonne pause avant ce segment si applicable
-            if seg in pause_set:
-                cs = pause_colspan_by_seg[seg]
-                dur = pause_dur_by_seg[seg]
+        seg = 0
+        while seg <= c.nb_segments:
+            if seg in inactive_range_starts:
+                a, b = seg, inactive_range_starts[seg]
+                cs = b - a
+                dur = (b - a) * c.segment_duration
                 dur_h = int(dur)
                 dur_m = int((dur % 1) * 60)
                 dur_str = f"{dur_h}h{dur_m:02d}" if dur_h else f"{dur_m}min"
                 header_tds.append(f'<th colspan="{cs}" class="th-pause">⏸ {dur_str}</th>')
-            h = c.segment_start_hour(seg)
-            is_mark = seg in mark_segs
-            if is_mark:
-                h_mod = h % 24
-                closest_hh = min((0, 6, 12, 18), key=lambda hm: min(abs(h_mod - hm), 24 - abs(h_mod - hm)))
-                label = f"{closest_hh:02d}h"
+                seg = b
+            elif seg < c.nb_segments:
+                h = c.segment_start_hour(seg)
+                is_mark = seg in mark_segs
+                if is_mark:
+                    h_mod = h % 24
+                    closest_hh = min((0, 6, 12, 18), key=lambda hm: min(abs(h_mod - hm), 24 - abs(h_mod - hm)))
+                    label = f"{closest_hh:02d}h"
+                else:
+                    label = ""
+                night_class = " seg-header-night" if seg in night_segs else ""
+                mark_class = " seg-mark-header" if is_mark else ""
+                header_tds.append(f'<th class="th-seg{night_class}{mark_class}">{label}</th>')
+                seg += 1
             else:
-                label = ""
-            night_class = " seg-header-night" if seg in c.night_segments else ""
-            mark_class = " seg-mark-header" if is_mark else ""
-            header_tds.append(f'<th class="th-seg{night_class}{mark_class}">{label}</th>')
-        if c.nb_segments in pause_set:
-            cs = pause_colspan_by_seg[c.nb_segments]
-            dur = pause_dur_by_seg[c.nb_segments]
-            dur_h = int(dur)
-            dur_m = int((dur % 1) * 60)
-            dur_str = f"{dur_h}h{dur_m:02d}" if dur_h else f"{dur_m}min"
-            header_tds.append(f'<th colspan="{cs}" class="th-pause">⏸ {dur_str}</th>')
+                seg += 1
         header_row = f'<tr>\n{chr(10).join(header_tds)}\n</tr>'
 
         return header_row, rows_html
@@ -757,7 +762,7 @@ class RelaySolution:
 </style>
 </head>
 <body>
-<h2>Planning {c.total_km:.1f} km — {c.nb_segments} segments de {c.segment_km:.1f} km — Vitesse {c.speed_kmh:.1f} km/h</h2>
+<h2>Planning {c.total_km:.1f} km — {c.nb_active_segments} segments de {c.segment_km:.1f} km — Vitesse {c.speed_kmh:.1f} km/h</h2>
 <p>Départ : {DAY_NAMES[0]} {int(c.start_hour):02d}h{int((c.start_hour % 1) * 60):02d} &nbsp;|&nbsp; Arrivée : {day_end} ~{hh_end:02d}h{mm_end:02d}</p>
 <p>Binômes : <strong>{n_binomes}</strong>{lp_str_html} &nbsp;|&nbsp; Solos : <strong>{n_solos}</strong> ({km_solos:.1f} km) &nbsp;|&nbsp; Flex : <strong>{n_flex}</strong>{km_flex_str} &nbsp;|&nbsp; Pinned : <strong>{n_pinned}</strong> &nbsp;|&nbsp; Score : <strong>{f"{self.score:.1f}" if self.score is not None else "—"}</strong></p>
 <p>
