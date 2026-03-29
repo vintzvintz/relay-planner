@@ -1,8 +1,8 @@
-"""Tests de RelayConstraints : new_runner, add_relay, new_relay."""
+"""Tests de Constraints : new_runner, add_relay, new_relay."""
 
 import math
 import pytest
-from constraints import RelayConstraints, RelayIntervals, SharedRelay
+from relay.constraints import Constraints, Intervals, SharedLeg
 
 
 # ---------------------------------------------------------------------------
@@ -126,7 +126,7 @@ class TestAddRelay:
         assert spec.window == [(0, 5)]
 
     def test_window_relay_intervals(self, c):
-        w = RelayIntervals([(0, 3), (7, 9)])
+        w = Intervals([(0, 3), (7, 9)])
         c.new_runner("Alice").add_relay("R10", window=w)
         spec = c.runners_data["Alice"].relais[0]
         assert spec.window == [(0, 3), (7, 9)]
@@ -146,7 +146,7 @@ class TestAddRelay:
 
 
 # ---------------------------------------------------------------------------
-# new_relay / SharedRelay : pairing entre coureurs
+# new_relay / SharedLeg : pairing entre coureurs
 # ---------------------------------------------------------------------------
 
 class TestSharedRelay:
@@ -237,7 +237,7 @@ class TestMaxSamePartenaire:
         assert c.max_same_partenaire is None
 
     def test_global_max_same_partenaire_set(self):
-        rc = RelayConstraints(
+        rc = Constraints(
             total_km=100.0, nb_segments=10, speed_kmh=10.0, start_hour=15.0,
             compat_matrix={}, solo_max_km=15.0, solo_max_default=2,
             nuit_max_default=1, repos_jour_heures=7.0, repos_nuit_heures=9.0,

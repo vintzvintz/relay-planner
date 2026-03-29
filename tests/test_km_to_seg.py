@@ -1,13 +1,13 @@
-"""Tests unitaires pour RelayConstraints.km_to_seg().
+"""Tests unitaires pour Constraints.km_to_seg().
 
 km_to_seg(km) = floor(km * nb_segments / total_km)
 """
 import pytest
-from constraints import RelayConstraints
+from relay.constraints import Constraints
 
 
-def make_constraints(total_km: float, nb_segments: int) -> RelayConstraints:
-    return RelayConstraints(
+def make_constraints(total_km: float, nb_segments: int) -> Constraints:
+    return Constraints(
         total_km=total_km,
         nb_segments=nb_segments,
         speed_kmh=9.0,

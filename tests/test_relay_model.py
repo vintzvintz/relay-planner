@@ -1,10 +1,10 @@
-"""Tests unitaires de RelayModel : variables CP-SAT, contraintes, structure du modèle."""
+"""Tests unitaires de Model : variables CP-SAT, contraintes, structure du modèle."""
 
 import pytest
 from ortools.sat.python import cp_model
 
-from constraints import RelayConstraints, RelayIntervals
-from model import RelayModel, build_model
+from relay.constraints import Constraints, Intervals
+from relay.model import Model, build_model
 
 
 # ---------------------------------------------------------------------------
@@ -19,8 +19,8 @@ KM = 90.0
 
 
 def _make_rc(compat_matrix=None, solo_max_km=90.0, repos_jour=0.0, repos_nuit=0.0):
-    """RelayConstraints diurne (départ 8h), 90 km / 90 segs (1 km/seg), sans segments nocturnes."""
-    return RelayConstraints(
+    """Constraints diurne (départ 8h), 90 km / 90 segs (1 km/seg), sans segments nocturnes."""
+    return Constraints(
         total_km=KM,
         nb_segments=NB,
         speed_kmh=KM / NB,
@@ -95,7 +95,7 @@ def c_pinned():
 def c_window():
     """Alice fenêtre [0, 35] (R30=30 → end ≤ 36). Bob+Carol couvrent le reste."""
     rc = _make_rc(compat_matrix={("Alice", "Bob"): 0, ("Alice", "Carol"): 0, ("Bob", "Carol"): 0})
-    rc.new_runner("Alice").add_relay("R30", window=RelayIntervals([(0, 35)]))
+    rc.new_runner("Alice").add_relay("R30", window=Intervals([(0, 35)]))
     rc.new_runner("Bob").add_relay("R30")
     rc.new_runner("Carol").add_relay("R30")
     return rc
@@ -103,7 +103,7 @@ def c_window():
 
 @pytest.fixture
 def c_shared():
-    """SharedRelay R30 entre Alice et Bob (binôme forcé), Carol couvre le reste."""
+    """SharedLeg R30 entre Alice et Bob (binôme forcé), Carol couvre le reste."""
     rc = _make_rc(compat_matrix={("Alice", "Bob"): 2, ("Alice", "Carol"): 0, ("Bob", "Carol"): 0})
     shared = rc.new_relay("R30")
     rc.new_runner("Alice").add_relay(shared)
@@ -126,7 +126,7 @@ class TestBuildModel:
         assert isinstance(m.model, cp_model.CpModel)
 
     def test_double_build_raises(self, c2):
-        m = RelayModel()
+        m = Model()
         m.build(c2)
         with pytest.raises(AssertionError):
             m.build(c2)

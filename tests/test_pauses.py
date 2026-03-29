@@ -8,7 +8,7 @@ Dans le nouveau modèle, les pauses sont des segments INACTIFS dans l'espace-tem
 - active_to_time_seg(a) convertit un index actif en index temps
 
 Couvre :
-1. Calcul de inactive_ranges dans RelayConstraints.add_pause
+1. Calcul de inactive_ranges dans Constraints.add_pause
 2. segment_start_hour et active_to_time_seg
 3. hour_to_seg roundtrip (trivial dans le nouveau modèle)
 4. verifications._check_pauses sur solutions fictives
@@ -18,8 +18,8 @@ Couvre :
 """
 import io
 import pytest
-from constraints import RelayConstraints, R10
-from verifications import _check_pauses, _check_rest
+from relay.constraints import Constraints, R10
+from relay.verifications import _check_pauses, _check_rest
 
 
 # ---------------------------------------------------------------------------
@@ -43,14 +43,14 @@ _BASE = dict(
 )
 
 
-def _c(pauses: list[tuple[float, float]] | None = None, **kwargs) -> RelayConstraints:
-    """Crée un RelayConstraints depuis _BASE en déclarant les pauses via add_pause().
+def _c(pauses: list[tuple[float, float]] | None = None, **kwargs) -> Constraints:
+    """Crée un Constraints depuis _BASE en déclarant les pauses via add_pause().
 
     pauses : liste de (wall_clock_hour, duree) pour compatibilité.
              Triées par wall_clock_hour avant application.
     """
     base = {**_BASE, **kwargs}
-    c = RelayConstraints(**base)
+    c = Constraints(**base)
     speed, nb, km, start = base["speed_kmh"], base["nb_segments"], base["total_km"], base["start_hour"]
     D = 0.0
     for wall_clock_hour, duree in sorted(pauses or [], key=lambda p: p[0]):
@@ -211,7 +211,7 @@ class TestHourToSegRoundtrip:
 
     def _c(self, pauses=None, **kw):
         base = self._P | kw
-        c = RelayConstraints(**base)
+        c = Constraints(**base)
         speed, nb, km, start = base["speed_kmh"], base["nb_segments"], base["total_km"], base["start_hour"]
         D = 0.0
         for wall_clock_hour, duree in sorted(pauses or [], key=lambda p: p[0]):
@@ -322,7 +322,7 @@ def _build_solver_constraints():
     - Coureurs A et B incompatibles, 5×R10 chacun (= 50 segs actifs chacun)
     - Pause 1h à la frontière du segment actif 50 → inactive [50, 60), nb_total=110
     """
-    c = RelayConstraints(
+    c = Constraints(
         total_km=100.0,
         nb_segments=100,
         speed_kmh=10.0,
@@ -346,12 +346,12 @@ class TestSolverRespectsPause:
 
     @pytest.fixture(scope="class")
     def solutions(self):
-        from model import build_model
-        from solver import RelaySolver
+        from relay.model import build_model
+        from relay.solver import Solver
         c = _build_solver_constraints()
         relay_model = build_model(c)
         relay_model.add_optimisation_func(c)
-        solver = RelaySolver(relay_model, c)
+        solver = Solver(relay_model, c)
         sols = list(solver.solve(timeout_sec=30, max_count=3, log_progress=False))
         assert sols, "Le solveur n'a trouvé aucune solution dans le délai imparti"
         return sols
@@ -361,12 +361,12 @@ class TestSolverRespectsPause:
 
     def test_solutions_are_valid(self, solutions):
         for sol in solutions:
-            assert sol.valid, "RelaySolution.valid est False (vérifications ont échoué)"
+            assert sol.valid, "Solution.valid est False (vérifications ont échoué)"
 
     def test_no_relay_covers_inactive_segment(self, solutions):
         for sol in solutions:
             c = sol.constraints
-            for rel in sol.relais_list:
+            for rel in sol.relays:
                 for s in range(rel["start"], rel["end"]):
                     assert s not in c.inactive_segments, (
                         f"{rel['runner']}[{rel['k']}] [{rel['start']}, {rel['end']}["
@@ -377,7 +377,7 @@ class TestSolverRespectsPause:
         sol = solutions[0]
         c = sol.constraints
         coverage = [0] * c.nb_segments
-        for rel in sol.relais_list:
+        for rel in sol.relays:
             for s in range(rel["start"], rel["end"]):
                 coverage[s] += 1
         for s in c.active_segments:
@@ -394,8 +394,8 @@ class TestSolverRespectsPause:
 # ---------------------------------------------------------------------------
 
 def _make_rest_constraints(repos_jour_h=3.0, repos_nuit_h=3.0, pause_seg=None, pause_dur_h=None):
-    """Crée un RelayConstraints 40 segs actifs, 1 km/seg, vitesse 10 km/h, coureur A déclaré."""
-    c = RelayConstraints(
+    """Crée un Constraints 40 segs actifs, 1 km/seg, vitesse 10 km/h, coureur A déclaré."""
+    c = Constraints(
         total_km=40.0,
         nb_segments=40,
         speed_kmh=10.0,
@@ -491,7 +491,7 @@ class TestCheckRestWithPause:
 # ---------------------------------------------------------------------------
 
 def _build_rest_solver_constraints(repos_jour_h, with_pause):
-    c = RelayConstraints(
+    c = Constraints(
         total_km=30.0,
         nb_segments=30,
         speed_kmh=10.0,
@@ -513,11 +513,11 @@ def _build_rest_solver_constraints(repos_jour_h, with_pause):
 
 
 def _solve(c, timeout=30):
-    from model import build_model
-    from solver import RelaySolver
+    from relay.model import build_model
+    from relay.solver import Solver
     relay_model = build_model(c)
     relay_model.add_optimisation_func(c)
-    sols = list(RelaySolver(relay_model, c).solve(timeout_sec=timeout, max_count=1, log_progress=False))
+    sols = list(Solver(relay_model, c).solve(timeout_sec=timeout, max_count=1, log_progress=False))
     return sols
 
 
@@ -559,7 +559,7 @@ class TestSolverRespectsRestWithPause:
         sd = c.segment_duration
         repos_h = c._resolved_repos_jour(c.runners_data["A"]) * sd
         rels_a = sorted(
-            [r for r in sols[0].relais_list if r["runner"] == "A"],
+            [r for r in sols[0].relays if r["runner"] == "A"],
             key=lambda x: x["start"]
         )
         for prev, nxt in zip(rels_a, rels_a[1:]):
@@ -573,7 +573,7 @@ class TestSolverRespectsRestWithPause:
         sols, c = solutions_with_pause
         repos_segs = c._resolved_repos_jour(c.runners_data["A"])
         rels_a = sorted(
-            [r for r in sols[0].relais_list if r["runner"] == "A"],
+            [r for r in sols[0].relays if r["runner"] == "A"],
             key=lambda x: x["start"]
         )
         for prev, nxt in zip(rels_a, rels_a[1:]):
@@ -587,7 +587,7 @@ class TestSolverRespectsRestWithPause:
         sols, c = solutions_without_pause
         repos_segs = c._resolved_repos_jour(c.runners_data["A"])
         rels_a = sorted(
-            [r for r in sols[0].relais_list if r["runner"] == "A"],
+            [r for r in sols[0].relays if r["runner"] == "A"],
             key=lambda x: x["start"]
         )
         for prev, nxt in zip(rels_a, rels_a[1:]):

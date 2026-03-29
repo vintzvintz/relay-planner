@@ -1,13 +1,13 @@
-"""Fixtures partagées pour les tests RelayConstraints."""
+"""Fixtures partagées pour les tests Constraints."""
 
 import pytest
-from constraints import RelayConstraints
+from relay.constraints import Constraints
 
 
 @pytest.fixture
 def c():
-    """RelayConstraints minimal synthétique : 100 km, 10 segments, départ à 15h."""
-    return RelayConstraints(
+    """Constraints minimal synthétique : 100 km, 10 segments, départ à 15h."""
+    return Constraints(
         total_km=100.0,
         nb_segments=10,
         speed_kmh=10.0,

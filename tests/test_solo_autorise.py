@@ -9,8 +9,8 @@ Couvre :
 """
 
 import pytest
-from constraints import RelayConstraints
-from verifications import _check_solo_intervals, _NULL
+from relay.constraints import Constraints
+from relay.verifications import _check_solo_intervals, _NULL
 
 
 # ---------------------------------------------------------------------------
@@ -20,9 +20,9 @@ from verifications import _check_solo_intervals, _NULL
 COMPAT_MIN = {("A", "B"): 1}
 
 
-def make_c(solo_debut: float, solo_fin: float, nb_segments: int = 96, start_hour: float = 15.0) -> RelayConstraints:
-    """Construit un RelayConstraints minimal avec la plage solo demandée."""
-    return RelayConstraints(
+def make_c(solo_debut: float, solo_fin: float, nb_segments: int = 96, start_hour: float = 15.0) -> Constraints:
+    """Construit un Constraints minimal avec la plage solo demandée."""
+    return Constraints(
         total_km=144,
         nb_segments=nb_segments,
         speed_kmh=9.0,

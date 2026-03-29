@@ -2,10 +2,8 @@
 __pycache__/
 *.pyc
 *.pyo
-
+/.pytest_cache
 /plannings
-/enumerate_solutions*
-/explore_solutions
 
 *.odt
 *.log

@@ -1,4 +1,0 @@
-line-length = 100
-
-[lint.per-file-ignores]
-"data.py" = ["E501"]  # les sets compatible= sont intentionnellement sur une ligne

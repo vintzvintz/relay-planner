@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Matrice de compatibilité générée automatiquement par refresh_compat.py.
-Ne pas modifier manuellement — éditer compat_coureurs.xlsx puis relancer refresh_compat.py.
+Ne pas modifier manuellement — éditer compat_coureurs.xlsx puis relancer utils/refresh_compat.py.
 """
 
 # fmt: off
