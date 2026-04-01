@@ -2,9 +2,11 @@
 Solution CP-SAT : données, vérification et sérialisation.
 
 API publique :
-  Solution(relays, constraints, solver_score=None)
-    .from_cpsat(solver)                -> classmethod
-    .from_json(path, constraints=None) -> classmethod
+  Solution(relays, constraints, solver_score=None, skip_validation=False)
+    .from_cpsat(solver)                           -> classmethod
+    .from_dict(data, skip_validation=False)       -> classmethod
+    .from_json(path, skip_validation=False)       -> classmethod
+    .to_dict() -> dict  {"constraints": ..., "relays": [...]}
     .to_text() -> str
     .to_csv(filename)
     .to_json(filename)
@@ -27,13 +29,13 @@ OUTDIR = "plannings"
 
 
 class Solution:
-    """Encapsule une solution CP-SAT avec vérification et formatage."""
+    """Encapsule une solution CP-SAT avec contraintes, vérification et formatage."""
 
-    def __init__(self, relays: list, constraints, solver_score=None):
+    def __init__(self, relays: list, constraints, solver_score=None, skip_validation=False):
         self.relays = relays
         self.constraints = constraints
         self.solver_score = solver_score
-        if constraints is None:
+        if constraints is None or skip_validation:
             self.valid = None
         else:
             buf = io.StringIO()
@@ -69,8 +71,8 @@ class Solution:
                 else:
                     d_plus, d_moins = None, None
                 night_relay = bool(solver.value(model.relais_nuit[r][k]))
-                rd = c.runners_data[r]
-                rest_min_segs = c._resolved_repos_nuit(rd) if night_relay else c._resolved_repos_jour(rd)
+                opts = c.runners_data[r].options
+                rest_min_segs = opts.repos_nuit if night_relay else opts.repos_jour
                 relais_raw.append({
                     "runner":        r,
                     "k":             k,
@@ -103,11 +105,18 @@ class Solution:
         return cls(relais_raw, c, solver_score=solver.objective_value)
 
     @classmethod
-    def from_json(cls, path, constraints=None):
-        """Charge une Solution depuis un fichier JSON (format interne)."""
+    def from_dict(cls, data: dict, skip_validation=False):
+        """Construit une Solution depuis un dict produit par to_dict()."""
+        from .constraints import Constraints
+        constraints = Constraints.from_dict(data["constraints"])
+        return cls(data["relays"], constraints, skip_validation=skip_validation)
+
+    @classmethod
+    def from_json(cls, path, skip_validation=False):
+        """Charge une Solution depuis un fichier JSON produit par to_json()."""
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
-        return cls(data, constraints)
+        return cls.from_dict(data, skip_validation=skip_validation)
 
     # ------------------------------------------------------------------
     # API publique
@@ -160,10 +169,17 @@ class Solution:
         """Sauvegarde la solution en CSV (format lisible)."""
         formatters.to_csv(self, filename)
 
+    def to_dict(self) -> dict:
+        """Retourne la solution sous forme de dict sérialisable (contraintes + relais)."""
+        return {
+            "constraints": self.constraints.to_dict(),
+            "relays": self.relays,
+        }
+
     def to_json(self, filename):
         """Sauvegarde la solution en JSON (format interne)."""
         with open(filename, "w", encoding="utf-8") as f:
-            json.dump(self.relays, f, ensure_ascii=False, indent=2)
+            json.dump(self.to_dict(), f, ensure_ascii=False, indent=2)
 
     def save(self):
         """Affiche la solution et la sauvegarde dans des fichiers horodatés."""

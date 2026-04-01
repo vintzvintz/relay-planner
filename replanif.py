@@ -11,7 +11,7 @@ c = Constraints(
     total_km=440,
     nb_segments=176, # valeurs typiques  : 440=1k, 290=1k5 220=2k, 176=2k5 135=3k3, 88=5k
     speed_kmh=9.0,
-    start_hour=14.5,
+    start_hour=15.0,  # départ à 15 heures pile
     solo_max_km=17,  # pas de solo sur 17km et plus
     solo_max_default=1,  # 1 relais solo max par coureur
     nuit_max_default=1,  # 1 relais nocturne max par coureur
@@ -29,7 +29,7 @@ c = Constraints(
 )
 
 # Exempe de pause : jeudi 19h00 pour la pasta party
-c.add_pause(seg=c.km_to_seg(245), duree=1.8)  # placement géographique plutot que horaire
+c.add_pause(seg=c.km_to_seg(250), duree=1.8)  # placement géographique plutot que horaire
 #c.add_pause(seg=c.hour_to_seg(19.0, jour=1), duree=2)  # jeudi 15h00 (mercredi 15h + 24h), durée 1h30
 
 # --- Déclaration des coureurs ---

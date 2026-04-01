@@ -84,7 +84,7 @@ leo = c.new_runner("Leo")
 
 leo_clem = c.new_relay(R10)
 (leo
-    .set_options(solo_max=1)
+    .set_options(solo_max=0)
     .add_relay(R10, nb=4)
     #.add_relay(leo_clem)
 )

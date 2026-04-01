@@ -1,992 +1,1869 @@
-[
-  {
-    "runner": "Alexis",
-    "k": 2,
-    "start": 0,
-    "end": 4,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Olivier",
-    "pinned": 0,
-    "rest_h": 7.222222222222222,
-    "rest_min_segs": 26,
-    "d_plus": 38.0,
-    "d_moins": 35.0
+{
+  "constraints": {
+    "total_km": 440,
+    "nb_active_segments": 176,
+    "speed_kmh": 9.0,
+    "start_hour": 15.0,
+    "solo_max_size": 6,
+    "defaults": {
+      "solo_max": 1,
+      "nuit_max": 1,
+      "repos_jour": 26,
+      "repos_nuit": 33,
+      "max_same_partenaire": 2
+    },
+    "nuit_debut": 23.5,
+    "nuit_fin": 6.0,
+    "solo_autorise_debut": 6.5,
+    "solo_autorise_fin": 23.0,
+    "allow_flex_flex": true,
+    "profil_csv": "gpx/altitude.csv",
+    "compat_matrix": {
+      "Pierre|Vincent": 2,
+      "Pierre|Yacine": 2,
+      "Vincent|Yacine": 2,
+      "Matthieu|Olivier": 2,
+      "Matthieu|Yacine": 2,
+      "Matthieu|Nelly": 0,
+      "Olivier|Yacine": 2,
+      "Alexis|Guillaume": 2,
+      "Alexis|Eric": 2,
+      "Alexis|Yacine": 2,
+      "Alexis|Antoine": 2,
+      "Alexis|Ludovic": 2,
+      "Alexis|Gaelle": 2,
+      "Alexis|Nelly": 1,
+      "Alexis|Clemence": 1,
+      "Alexis|Leo": 1,
+      "Alexis|Alsacien_10": 1,
+      "Alexis|Alsacien_15": 2,
+      "Guillaume|Yacine": 1,
+      "Guillaume|Ludovic": 1,
+      "Guillaume|Nelly": 0,
+      "Guillaume|Leo": 0,
+      "Eric|Yacine": 2,
+      "Eric|Ludovic": 2,
+      "Eric|Gaelle": 1,
+      "Eric|Nelly": 1,
+      "Eric|Leo": 1,
+      "Alexandre|Antoine": 2,
+      "Alexandre|Ludovic": 2,
+      "Alexandre|Gaelle": 2,
+      "Alexandre|Nelly": 1,
+      "Alexandre|Clemence": 0,
+      "Alexandre|Leo": 1,
+      "Alexandre|Alsacien_10": 2,
+      "Alexandre|Alsacien_15": 1,
+      "Antoine|Ludovic": 2,
+      "Antoine|Gaelle": 2,
+      "Antoine|Nelly": 1,
+      "Antoine|Clemence": 0,
+      "Antoine|Leo": 1,
+      "Ludovic|Nelly": 0,
+      "Gaelle|Nelly": 2,
+      "Gaelle|Leo": 2,
+      "Clemence|Leo": 2,
+      "Alsacien_10|Alsacien_15": 0,
+      "Matthieu|Pierre": 2,
+      "Olivier|Pierre": 2,
+      "Alexis|Pierre": 2,
+      "Guillaume|Pierre": 2,
+      "Eric|Pierre": 2,
+      "Alexandre|Pierre": 2,
+      "Antoine|Pierre": 2,
+      "Ludovic|Pierre": 2,
+      "Gaelle|Pierre": 1,
+      "Nelly|Pierre": 0,
+      "Clemence|Pierre": 0,
+      "Leo|Pierre": 0,
+      "Alsacien_10|Pierre": 1,
+      "Alsacien_15|Pierre": 2,
+      "Matthieu|Vincent": 2,
+      "Olivier|Vincent": 2,
+      "Alexis|Vincent": 2,
+      "Guillaume|Vincent": 2,
+      "Eric|Vincent": 2,
+      "Alexandre|Vincent": 2,
+      "Antoine|Vincent": 2,
+      "Ludovic|Vincent": 2,
+      "Gaelle|Vincent": 2,
+      "Nelly|Vincent": 2,
+      "Clemence|Vincent": 1,
+      "Leo|Vincent": 2,
+      "Alsacien_10|Vincent": 2,
+      "Alsacien_15|Vincent": 1,
+      "Alexis|Matthieu": 2,
+      "Guillaume|Matthieu": 2,
+      "Eric|Matthieu": 2,
+      "Alexandre|Matthieu": 2,
+      "Antoine|Matthieu": 2,
+      "Ludovic|Matthieu": 2,
+      "Gaelle|Matthieu": 1,
+      "Clemence|Matthieu": 0,
+      "Leo|Matthieu": 1,
+      "Alsacien_10|Matthieu": 1,
+      "Alsacien_15|Matthieu": 2,
+      "Alexis|Olivier": 2,
+      "Guillaume|Olivier": 2,
+      "Eric|Olivier": 2,
+      "Alexandre|Olivier": 2,
+      "Antoine|Olivier": 2,
+      "Ludovic|Olivier": 2,
+      "Gaelle|Olivier": 2,
+      "Nelly|Olivier": 1,
+      "Clemence|Olivier": 1,
+      "Leo|Olivier": 1,
+      "Alsacien_10|Olivier": 1,
+      "Alsacien_15|Olivier": 2,
+      "Alexandre|Alexis": 2,
+      "Eric|Guillaume": 1,
+      "Alexandre|Guillaume": 1,
+      "Antoine|Guillaume": 1,
+      "Gaelle|Guillaume": 0,
+      "Clemence|Guillaume": 0,
+      "Alsacien_10|Guillaume": 1,
+      "Alsacien_15|Guillaume": 2,
+      "Alexandre|Eric": 2,
+      "Antoine|Eric": 2,
+      "Clemence|Eric": 1,
+      "Alsacien_10|Eric": 2,
+      "Alsacien_15|Eric": 1,
+      "Alexandre|Yacine": 2,
+      "Antoine|Yacine": 2,
+      "Ludovic|Yacine": 2,
+      "Gaelle|Yacine": 2,
+      "Nelly|Yacine": 2,
+      "Clemence|Yacine": 1,
+      "Leo|Yacine": 1,
+      "Alsacien_10|Yacine": 2,
+      "Alsacien_15|Yacine": 1,
+      "Alsacien_10|Antoine": 2,
+      "Alsacien_15|Antoine": 1,
+      "Gaelle|Ludovic": 1,
+      "Clemence|Ludovic": 0,
+      "Leo|Ludovic": 0,
+      "Alsacien_10|Ludovic": 1,
+      "Alsacien_15|Ludovic": 2,
+      "Clemence|Gaelle": 0,
+      "Alsacien_10|Gaelle": 2,
+      "Alsacien_15|Gaelle": 1,
+      "Clemence|Nelly": 2,
+      "Leo|Nelly": 2,
+      "Alsacien_10|Nelly": 2,
+      "Alsacien_15|Nelly": 1,
+      "Alsacien_10|Clemence": 2,
+      "Alsacien_15|Clemence": 1,
+      "Alsacien_10|Leo": 2,
+      "Alsacien_15|Leo": 1
+    },
+    "pauses": [
+      {
+        "seg": 100,
+        "inactive_range": [
+          100,
+          107
+        ]
+      }
+    ],
+    "once_max": [
+      [
+        "Gaelle",
+        "Nelly",
+        1
+      ],
+      [
+        "Gaelle",
+        "Leo",
+        1
+      ]
+    ],
+    "runners": {
+      "Pierre": {
+        "relais": [
+          {
+            "size": [
+              8
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Alexis": {
+        "relais": [
+          {
+            "size": [
+              12
+            ],
+            "paired_with": [
+              "Olivier",
+              0
+            ],
+            "window": [
+              [
+                28,
+                43
+              ]
+            ],
+            "pinned": null
+          },
+          {
+            "size": [
+              12
+            ],
+            "paired_with": [
+              "Olivier",
+              1
+            ],
+            "window": [
+              [
+                115,
+                129
+              ]
+            ],
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": 0
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 5,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 3
+        }
+      },
+      "Olivier": {
+        "relais": [
+          {
+            "size": [
+              12
+            ],
+            "paired_with": [
+              "Alexis",
+              0
+            ],
+            "window": [
+              [
+                28,
+                43
+              ]
+            ],
+            "pinned": null
+          },
+          {
+            "size": [
+              12
+            ],
+            "paired_with": [
+              "Alexis",
+              1
+            ],
+            "window": [
+              [
+                115,
+                129
+              ]
+            ],
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 5,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 3
+        }
+      },
+      "Vincent": {
+        "relais": [
+          {
+            "size": [
+              5
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              5
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 22,
+          "repos_nuit": 29,
+          "max_same_partenaire": 2
+        }
+      },
+      "Matthieu": {
+        "relais": [
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Guillaume": {
+        "relais": [
+          {
+            "size": [
+              8
+            ],
+            "paired_with": null,
+            "window": [
+              [
+                0,
+                86
+              ]
+            ],
+            "pinned": null
+          },
+          {
+            "size": [
+              8
+            ],
+            "paired_with": null,
+            "window": [
+              [
+                0,
+                86
+              ]
+            ],
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Eric": {
+        "relais": [
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": [
+              [
+                0,
+                93
+              ]
+            ],
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": [
+              [
+                0,
+                93
+              ]
+            ],
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Yacine": {
+        "relais": [
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": [
+              [
+                0,
+                93
+              ]
+            ],
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": [
+              [
+                0,
+                93
+              ]
+            ],
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": [
+              [
+                0,
+                93
+              ]
+            ],
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 18,
+          "repos_nuit": 29,
+          "max_same_partenaire": 2
+        }
+      },
+      "Alexandre": {
+        "relais": [
+          {
+            "size": [
+              5
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              5
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Antoine": {
+        "relais": [
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              5
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Ludovic": {
+        "relais": [
+          {
+            "size": [
+              8
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              6
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Nelly": {
+        "relais": [
+          {
+            "size": [
+              4
+            ],
+            "paired_with": [
+              "Clemence",
+              0
+            ],
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": [
+              "Gaelle",
+              0
+            ],
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 0,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Gaelle": {
+        "relais": [
+          {
+            "size": [
+              4
+            ],
+            "paired_with": [
+              "Nelly",
+              1
+            ],
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              5
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 0,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Clemence": {
+        "relais": [
+          {
+            "size": [
+              4
+            ],
+            "paired_with": [
+              "Nelly",
+              0
+            ],
+            "window": [
+              [
+                0,
+                28
+              ]
+            ],
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": [
+              [
+                151,
+                183
+              ]
+            ],
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 1,
+          "nuit_max": 1,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      },
+      "Leo": {
+        "relais": [
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          },
+          {
+            "size": [
+              4
+            ],
+            "paired_with": null,
+            "window": null,
+            "pinned": null
+          }
+        ],
+        "options": {
+          "solo_max": 0,
+          "nuit_max": 1,
+          "repos_jour": 26,
+          "repos_nuit": 33,
+          "max_same_partenaire": 2
+        }
+      }
+    }
   },
-  {
-    "runner": "Olivier",
-    "k": 2,
-    "start": 0,
-    "end": 4,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Alexis",
-    "pinned": null,
-    "rest_h": 7.222222222222222,
-    "rest_min_segs": 26,
-    "d_plus": 38.0,
-    "d_moins": 35.0
-  },
-  {
-    "runner": "Antoine",
-    "k": 0,
-    "start": 4,
-    "end": 10,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Matthieu",
-    "pinned": null,
-    "rest_h": 15.555555555555557,
-    "rest_min_segs": 26,
-    "d_plus": 225.0,
-    "d_moins": 170.0
-  },
-  {
-    "runner": "Matthieu",
-    "k": 0,
-    "start": 4,
-    "end": 10,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Antoine",
-    "pinned": null,
-    "rest_h": 12.777777777777779,
-    "rest_min_segs": 26,
-    "d_plus": 225.0,
-    "d_moins": 170.0
-  },
-  {
-    "runner": "Guillaume",
-    "k": 0,
-    "start": 10,
-    "end": 18,
-    "size": 8,
-    "size_decl": 8,
-    "km": 20.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Ludovic",
-    "pinned": null,
-    "rest_h": 8.333333333333334,
-    "rest_min_segs": 26,
-    "d_plus": 211.0,
-    "d_moins": 217.0
-  },
-  {
-    "runner": "Ludovic",
-    "k": 0,
-    "start": 10,
-    "end": 18,
-    "size": 8,
-    "size_decl": 8,
-    "km": 20.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Guillaume",
-    "pinned": null,
-    "rest_h": 10.555555555555555,
-    "rest_min_segs": 26,
-    "d_plus": 211.0,
-    "d_moins": 217.0
-  },
-  {
-    "runner": "Yacine",
-    "k": 0,
-    "start": 18,
-    "end": 22,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": true,
-    "night": false,
-    "partner": null,
-    "pinned": null,
-    "rest_h": 5.555555555555555,
-    "rest_min_segs": 18,
-    "d_plus": 67.0,
-    "d_moins": 62.0
-  },
-  {
-    "runner": "Clemence",
-    "k": 0,
-    "start": 22,
-    "end": 26,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Nelly",
-    "pinned": null,
-    "rest_h": 35.55555555555556,
-    "rest_min_segs": 26,
-    "d_plus": 91.0,
-    "d_moins": 50.0
-  },
-  {
-    "runner": "Nelly",
-    "k": 0,
-    "start": 22,
-    "end": 26,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Clemence",
-    "pinned": null,
-    "rest_h": 10.0,
-    "rest_min_segs": 26,
-    "d_plus": 91.0,
-    "d_moins": 50.0
-  },
-  {
-    "runner": "Gaelle",
-    "k": 2,
-    "start": 26,
-    "end": 30,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Leo",
-    "pinned": null,
-    "rest_h": 13.88888888888889,
-    "rest_min_segs": 26,
-    "d_plus": 154.0,
-    "d_moins": 128.0
-  },
-  {
-    "runner": "Leo",
-    "k": 0,
-    "start": 26,
-    "end": 30,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Gaelle",
-    "pinned": null,
-    "rest_h": 8.88888888888889,
-    "rest_min_segs": 26,
-    "d_plus": 154.0,
-    "d_moins": 128.0
-  },
-  {
-    "runner": "Alexis",
-    "k": 0,
-    "start": 30,
-    "end": 42,
-    "size": 12,
-    "size_decl": 12,
-    "km": 30.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Olivier",
-    "pinned": null,
-    "rest_h": 9.444444444444445,
-    "rest_min_segs": 33,
-    "d_plus": 297.0,
-    "d_moins": 286.0
-  },
-  {
-    "runner": "Olivier",
-    "k": 0,
-    "start": 30,
-    "end": 42,
-    "size": 12,
-    "size_decl": 12,
-    "km": 30.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Alexis",
-    "pinned": null,
-    "rest_h": 10.555555555555555,
-    "rest_min_segs": 33,
-    "d_plus": 297.0,
-    "d_moins": 286.0
-  },
-  {
-    "runner": "Eric",
-    "k": 0,
-    "start": 42,
-    "end": 48,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Yacine",
-    "pinned": null,
-    "rest_h": 10.0,
-    "rest_min_segs": 33,
-    "d_plus": 213.0,
-    "d_moins": 100.0
-  },
-  {
-    "runner": "Yacine",
-    "k": 1,
-    "start": 42,
-    "end": 48,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Eric",
-    "pinned": null,
-    "rest_h": 10.0,
-    "rest_min_segs": 29,
-    "d_plus": 213.0,
-    "d_moins": 100.0
-  },
-  {
-    "runner": "Guillaume",
-    "k": 1,
-    "start": 48,
-    "end": 56,
-    "size": 8,
-    "size_decl": 8,
-    "km": 20.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Pierre",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 33,
-    "d_plus": 420.0,
-    "d_moins": 328.0
-  },
-  {
-    "runner": "Pierre",
-    "k": 0,
-    "start": 48,
-    "end": 56,
-    "size": 8,
-    "size_decl": 8,
-    "km": 20.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Guillaume",
-    "pinned": null,
-    "rest_h": 9.444444444444445,
-    "rest_min_segs": 33,
-    "d_plus": 420.0,
-    "d_moins": 328.0
-  },
-  {
-    "runner": "Ludovic",
-    "k": 1,
-    "start": 56,
-    "end": 62,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Matthieu",
-    "pinned": null,
-    "rest_h": 18.333333333333336,
-    "rest_min_segs": 26,
-    "d_plus": 219.0,
-    "d_moins": 270.0
-  },
-  {
-    "runner": "Matthieu",
-    "k": 1,
-    "start": 56,
-    "end": 62,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Ludovic",
-    "pinned": null,
-    "rest_h": 7.777777777777779,
-    "rest_min_segs": 26,
-    "d_plus": 219.0,
-    "d_moins": 270.0
-  },
-  {
-    "runner": "Leo",
-    "k": 1,
-    "start": 62,
-    "end": 66,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Nelly",
-    "pinned": null,
-    "rest_h": 8.333333333333334,
-    "rest_min_segs": 26,
-    "d_plus": 111.0,
-    "d_moins": 59.0
-  },
-  {
-    "runner": "Nelly",
-    "k": 2,
-    "start": 62,
-    "end": 66,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Leo",
-    "pinned": null,
-    "rest_h": 12.777777777777779,
-    "rest_min_segs": 26,
-    "d_plus": 111.0,
-    "d_moins": 59.0
-  },
-  {
-    "runner": "Antoine",
-    "k": 3,
-    "start": 66,
-    "end": 71,
-    "size": 5,
-    "size_decl": 5,
-    "km": 12.5,
-    "flex": false,
-    "solo": true,
-    "night": false,
-    "partner": null,
-    "pinned": null,
-    "rest_h": 15.833333333333334,
-    "rest_min_segs": 26,
-    "d_plus": 66.0,
-    "d_moins": 53.0
-  },
-  {
-    "runner": "Alexandre",
-    "k": 0,
-    "start": 71,
-    "end": 76,
-    "size": 5,
-    "size_decl": 5,
-    "km": 12.5,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Vincent",
-    "pinned": null,
-    "rest_h": 8.61111111111111,
-    "rest_min_segs": 26,
-    "d_plus": 115.0,
-    "d_moins": 41.0
-  },
-  {
-    "runner": "Vincent",
-    "k": 0,
-    "start": 71,
-    "end": 76,
-    "size": 5,
-    "size_decl": 5,
-    "km": 12.5,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Alexandre",
-    "pinned": null,
-    "rest_h": 8.61111111111111,
-    "rest_min_segs": 22,
-    "d_plus": 115.0,
-    "d_moins": 41.0
-  },
-  {
-    "runner": "Alexis",
-    "k": 3,
-    "start": 76,
-    "end": 80,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": true,
-    "night": false,
-    "partner": null,
-    "pinned": null,
-    "rest_h": 10.0,
-    "rest_min_segs": 26,
-    "d_plus": 55.0,
-    "d_moins": 358.0
-  },
-  {
-    "runner": "Gaelle",
-    "k": 3,
-    "start": 80,
-    "end": 84,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Olivier",
-    "pinned": null,
-    "rest_h": 7.777777777777779,
-    "rest_min_segs": 26,
-    "d_plus": 130.0,
-    "d_moins": 154.0
-  },
-  {
-    "runner": "Olivier",
-    "k": 3,
-    "start": 80,
-    "end": 84,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Gaelle",
-    "pinned": null,
-    "rest_h": 8.88888888888889,
-    "rest_min_segs": 26,
-    "d_plus": 130.0,
-    "d_moins": 154.0
-  },
-  {
-    "runner": "Eric",
-    "k": 1,
-    "start": 84,
-    "end": 90,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Yacine",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 264.0,
-    "d_moins": 114.0
-  },
-  {
-    "runner": "Yacine",
-    "k": 2,
-    "start": 84,
-    "end": 90,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Eric",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 18,
-    "d_plus": 264.0,
-    "d_moins": 114.0
-  },
-  {
-    "runner": "Matthieu",
-    "k": 2,
-    "start": 90,
-    "end": 96,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Pierre",
-    "pinned": null,
-    "rest_h": 11.666666666666668,
-    "rest_min_segs": 26,
-    "d_plus": 177.0,
-    "d_moins": 353.0
-  },
-  {
-    "runner": "Pierre",
-    "k": 1,
-    "start": 90,
-    "end": 96,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Matthieu",
-    "pinned": null,
-    "rest_h": 13.333333333333334,
-    "rest_min_segs": 26,
-    "d_plus": 177.0,
-    "d_moins": 353.0
-  },
-  {
-    "runner": "Leo",
-    "k": 2,
-    "start": 96,
-    "end": 100,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": true,
-    "night": false,
-    "partner": null,
-    "pinned": null,
-    "rest_h": 9.444444444444445,
-    "rest_min_segs": 26,
-    "d_plus": 251.0,
-    "d_moins": 143.0
-  },
-  {
-    "runner": "Alexandre",
-    "k": 1,
-    "start": 107,
-    "end": 112,
-    "size": 5,
-    "size_decl": 5,
-    "km": 12.5,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Vincent",
-    "pinned": null,
-    "rest_h": 7.222222222222222,
-    "rest_min_segs": 26,
-    "d_plus": 327.0,
-    "d_moins": 208.0
-  },
-  {
-    "runner": "Vincent",
-    "k": 1,
-    "start": 107,
-    "end": 112,
-    "size": 5,
-    "size_decl": 5,
-    "km": 12.5,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Alexandre",
-    "pinned": null,
-    "rest_h": 6.111111111111112,
-    "rest_min_segs": 22,
-    "d_plus": 327.0,
-    "d_moins": 208.0
-  },
-  {
-    "runner": "Gaelle",
-    "k": 0,
-    "start": 112,
-    "end": 116,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Nelly",
-    "pinned": null,
-    "rest_h": 11.666666666666668,
-    "rest_min_segs": 26,
-    "d_plus": 230.0,
-    "d_moins": 203.0
-  },
-  {
-    "runner": "Nelly",
-    "k": 1,
-    "start": 112,
-    "end": 116,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Gaelle",
-    "pinned": null,
-    "rest_h": 9.444444444444445,
-    "rest_min_segs": 26,
-    "d_plus": 230.0,
-    "d_moins": 203.0
-  },
-  {
-    "runner": "Alexis",
-    "k": 1,
-    "start": 116,
-    "end": 128,
-    "size": 12,
-    "size_decl": 12,
-    "km": 30.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Olivier",
-    "pinned": null,
-    "rest_h": 10.833333333333334,
-    "rest_min_segs": 33,
-    "d_plus": 584.0,
-    "d_moins": 709.0
-  },
-  {
-    "runner": "Olivier",
-    "k": 1,
-    "start": 116,
-    "end": 128,
-    "size": 12,
-    "size_decl": 12,
-    "km": 30.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Alexis",
-    "pinned": null,
-    "rest_h": 9.722222222222223,
-    "rest_min_segs": 33,
-    "d_plus": 584.0,
-    "d_moins": 709.0
-  },
-  {
-    "runner": "Antoine",
-    "k": 1,
-    "start": 128,
-    "end": 134,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Ludovic",
-    "pinned": null,
-    "rest_h": 10.277777777777779,
-    "rest_min_segs": 33,
-    "d_plus": 259.0,
-    "d_moins": 254.0
-  },
-  {
-    "runner": "Ludovic",
-    "k": 2,
-    "start": 128,
-    "end": 134,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Antoine",
-    "pinned": null,
-    "rest_h": 10.277777777777779,
-    "rest_min_segs": 33,
-    "d_plus": 259.0,
-    "d_moins": 254.0
-  },
-  {
-    "runner": "Leo",
-    "k": 3,
-    "start": 134,
-    "end": 138,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Vincent",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 33,
-    "d_plus": 187.0,
-    "d_moins": 212.0
-  },
-  {
-    "runner": "Vincent",
-    "k": 2,
-    "start": 134,
-    "end": 138,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Leo",
-    "pinned": null,
-    "rest_h": 8.055555555555555,
-    "rest_min_segs": 29,
-    "d_plus": 187.0,
-    "d_moins": 212.0
-  },
-  {
-    "runner": "Alexandre",
-    "k": 2,
-    "start": 138,
-    "end": 144,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Matthieu",
-    "pinned": null,
-    "rest_h": 9.166666666666668,
-    "rest_min_segs": 33,
-    "d_plus": 251.0,
-    "d_moins": 251.0
-  },
-  {
-    "runner": "Matthieu",
-    "k": 3,
-    "start": 138,
-    "end": 144,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": true,
-    "partner": "Alexandre",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 33,
-    "d_plus": 251.0,
-    "d_moins": 251.0
-  },
-  {
-    "runner": "Pierre",
-    "k": 2,
-    "start": 144,
-    "end": 150,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": true,
-    "night": false,
-    "partner": null,
-    "pinned": null,
-    "rest_h": 7.5,
-    "rest_min_segs": 26,
-    "d_plus": 238.0,
-    "d_moins": 224.0
-  },
-  {
-    "runner": "Nelly",
-    "k": 3,
-    "start": 150,
-    "end": 154,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": true,
-    "night": false,
-    "partner": null,
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 94.0,
-    "d_moins": 116.0
-  },
-  {
-    "runner": "Clemence",
-    "k": 1,
-    "start": 154,
-    "end": 158,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": true,
-    "night": false,
-    "partner": null,
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 89.0,
-    "d_moins": 63.0
-  },
-  {
-    "runner": "Gaelle",
-    "k": 1,
-    "start": 158,
-    "end": 163,
-    "size": 5,
-    "size_decl": 5,
-    "km": 12.5,
-    "flex": false,
-    "solo": true,
-    "night": false,
-    "partner": null,
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 136.0,
-    "d_moins": 180.0
-  },
-  {
-    "runner": "Olivier",
-    "k": 4,
-    "start": 163,
-    "end": 167,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": true,
-    "night": false,
-    "partner": null,
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 46.0,
-    "d_moins": 86.0
-  },
-  {
-    "runner": "Alexis",
-    "k": 4,
-    "start": 167,
-    "end": 171,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Vincent",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 2.0,
-    "d_moins": 60.0
-  },
-  {
-    "runner": "Vincent",
-    "k": 3,
-    "start": 167,
-    "end": 171,
-    "size": 4,
-    "size_decl": 4,
-    "km": 10.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Alexis",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 22,
-    "d_plus": 2.0,
-    "d_moins": 60.0
-  },
-  {
-    "runner": "Antoine",
-    "k": 2,
-    "start": 171,
-    "end": 177,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Ludovic",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 27.0,
-    "d_moins": 47.0
-  },
-  {
-    "runner": "Ludovic",
-    "k": 3,
-    "start": 171,
-    "end": 177,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Antoine",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 27.0,
-    "d_moins": 47.0
-  },
-  {
-    "runner": "Alexandre",
-    "k": 3,
-    "start": 177,
-    "end": 183,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Pierre",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 17.0,
-    "d_moins": 26.0
-  },
-  {
-    "runner": "Pierre",
-    "k": 3,
-    "start": 177,
-    "end": 183,
-    "size": 6,
-    "size_decl": 6,
-    "km": 15.0,
-    "flex": false,
-    "solo": false,
-    "night": false,
-    "partner": "Alexandre",
-    "pinned": null,
-    "rest_h": null,
-    "rest_min_segs": 26,
-    "d_plus": 17.0,
-    "d_moins": 26.0
-  }
-]
+  "relays": [
+    {
+      "runner": "Alexis",
+      "k": 2,
+      "start": 0,
+      "end": 4,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Olivier",
+      "pinned": 0,
+      "rest_h": 7.222222222222222,
+      "rest_min_segs": 26,
+      "d_plus": 38.0,
+      "d_moins": 35.0
+    },
+    {
+      "runner": "Olivier",
+      "k": 2,
+      "start": 0,
+      "end": 4,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Alexis",
+      "pinned": null,
+      "rest_h": 7.222222222222222,
+      "rest_min_segs": 26,
+      "d_plus": 38.0,
+      "d_moins": 35.0
+    },
+    {
+      "runner": "Eric",
+      "k": 0,
+      "start": 4,
+      "end": 10,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Yacine",
+      "pinned": null,
+      "rest_h": 8.88888888888889,
+      "rest_min_segs": 26,
+      "d_plus": 225.0,
+      "d_moins": 170.0
+    },
+    {
+      "runner": "Yacine",
+      "k": 1,
+      "start": 4,
+      "end": 10,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Eric",
+      "pinned": null,
+      "rest_h": 8.88888888888889,
+      "rest_min_segs": 18,
+      "d_plus": 225.0,
+      "d_moins": 170.0
+    },
+    {
+      "runner": "Vincent",
+      "k": 2,
+      "start": 10,
+      "end": 14,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": 13.333333333333334,
+      "rest_min_segs": 22,
+      "d_plus": 96.0,
+      "d_moins": 39.0
+    },
+    {
+      "runner": "Guillaume",
+      "k": 0,
+      "start": 14,
+      "end": 22,
+      "size": 8,
+      "size_decl": 8,
+      "km": 20.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Pierre",
+      "pinned": null,
+      "rest_h": 7.222222222222222,
+      "rest_min_segs": 26,
+      "d_plus": 182.0,
+      "d_moins": 240.0
+    },
+    {
+      "runner": "Pierre",
+      "k": 0,
+      "start": 14,
+      "end": 22,
+      "size": 8,
+      "size_decl": 8,
+      "km": 20.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Guillaume",
+      "pinned": null,
+      "rest_h": 9.444444444444445,
+      "rest_min_segs": 26,
+      "d_plus": 182.0,
+      "d_moins": 240.0
+    },
+    {
+      "runner": "Clemence",
+      "k": 0,
+      "start": 22,
+      "end": 26,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Nelly",
+      "pinned": null,
+      "rest_h": 35.55555555555556,
+      "rest_min_segs": 26,
+      "d_plus": 91.0,
+      "d_moins": 50.0
+    },
+    {
+      "runner": "Nelly",
+      "k": 0,
+      "start": 22,
+      "end": 26,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Clemence",
+      "pinned": null,
+      "rest_h": 12.777777777777779,
+      "rest_min_segs": 26,
+      "d_plus": 91.0,
+      "d_moins": 50.0
+    },
+    {
+      "runner": "Gaelle",
+      "k": 2,
+      "start": 26,
+      "end": 30,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Leo",
+      "pinned": null,
+      "rest_h": 13.88888888888889,
+      "rest_min_segs": 26,
+      "d_plus": 154.0,
+      "d_moins": 128.0
+    },
+    {
+      "runner": "Leo",
+      "k": 0,
+      "start": 26,
+      "end": 30,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Gaelle",
+      "pinned": null,
+      "rest_h": 11.666666666666668,
+      "rest_min_segs": 26,
+      "d_plus": 154.0,
+      "d_moins": 128.0
+    },
+    {
+      "runner": "Alexis",
+      "k": 0,
+      "start": 30,
+      "end": 42,
+      "size": 12,
+      "size_decl": 12,
+      "km": 30.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Olivier",
+      "pinned": null,
+      "rest_h": 10.555555555555555,
+      "rest_min_segs": 33,
+      "d_plus": 297.0,
+      "d_moins": 286.0
+    },
+    {
+      "runner": "Olivier",
+      "k": 0,
+      "start": 30,
+      "end": 42,
+      "size": 12,
+      "size_decl": 12,
+      "km": 30.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Alexis",
+      "pinned": null,
+      "rest_h": 9.444444444444445,
+      "rest_min_segs": 33,
+      "d_plus": 297.0,
+      "d_moins": 286.0
+    },
+    {
+      "runner": "Eric",
+      "k": 1,
+      "start": 42,
+      "end": 48,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Yacine",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 33,
+      "d_plus": 213.0,
+      "d_moins": 100.0
+    },
+    {
+      "runner": "Yacine",
+      "k": 2,
+      "start": 42,
+      "end": 48,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Eric",
+      "pinned": null,
+      "rest_h": 10.0,
+      "rest_min_segs": 29,
+      "d_plus": 213.0,
+      "d_moins": 100.0
+    },
+    {
+      "runner": "Guillaume",
+      "k": 1,
+      "start": 48,
+      "end": 56,
+      "size": 8,
+      "size_decl": 8,
+      "km": 20.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Ludovic",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 33,
+      "d_plus": 420.0,
+      "d_moins": 328.0
+    },
+    {
+      "runner": "Ludovic",
+      "k": 0,
+      "start": 48,
+      "end": 56,
+      "size": 8,
+      "size_decl": 8,
+      "km": 20.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Guillaume",
+      "pinned": null,
+      "rest_h": 10.555555555555555,
+      "rest_min_segs": 33,
+      "d_plus": 420.0,
+      "d_moins": 328.0
+    },
+    {
+      "runner": "Matthieu",
+      "k": 0,
+      "start": 56,
+      "end": 62,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Pierre",
+      "pinned": null,
+      "rest_h": 7.222222222222222,
+      "rest_min_segs": 26,
+      "d_plus": 219.0,
+      "d_moins": 270.0
+    },
+    {
+      "runner": "Pierre",
+      "k": 1,
+      "start": 56,
+      "end": 62,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Matthieu",
+      "pinned": null,
+      "rest_h": 7.222222222222222,
+      "rest_min_segs": 26,
+      "d_plus": 219.0,
+      "d_moins": 270.0
+    },
+    {
+      "runner": "Antoine",
+      "k": 3,
+      "start": 62,
+      "end": 67,
+      "size": 5,
+      "size_decl": 5,
+      "km": 12.5,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Vincent",
+      "pinned": null,
+      "rest_h": 7.5,
+      "rest_min_segs": 26,
+      "d_plus": 123.0,
+      "d_moins": 73.0
+    },
+    {
+      "runner": "Vincent",
+      "k": 0,
+      "start": 62,
+      "end": 67,
+      "size": 5,
+      "size_decl": 5,
+      "km": 12.5,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Antoine",
+      "pinned": null,
+      "rest_h": 11.11111111111111,
+      "rest_min_segs": 22,
+      "d_plus": 123.0,
+      "d_moins": 73.0
+    },
+    {
+      "runner": "Alexandre",
+      "k": 0,
+      "start": 67,
+      "end": 72,
+      "size": 5,
+      "size_decl": 5,
+      "km": 12.5,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": 9.722222222222223,
+      "rest_min_segs": 26,
+      "d_plus": 72.0,
+      "d_moins": 41.0
+    },
+    {
+      "runner": "Leo",
+      "k": 1,
+      "start": 72,
+      "end": 76,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Nelly",
+      "pinned": null,
+      "rest_h": 16.11111111111111,
+      "rest_min_segs": 26,
+      "d_plus": 97.0,
+      "d_moins": 39.0
+    },
+    {
+      "runner": "Nelly",
+      "k": 2,
+      "start": 72,
+      "end": 76,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Leo",
+      "pinned": null,
+      "rest_h": 10.0,
+      "rest_min_segs": 26,
+      "d_plus": 97.0,
+      "d_moins": 39.0
+    },
+    {
+      "runner": "Olivier",
+      "k": 3,
+      "start": 76,
+      "end": 80,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": 10.0,
+      "rest_min_segs": 26,
+      "d_plus": 55.0,
+      "d_moins": 358.0
+    },
+    {
+      "runner": "Alexis",
+      "k": 3,
+      "start": 80,
+      "end": 84,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Gaelle",
+      "pinned": null,
+      "rest_h": 8.88888888888889,
+      "rest_min_segs": 26,
+      "d_plus": 130.0,
+      "d_moins": 154.0
+    },
+    {
+      "runner": "Gaelle",
+      "k": 3,
+      "start": 80,
+      "end": 84,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Alexis",
+      "pinned": null,
+      "rest_h": 7.777777777777779,
+      "rest_min_segs": 26,
+      "d_plus": 130.0,
+      "d_moins": 154.0
+    },
+    {
+      "runner": "Yacine",
+      "k": 0,
+      "start": 84,
+      "end": 88,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 18,
+      "d_plus": 46.0,
+      "d_moins": 70.0
+    },
+    {
+      "runner": "Matthieu",
+      "k": 1,
+      "start": 88,
+      "end": 94,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Pierre",
+      "pinned": null,
+      "rest_h": 9.444444444444445,
+      "rest_min_segs": 26,
+      "d_plus": 292.0,
+      "d_moins": 319.0
+    },
+    {
+      "runner": "Pierre",
+      "k": 2,
+      "start": 88,
+      "end": 94,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Matthieu",
+      "pinned": null,
+      "rest_h": 12.222222222222223,
+      "rest_min_segs": 26,
+      "d_plus": 292.0,
+      "d_moins": 319.0
+    },
+    {
+      "runner": "Antoine",
+      "k": 0,
+      "start": 94,
+      "end": 100,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Ludovic",
+      "pinned": null,
+      "rest_h": 7.777777777777779,
+      "rest_min_segs": 26,
+      "d_plus": 354.0,
+      "d_moins": 221.0
+    },
+    {
+      "runner": "Ludovic",
+      "k": 1,
+      "start": 94,
+      "end": 100,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Antoine",
+      "pinned": null,
+      "rest_h": 12.222222222222223,
+      "rest_min_segs": 26,
+      "d_plus": 354.0,
+      "d_moins": 221.0
+    },
+    {
+      "runner": "Alexandre",
+      "k": 1,
+      "start": 107,
+      "end": 112,
+      "size": 5,
+      "size_decl": 5,
+      "km": 12.5,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Vincent",
+      "pinned": null,
+      "rest_h": 7.222222222222222,
+      "rest_min_segs": 26,
+      "d_plus": 327.0,
+      "d_moins": 208.0
+    },
+    {
+      "runner": "Vincent",
+      "k": 1,
+      "start": 107,
+      "end": 112,
+      "size": 5,
+      "size_decl": 5,
+      "km": 12.5,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Alexandre",
+      "pinned": null,
+      "rest_h": 6.111111111111112,
+      "rest_min_segs": 22,
+      "d_plus": 327.0,
+      "d_moins": 208.0
+    },
+    {
+      "runner": "Gaelle",
+      "k": 0,
+      "start": 112,
+      "end": 116,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Nelly",
+      "pinned": null,
+      "rest_h": 11.666666666666668,
+      "rest_min_segs": 26,
+      "d_plus": 230.0,
+      "d_moins": 203.0
+    },
+    {
+      "runner": "Nelly",
+      "k": 1,
+      "start": 112,
+      "end": 116,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Gaelle",
+      "pinned": null,
+      "rest_h": 9.444444444444445,
+      "rest_min_segs": 26,
+      "d_plus": 230.0,
+      "d_moins": 203.0
+    },
+    {
+      "runner": "Alexis",
+      "k": 1,
+      "start": 116,
+      "end": 128,
+      "size": 12,
+      "size_decl": 12,
+      "km": 30.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Olivier",
+      "pinned": null,
+      "rest_h": 9.722222222222223,
+      "rest_min_segs": 33,
+      "d_plus": 584.0,
+      "d_moins": 709.0
+    },
+    {
+      "runner": "Olivier",
+      "k": 1,
+      "start": 116,
+      "end": 128,
+      "size": 12,
+      "size_decl": 12,
+      "km": 30.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Alexis",
+      "pinned": null,
+      "rest_h": 12.5,
+      "rest_min_segs": 33,
+      "d_plus": 584.0,
+      "d_moins": 709.0
+    },
+    {
+      "runner": "Antoine",
+      "k": 1,
+      "start": 128,
+      "end": 134,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Matthieu",
+      "pinned": null,
+      "rest_h": 9.166666666666668,
+      "rest_min_segs": 33,
+      "d_plus": 259.0,
+      "d_moins": 254.0
+    },
+    {
+      "runner": "Matthieu",
+      "k": 2,
+      "start": 128,
+      "end": 134,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Antoine",
+      "pinned": null,
+      "rest_h": 9.166666666666668,
+      "rest_min_segs": 33,
+      "d_plus": 259.0,
+      "d_moins": 254.0
+    },
+    {
+      "runner": "Leo",
+      "k": 2,
+      "start": 134,
+      "end": 138,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Vincent",
+      "pinned": null,
+      "rest_h": 9.722222222222223,
+      "rest_min_segs": 33,
+      "d_plus": 187.0,
+      "d_moins": 212.0
+    },
+    {
+      "runner": "Vincent",
+      "k": 3,
+      "start": 134,
+      "end": 138,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Leo",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 29,
+      "d_plus": 187.0,
+      "d_moins": 212.0
+    },
+    {
+      "runner": "Alexandre",
+      "k": 2,
+      "start": 138,
+      "end": 144,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Pierre",
+      "pinned": null,
+      "rest_h": 9.166666666666668,
+      "rest_min_segs": 33,
+      "d_plus": 251.0,
+      "d_moins": 251.0
+    },
+    {
+      "runner": "Pierre",
+      "k": 3,
+      "start": 138,
+      "end": 144,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Alexandre",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 33,
+      "d_plus": 251.0,
+      "d_moins": 251.0
+    },
+    {
+      "runner": "Ludovic",
+      "k": 2,
+      "start": 144,
+      "end": 150,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": 7.5,
+      "rest_min_segs": 26,
+      "d_plus": 238.0,
+      "d_moins": 224.0
+    },
+    {
+      "runner": "Nelly",
+      "k": 3,
+      "start": 150,
+      "end": 154,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 94.0,
+      "d_moins": 116.0
+    },
+    {
+      "runner": "Clemence",
+      "k": 1,
+      "start": 154,
+      "end": 158,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 89.0,
+      "d_moins": 63.0
+    },
+    {
+      "runner": "Gaelle",
+      "k": 1,
+      "start": 158,
+      "end": 163,
+      "size": 5,
+      "size_decl": 5,
+      "km": 12.5,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 136.0,
+      "d_moins": 180.0
+    },
+    {
+      "runner": "Alexis",
+      "k": 4,
+      "start": 163,
+      "end": 167,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 46.0,
+      "d_moins": 86.0
+    },
+    {
+      "runner": "Antoine",
+      "k": 2,
+      "start": 167,
+      "end": 173,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Matthieu",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 9.0,
+      "d_moins": 82.0
+    },
+    {
+      "runner": "Matthieu",
+      "k": 3,
+      "start": 167,
+      "end": 173,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Antoine",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 9.0,
+      "d_moins": 82.0
+    },
+    {
+      "runner": "Leo",
+      "k": 3,
+      "start": 173,
+      "end": 177,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Olivier",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 20.0,
+      "d_moins": 25.0
+    },
+    {
+      "runner": "Olivier",
+      "k": 4,
+      "start": 173,
+      "end": 177,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Leo",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 20.0,
+      "d_moins": 25.0
+    },
+    {
+      "runner": "Alexandre",
+      "k": 3,
+      "start": 177,
+      "end": 183,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Ludovic",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 17.0,
+      "d_moins": 26.0
+    },
+    {
+      "runner": "Ludovic",
+      "k": 3,
+      "start": 177,
+      "end": 183,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Alexandre",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 17.0,
+      "d_moins": 26.0
+    }
+  ]
+}

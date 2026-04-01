@@ -363,7 +363,7 @@ class TestMaxSamePartenaire:
 
     def _rc_global(self, max_same):
         rc = _make_rc(compat_matrix={("Alice", "Bob"): 2, ("Alice", "Carol"): 0, ("Bob", "Carol"): 0})
-        rc.max_same_partenaire = max_same
+        rc.defaults.max_same_partenaire = max_same
         rc.new_runner("Alice").add_relay("R15").add_relay("R15")
         rc.new_runner("Bob").add_relay("R15").add_relay("R15")
         rc.new_runner("Carol").add_relay("R15", nb=2)
@@ -415,7 +415,7 @@ class TestMaxSamePartenaire:
 
     def test_individual_overrides_global(self):
         rc = _make_rc(compat_matrix={("Alice", "Bob"): 2, ("Alice", "Carol"): 0, ("Bob", "Carol"): 0})
-        rc.max_same_partenaire = 2
+        rc.defaults.max_same_partenaire = 2
         rc.new_runner("Alice").set_options(max_same_partenaire=1).add_relay("R15").add_relay("R15")
         rc.new_runner("Bob").add_relay("R15").add_relay("R15")
         rc.new_runner("Carol").add_relay("R15", nb=2)

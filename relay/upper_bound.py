@@ -55,7 +55,7 @@ def _compute_upper_bound_glop(constraints) -> LpBounds | None:
             for r2 in constraints.runners[i + 1:]:
                 if counts[r2].get(s, 0) == 0:
                     continue
-                if not constraints.is_compatible(r1, r2):
+                if constraints.compat_score(r1, r2) == 0:
                     continue
                 ub = min(counts[r1][s], counts[r2][s])
                 b[(r1, r2, s)] = solver.NumVar(0.0, ub, f"b_{r1}_{r2}_{s}")
@@ -156,7 +156,7 @@ def _compute_upper_bound_cpsat(constraints, timeout_sec: float = 3.0) -> LpBound
                 c2 = counts[r2].get(s, 0)
                 if c2 == 0:
                     continue
-                if not constraints.is_compatible(r1, r2):
+                if constraints.compat_score(r1, r2) == 0:
                     continue
                 ub = min(c1, c2)
                 bv[(r1, r2, s)] = model.new_int_var(0, ub, f"b_{r1}_{r2}_{s}")

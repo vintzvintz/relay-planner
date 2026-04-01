@@ -15,6 +15,9 @@ def check(solution, out=_NULL) -> bool:
 
     print("\n--- Vérifications ---", file=out)
 
+    if not _check_unknown_runners(relays, constraints, out):
+        return False
+
     ok = True
     ok &= _check_coverage(relays, constraints, out)
     ok &= _check_pauses(relays, constraints, out)
@@ -56,6 +59,15 @@ def _active_pairs(solution: list[dict]) -> list[tuple[str, str]]:
 # ------------------------------------------------------------------
 # Vérifications post-résolution
 # ------------------------------------------------------------------
+
+def _check_unknown_runners(solution: list[dict], constraints: Constraints, out) -> bool:
+    unknown = {rel["runner"] for rel in solution if rel["runner"] not in constraints.runners_data}
+    if unknown:
+        for r in sorted(unknown):
+            print(f"  COUREUR INCONNU : {r} (absent des contraintes courantes)", file=out)
+        return False
+    return True
+
 
 def _check_pauses(solution: list[dict], constraints: Constraints, out) -> bool:
     ok = True
@@ -114,8 +126,9 @@ def _check_rest(solution: list[dict], constraints: Constraints, out) -> bool:
     sd = constraints.segment_duration  # heures par quantum de temps
     ok = True
     for r, rels in relais.items():
-        repos_jour_h = constraints._resolved_repos_jour(constraints.runners_data[r]) * sd
-        repos_nuit_h = constraints._resolved_repos_nuit(constraints.runners_data[r]) * sd
+        opts = constraints.runners_data[r].options
+        repos_jour_h = opts.repos_jour * sd
+        repos_nuit_h = opts.repos_nuit * sd
         sorted_relais = sorted(rels, key=lambda x: x["start"])
         for i in range(len(sorted_relais) - 1):
             prev, nxt = sorted_relais[i], sorted_relais[i + 1]
@@ -134,7 +147,7 @@ def _check_night_max(solution: list[dict], constraints: Constraints, out) -> boo
     relais = _relais_by_runner(solution)
     ok = True
     for r, rels in relais.items():
-        nuit_max = constraints._resolved_nuit_max(constraints.runners_data[r])
+        nuit_max = constraints.runners_data[r].options.nuit_max
         n = sum(1 for rel in rels if rel["night"])
         if n > nuit_max:
             print(f"  NUIT x{n} : {r}", file=out)
@@ -148,7 +161,7 @@ def _check_solo_max(solution: list[dict], constraints: Constraints, out) -> bool
     relais = _relais_by_runner(solution)
     ok = True
     for r, rels in relais.items():
-        solo_max = constraints._resolved_solo_max(constraints.runners_data[r])
+        solo_max = constraints.runners_data[r].options.solo_max
         n = sum(1 for rel in rels if rel["solo"])
         if n > solo_max:
             print(f"  SOLO x{n} : {r}", file=out)

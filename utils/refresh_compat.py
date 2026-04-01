@@ -1,6 +1,5 @@
 """
 Lit compat_coureurs.xlsx et génère compat.py avec la matrice de compatibilité
-et la fonction is_compatible().
 
 Lancer depuis la racine du projet : python utils/refresh_compat.py
 """

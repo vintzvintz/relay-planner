@@ -164,7 +164,7 @@ class _PartialModel(Model):
             if only_for is not None and r not in only_for:
                 continue
             rd = c.runners_data[r]
-            nuit_max = c._resolved_nuit_max(rd)
+            nuit_max = rd.options.nuit_max
             if nuit_max < len(rd.relais):
                 model.add(sum(self.relais_nuit[r]) <= nuit_max)
 
@@ -181,8 +181,8 @@ class _PartialModel(Model):
             if n_relays < 2:
                 continue
             rd = c.runners_data[r]
-            repos_jour = c._resolved_repos_jour(rd)
-            repos_nuit = c._resolved_repos_nuit(rd)
+            repos_jour = rd.repos_jour
+            repos_nuit = rd.repos_nuit
             for k in range(n_relays):
                 for kp in range(k + 1, n_relays):
                     k_before_kp = model.new_bool_var(f"bef_{r}_{k}_{kp}")
@@ -328,7 +328,7 @@ class FeasibilityAnalyser:
         elif key == "skip_max_same_partenaire":
             self._drill_max_same_partenaire()
         else:
-            print(f"    (pas de diagnostic fin disponible pour cette famille)")
+            print("    (pas de diagnostic fin disponible pour cette famille)")
 
     def _drill_per_runner(self, family_name: str, kwarg_only: str) -> None:
         """Pour repos / dispo / nuit : teste chaque coureur séparément.
@@ -353,7 +353,7 @@ class FeasibilityAnalyser:
 
         if not guilty:
             print(f"    Aucun coureur isolément ne cause l'infaisabilité ({family_name}).")
-            print(f"    → Probablement une interaction entre plusieurs coureurs.")
+            print("    → Probablement une interaction entre plusieurs coureurs.")
 
     def _build_with_one_runner(self, kwarg_only: str, runner: str) -> cp_model.CpModel:
         """Construit un modèle avec la contrainte réactivée uniquement pour `runner`."""
@@ -445,7 +445,7 @@ class FeasibilityAnalyser:
     def _drill_max_same_partenaire(self) -> None:
         """Teste chaque paire (r1, r2) soumise à max_same_partenaire individuellement."""
         c = self.c
-        default = c.max_same_partenaire
+        default = c.defaults.max_same_partenaire
 
         # Construire un modèle temporaire pour connaître les clés same_relay disponibles
         m_ref = _PartialModel()
@@ -458,8 +458,8 @@ class FeasibilityAnalyser:
             if key in seen:
                 continue
             seen.add(key)
-            lim1 = c.runners_data[r1].max_same_partenaire
-            lim2 = c.runners_data[r2].max_same_partenaire
+            lim1 = c.runners_data[r1].options.max_same_partenaire
+            lim2 = c.runners_data[r2].options.max_same_partenaire
             individual = [v for v in (lim1, lim2) if v is not None]
             max_same = min(individual) if individual else default
             if max_same is not None:

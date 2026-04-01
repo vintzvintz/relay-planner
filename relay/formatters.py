@@ -14,33 +14,65 @@ DAY_NAMES = ["Mercredi", "Jeudi", "Vendredi"]
 DAY_SHORT = ["Mer", "Jeu", "Ven"]
 
 PROFIL_SVG_HEIGHT = 140
+PLANNING_WIDTH = 85
+GANTT_HOUR_MARKS = (0, 6, 12, 18)
+GANTT_DAYS = 4
 
-# Colonnes du CSV export (ordre et noms lisibles)
+
+# TRI_GANTT determine l'ordre des lignes dans le gantt
+# "decl" = ordre des new_runner() - constant
+# "alpha" = ordre alphabétique - constant
+# "start" = par ordre de départ - variable selon solutions
+TRI_GANTT = "decl"
+
+DENIV_WIDTH = 6  # signe + 4 chiffres max + 'm'
+
+
+# Colonnes du CSV export (ordre fixe et noms lisibles)
 CSV_FIELDS = (
     "coureur", "partenaire", "k",
     "debut_txt", "fin_txt",
     "debut_seg", "fin_seg",
     "debut_heure", "fin_heure",
-    "debut_km", "fin_km", "distance_km", 
+    "debut_km", "fin_km", "distance_km",
     "solo", "nuit", "flex", "pinned",
     "rest_h", "d_plus", "d_moins",
 )
 
+_CSS_CLASS_MAP = {
+    "free":        "seg-free",
+    "rest":        "seg-rest",
+    "relay_binome": "seg-binome",
+    "relay_flex":  "seg-flex",
+    "relay_solo":  "seg-solo",
+    "relay_fixe":  "seg-fixe",
+    "unavail":     "seg-unavail",
+}
+
+_TAG_CONFIG = [
+    ("fixe", lambda r: r["pinned"] is not None),
+    ("solo", lambda r: r["solo"]),
+    ("nuit", lambda r: r["night"]),
+    ("flex", lambda r: r["flex"]),
+]
+
 
 # ------------------------------------------------------------------
-# Structures de données intermédiaires
+# Structures de données intermédiaires communes au HTML et au texte
 # ------------------------------------------------------------------
 
 
 @dataclass
-class ChronoRelay:
-    """Une ligne de relais dans le planning chronologique."""
-    kind: str = "relay"
+class ChronoEntry:
+    """Une ligne dans le planning chronologique (relais ou pause)."""
+    kind: str = "relay"         # "relay" ou "pause"
     day_s: str = ""
     hh: int = 0
     mm: int = 0
+    day_e: str = ""
     hh_end: int = 0
     mm_end: int = 0
+    # Champs relais (vides pour les pauses)
     seg_start: int = 0
     time_seg_start: int = 0
     km_start: float = 0.0
@@ -50,19 +82,8 @@ class ChronoRelay:
     d_moins: float | None = None
     tags: list = field(default_factory=list)
     rel: dict = field(default_factory=dict)
-
-
-@dataclass
-class ChronoPause:
-    """Une ligne de pause dans le planning chronologique."""
-    kind: str = "pause"
+    # Champ pause
     dur_str: str = ""
-    ds: str = ""
-    hs: int = 0
-    ms: int = 0
-    de: str = ""
-    he: int = 0
-    me: int = 0
 
 
 @dataclass
@@ -73,6 +94,8 @@ class RelaisLine:
     mm: int = 0
     hh_e: int = 0
     mm_e: int = 0
+    seg_start: int = 0
+    km_start: float = 0.0
     km_dist: float = 0.0
     d_plus: float | None = None
     d_moins: float | None = None
@@ -96,142 +119,140 @@ class RunnerRecap:
     relais: list = field(default_factory=list)  # list[RelaisLine]
 
 
+
 # ------------------------------------------------------------------
 # Helpers bas niveau
 # ------------------------------------------------------------------
 
 
-def _chrono_tags(rel):
-    return [t for t, v in [("fixe", (rel["pinned"] is not None)), ("solo", rel["solo"]), ("nuit", rel["night"])] if v]
+def _split_hour(h: float) -> tuple[int, int, int]:
+    """Convertit des heures décimales en (jour, hh, mm)."""
+    day = int(h // 24)
+    hh = int(h) % 24
+    mm = int((h % 1) * 60)
+    return day, hh, mm
 
 
-def _recap_tags(rel):
-    return [t for t, v in [("fixe", (rel["pinned"] is not None)), ("nuit", rel["night"]), ("flex", rel["flex"])] if v]
+def _fmt_duration(hours: float) -> str:
+    """Formate une durée en heures décimales (ex: 1.5 -> '1h30')."""
+    h = int(hours)
+    m = int((hours % 1) * 60)
+    return f"{h}h{m:02d}" if h else f"{m}min"
 
 
-def _dedup_key(rel):
-    return (
-        min(rel["runner"], rel["partner"] or "zzz"),
-        max(rel["runner"], rel["partner"] or "zzz"),
-        rel["start"],
-    )
+def _build_tags(rel) -> list[str]:
+    return [name for name, condition in _TAG_CONFIG if condition(rel)]
 
 
-def _fmt_dplus(d_plus: float | None, width: int = 0) -> str:
-    if d_plus is None:
+
+def _fmt_deniv(value: float | None, sign: str, width: int = 0) -> str:
+    if value is None:
         return ""
-    s = f"+{d_plus:.0f}m"
+    s = f"{sign}{value:.0f}m"
     return s.ljust(width) if width else s
-
-
-def _fmt_dmoins(d_moins: float | None, width: int = 0) -> str:
-    if d_moins is None:
-        return ""
-    s = f"-{d_moins:.0f}m"
-    return s.ljust(width) if width else s
-
-
-def _fmt_elevation(d_plus: float | None, d_moins: float | None,
-                   wp: int = 0, wm: int = 0) -> str:
-    if d_plus is None:
-        return ""
-    dp = f"+{d_plus:.0f}m"
-    dm = f"-{d_moins:.0f}m"
-    if wp:
-        dp = dp.rjust(wp)
-    if wm:
-        dm = dm.rjust(wm)
-    return f"{dp} {dm}"
-
-
-def _elevation_widths(relays_iter) -> tuple[int, int]:
-    """Calcule la largeur max de ↑Xm et ↓Xm sur une liste de relais."""
-    wp = wm = 0
-    for rel in relays_iter:
-        dp = rel.get("d_plus")
-        dm = rel.get("d_moins")
-        if dp is not None:
-            wp = max(wp, len(f"+{dp:.0f}m"))
-            wm = max(wm, len(f"-{dm:.0f}m"))
-    return wp, wm
-
-
-# def _fmt_seg(constraints, seg):
-#     h = constraints.segment_start_hour(seg)
-#     day, hh, mm = int(h // 24), int(h) % 24, int((h % 1) * 60)
-#     return DAY_NAMES[min(day, 2)], hh, mm
 
 
 def _fmt_seg_short(constraints, seg):
     h = constraints.segment_start_hour(seg)
-    day, hh, mm = int(h // 24), int(h) % 24, int((h % 1) * 60)
-    return DAY_SHORT[min(day, 2)], hh, mm
-
-# TODO remove duplicate with _fmt_seg_short
-def _fmt_seg_short_end(constraints, seg):
-    h = constraints.segment_start_hour(seg)
-    day, hh, mm = int(h // 24), int(h) % 24, int((h % 1) * 60)
+    day, hh, mm = _split_hour(h)
     return DAY_SHORT[min(day, 2)], hh, mm
 
 
-def _chrono_coureurs_width(relays):
-    seen = set()
-    w = 0
-    for rel in relays:
-        dedup = _dedup_key(rel)
-        if dedup in seen and rel["partner"]:
-            continue
-        seen.add(dedup)
-        label = f"{rel['runner']} + {rel['partner']}" if rel["partner"] else rel["runner"]
-        w = max(w, len(label))
-    return w
+def _max_label_width(relays, label_fn) -> int:
+    return max((len(label_fn(r)) for r in relays), default=0)
 
 
-def _recap_partenaire_width(relays):
-    w = 0
-    for rel in relays:
-        label = f"avec {rel['partner']}" if rel["partner"] else "seul"
-        w = max(w, len(label))
-    return w
-
-
-def _pause_info(constraints, time_start: int, time_end: int) -> ChronoPause:
+def _build_pause_entry(constraints, time_start: int, time_end: int) -> ChronoEntry:
     c = constraints
     ph_start = c.segment_start_hour(time_start)
     ph_end = c.segment_start_hour(time_end)
-    d_start, d_end = int(ph_start // 24), int(ph_end // 24)
-    hs, ms = int(ph_start) % 24, int((ph_start % 1) * 60)
-    he, me = int(ph_end) % 24, int((ph_end % 1) * 60)
-    ds = DAY_SHORT[min(d_start, 2)]
-    de = DAY_SHORT[min(d_end, 2)]
-    dur = ph_end - ph_start
-    dur_h, dur_m = int(dur), int((dur % 1) * 60)
-    dur_str = f"{dur_h}h{dur_m:02d}" if dur_h else f"{dur_m}min"
-    return ChronoPause(dur_str=dur_str, ds=ds, hs=hs, ms=ms, de=de, he=he, me=me)
+    d_start, hh, mm = _split_hour(ph_start)
+    d_end, hh_end, mm_end = _split_hour(ph_end)
+    dur_str = _fmt_duration(ph_end - ph_start)
+    active = c.time_seg_to_active(time_start)
+    return ChronoEntry(
+        kind="pause",
+        day_s=DAY_SHORT[min(d_start, 2)], hh=hh, mm=mm,
+        day_e=DAY_SHORT[min(d_end, 2)], hh_end=hh_end, mm_end=mm_end,
+        seg_start=active,
+        km_start=active * c.segment_km,
+        dur_str=dur_str,
+    )
+
 
 
 # ------------------------------------------------------------------
-# Construction des données intermédiaires
+# Export CSV
+# ------------------------------------------------------------------
+
+
+def _csv_row(rel, constraints):
+    c = constraints
+    h_s = c.segment_start_hour(rel["start"])
+    day_s_idx, hh, mm = _split_hour(h_s)
+    day_s = DAY_SHORT[min(day_s_idx, 2)]
+    h_e = c.segment_start_hour(rel["end"])
+    _, hh_e, mm_e = _split_hour(h_e)
+
+    def r3(v):
+        return round(v, 3) if v is not None else None
+
+    return {
+        "coureur": rel["runner"],
+        "partenaire": rel["partner"],
+        "debut_txt": f"{day_s} {hh:02d}h{mm:02d}",
+        "fin_txt": f"{day_s} {hh_e:02d}h{mm_e:02d}",
+        "debut_seg": rel["start"],
+        "fin_seg": rel["end"],
+        "debut_heure": r3(c.segment_start_hour(rel["start"])),
+        "fin_heure": r3(c.segment_start_hour(rel["end"])),
+        "debut_km": r3(c.time_seg_to_active(rel["start"]) * c.segment_km),
+        "fin_km": r3(c.time_seg_to_active(rel["end"]) * c.segment_km),
+        "distance_km": r3(rel["km"]),
+        "k": rel["k"],
+        "solo": rel["solo"],
+        "nuit": rel["night"],
+        "flex": rel["flex"],
+        "pinned": rel.get("pinned"),
+        "rest_h": r3(rel["rest_h"]),
+        "d_plus": r3(rel.get("d_plus")),
+        "d_moins": r3(rel.get("d_moins")),
+    }
+
+
+def to_csv(solution, filename):
+    """Sauvegarde la solution en CSV (format lisible)."""
+    rows = [_csv_row(rel, solution.constraints) for rel in solution.relays]
+    with open(filename, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+# ------------------------------------------------------------------
+# Construction des données intermédiaires pour HTML et texte
 # ------------------------------------------------------------------
 
 
 def build_chrono_entries(relays, constraints) -> list:
-    """Retourne la liste plate (ChronoRelay | ChronoPause) du planning chronologique."""
+    """Retourne la liste plate de ChronoEntry du planning chronologique."""
     c = constraints
     entries = []
     seen = set()
     pause_inserted = set()
     for rel in relays:
-        dedup = _dedup_key(rel)
+        dedup = (min(rel["runner"], rel["partner"] or "zzz"),
+                  max(rel["runner"], rel["partner"] or "zzz"), 
+                  rel["start"])
         if dedup in seen and rel["partner"]:
             continue
         seen.add(dedup)
 
         day_s, hh, mm = _fmt_seg_short(c, rel["start"])
-        _, hh_end, mm_end = _fmt_seg_short_end(c, rel["end"])
+        day_e, hh_end, mm_end = _fmt_seg_short(c, rel["end"])
         coureurs = f"{rel['runner']} + {rel['partner']}" if rel["partner"] else rel["runner"]
-        entries.append(ChronoRelay(
-            day_s=day_s, hh=hh, mm=mm, hh_end=hh_end, mm_end=mm_end,
+        entries.append(ChronoEntry(
+            day_s=day_s, hh=hh, mm=mm, day_e=day_e, hh_end=hh_end, mm_end=mm_end,
             seg_start=c.time_seg_to_active(rel["start"]),
             time_seg_start=rel["start"],
             km_start=c.time_seg_to_active(rel["start"]) * c.segment_km,
@@ -239,14 +260,14 @@ def build_chrono_entries(relays, constraints) -> list:
             coureurs=coureurs,
             d_plus=rel.get("d_plus"),
             d_moins=rel.get("d_moins"),
-            tags=_chrono_tags(rel),
+            tags=_build_tags(rel),
             rel=rel,
         ))
 
         for a, b in c.inactive_ranges:
             if rel["end"] == a and a not in pause_inserted:
                 pause_inserted.add(a)
-                entries.append(_pause_info(c, a, b))
+                entries.append(_build_pause_entry(c, a, b))
 
     return entries
 
@@ -276,12 +297,14 @@ def build_runner_recaps(relays, constraints) -> list:
                 repos_str = ""
             relais_lines.append(RelaisLine(
                 day_s=day_s, hh=hh, mm=mm, hh_e=hh_e, mm_e=mm_e,
+                seg_start=c.time_seg_to_active(rel["start"]),
+                km_start=c.time_seg_to_active(rel["start"]) * c.segment_km,
                 km_dist=rel["km"],
                 d_plus=rel.get("d_plus"),
                 d_moins=rel.get("d_moins"),
                 partenaire=p,
                 repos_str=repos_str,
-                tags=_recap_tags(rel),
+                tags=_build_tags(rel),
                 rel=rel,
             ))
 
@@ -312,97 +335,97 @@ def _summary_data(solution):
     min_per_km = 60.0 / c.speed_kmh
     h_start = c.start_hour
     h_end = c.segment_start_hour(c.nb_segments)
+    d_start, hh_start, mm_start = _split_hour(h_start)
+    d_end, hh_end, mm_end = _split_hour(h_end)
     return {
-        "nb_coureurs":   len(c.runners),
-        "km_engages":    sum(r["size_decl"] * c.segment_km for r in solution.relays),
+        "nb_coureurs":    len(c.runners),
+        "km_engages":     sum(r["size_decl"] * c.segment_km for r in solution.relays),
         "min_per_km_str": f"{int(min_per_km)}'{int((min_per_km % 1) * 60):02d}\"",
-        "seg_dur_min":   c.segment_duration * 60,
-        "day_start":     DAY_SHORT[min(int(h_start // 24), 2)],
-        "hh_start":      int(h_start) % 24,
-        "mm_start":      int((h_start % 1) * 60),
-        "day_end":       DAY_SHORT[min(int(h_end // 24), 2)],
-        "hh_end":        int(h_end) % 24,
-        "mm_end":        int((h_end % 1) * 60),
-        "lp_bound":      c.lp_bounds.upper_bound if c.lp_bounds is not None else "?",
-        "score_str":     f"{score:.0f}" if score is not None else "?",
-        "km_flex_str":   f"{km_flex:.1f}" if km_flex else "0",
-        "n_solos":       n_solos,
+        "seg_dur_min":    c.segment_duration * 60,
+        "day_start":      DAY_SHORT[min(d_start, 2)],
+        "hh_start":       hh_start,
+        "mm_start":       mm_start,
+        "day_end":        DAY_SHORT[min(d_end, 2)],
+        "hh_end":         hh_end,
+        "mm_end":         mm_end,
+        "lp_bound":       c.lp_bounds.upper_bound if c.lp_bounds is not None else "?",
+        "score_str":      f"{score:.0f}" if score is not None else "?",
+        "km_flex_str":    f"{km_flex:.1f}" if km_flex else "0",
+        "n_solos":        n_solos,
     }
 
 
-def _planning_chrono_lines(solution):
+def _build_text_chrono(solution):
     c = solution.constraints
     relays = solution.relays
-    W = 74
     lines = []
     d = _summary_data(solution)
 
-    lines.append("=" * W)
+    lines.append("=" * PLANNING_WIDTH)
     lines.append(f"  Planning LYS-FES  {c.total_km:.1f} km     {d['day_start']} {d['hh_start']:02d}h{d['mm_start']:02d} -> {d['day_end']} {d['hh_end']:02d}h{d['mm_end']:02d}")
     lines.append(f"  {d['nb_coureurs']} coureurs - {d['km_engages']:.1f} km engagés - {c.nb_active_segments} segments - {d['min_per_km_str']} min/km - {d['seg_dur_min']:.0f} min/segment")
     lines.append(f"  score {d['score_str']}/{d['lp_bound']} - {d['km_flex_str']} km flex - {d['n_solos']} relais solo")
-    lines.append("=" * W)
+    lines.append("=" * PLANNING_WIDTH)
 
-    cw = _chrono_coureurs_width(relays)
-    wp, wm = _elevation_widths(relays)
-    current_day = -1
+    cw = _max_label_width(relays, lambda r: f"{r['runner']} + {r['partner']}" if r["partner"] else r["runner"])
     for entry in build_chrono_entries(relays, c):
-        if isinstance(entry, ChronoRelay):
-            day = int(c.segment_start_hour(entry.time_seg_start) // 24)
-            if day != current_day:
-                current_day = day
-                lines.append(f"\n▶ {DAY_NAMES[min(day, 2)].upper()}")
+        if entry.kind == "relay":
             debut = f"{entry.day_s} {entry.hh:02d}h{entry.mm:02d}"
             fin = f"{entry.hh_end:02d}h{entry.mm_end:02d}"
             seg_dep = f"{entry.seg_start:>3}"
             km_dep = f"{entry.km_start:>6.1f} km"
             flags = f"  [{' '.join(entry.tags)}]" if entry.tags else ""
             if entry.d_plus is not None:
-                dp = f"↑{entry.d_plus:.0f}m".rjust(wp + 1)
-                dm = f"↓{entry.d_moins:.0f}m".rjust(wm)
+                dp = f"↑{entry.d_plus:.0f}m".rjust(DENIV_WIDTH + 1)
+                dm = f"↓{entry.d_moins:.0f}m".rjust(DENIV_WIDTH)
                 dplus_str = f" {dp} {dm}"
             else:
-                dplus_str = " " * (wp + wm + 3)
+                dplus_str = " " * (DENIV_WIDTH * 2 + 3)
             lines.append(f"  {debut} → {fin}   {seg_dep}   {km_dep}   {entry.km_dist:>4.1f} km   {entry.coureurs:<{cw}}{dplus_str}{flags}")
         else:
-            p = entry
-            debut_p = f"{p.ds} {p.hs:02d}h{p.ms:02d}"
-            fin_p = f"{p.he:02d}h{p.me:02d}"
-            lines.append(f"  {debut_p} → {fin_p}   ⏸  PAUSE {p.dur_str}")
+            debut_p = f"{entry.day_s} {entry.hh:02d}h{entry.mm:02d}"
+            fin_p = f"{entry.hh_end:02d}h{entry.mm_end:02d}"
+            seg_dep = f"{entry.seg_start:>3}"
+            km_dep = f"{entry.km_start:>6.1f} km"
+            pause_label = f"⏸  PAUSE {entry.dur_str}"
+            lines.append(f"  {debut_p} → {fin_p}   {seg_dep}   {km_dep}   {'':>7}   {pause_label:<{cw}}")
 
     return lines
 
 
-def _recap_coureurs_lines(solution):
-    W = 74
+def _build_text_recap(solution):
     lines = []
-    lines.append(f"\n{'─' * W}")
+    lines.append(f"\n{'─' * PLANNING_WIDTH}")
     lines.append("  PAR COUREUR")
-    lines.append(f"{'─' * W}")
-    pw = _recap_partenaire_width(solution.relays)
-    wp, wm = _elevation_widths(solution.relays)
+    lines.append(f"{'─' * PLANNING_WIDTH}")
+    pw = _max_label_width(solution.relays, lambda r: f"avec {r['partner']}" if r["partner"] else "seul")
     for recap in build_runner_recaps(solution.relays, solution.constraints):
         flags = []
         if recap.n_solo:
             flags.append(f"{recap.n_solo} seul")
         if recap.n_nuit:
             flags.append(f"{recap.n_nuit} nuit")
-        dplus_total = _fmt_elevation(recap.total_d_plus, recap.total_d_moins)
-        if dplus_total:
-            dplus_total = "  " + dplus_total
+        if recap.total_d_plus is not None:
+            dplus_total = f" {_fmt_deniv(recap.total_d_plus, '+').rjust(DENIV_WIDTH + 1)} {_fmt_deniv(recap.total_d_moins, '-').rjust(DENIV_WIDTH)}"
+        else:
+            dplus_total = " " * (DENIV_WIDTH * 2 + 3)
+        # Aligne total_km sur la colonne km_dist : 2(indent)+18(heure)+3+3(seg)+3+9(km_dep) = 38 chars avant "   km_dist"
+        RECAP_TITLE_WIDTH = 2 + 18 + 3 + 3 + 3 + 9 - 1  # = 37
+        flags_str = f"  ({', '.join(flags)})" if flags else ""
         lines.append(
-            f"\n{recap.name:<12}  {recap.total_km:>5.1f} km  {recap.n_relais} relais{dplus_total}"
-            + (f"  ({', '.join(flags)})" if flags else "")
+            f"\n{recap.name:<{RECAP_TITLE_WIDTH}}   {recap.total_km:>4.1f} km"
+            f"   {'':>{pw}}{dplus_total}{flags_str}"
         )
         for rl in recap.relais:
             flags_rel = f"  [{' '.join(rl.tags)}]" if rl.tags else ""
             if rl.d_plus is not None:
-                dplus_str = " " + _fmt_elevation(rl.d_plus, rl.d_moins, wp=wp, wm=wm)
+                dplus_str = f" {_fmt_deniv(rl.d_plus, '+').rjust(DENIV_WIDTH + 1)} {_fmt_deniv(rl.d_moins, '-').rjust(DENIV_WIDTH)}"
             else:
-                dplus_str = " " * (wp + wm + 2)
+                dplus_str = " " * (DENIV_WIDTH * 2 + 3)
             lines.append(
                 f"  {rl.day_s} {rl.hh:02d}h{rl.mm:02d} → {rl.hh_e:02d}h{rl.mm_e:02d}"
-                f"  {rl.km_dist:>4.1f} km{dplus_str}  {rl.partenaire:<{pw}}  {rl.repos_str:<11}{flags_rel}"
+                f"   {rl.seg_start:>3}   {rl.km_start:>6.1f} km   {rl.km_dist:>4.1f} km"
+                f"   {rl.partenaire:<{pw}}{dplus_str}  {rl.repos_str:<11}{flags_rel}"
             )
 
     return lines
@@ -410,7 +433,7 @@ def _recap_coureurs_lines(solution):
 
 def to_text(solution) -> str:
     """Retourne le planning complet en texte (planning chrono + récap)."""
-    lines = _planning_chrono_lines(solution) + _recap_coureurs_lines(solution)
+    lines = _build_text_chrono(solution) + _build_text_recap(solution)
     return "\n".join(lines) + "\n"
 
 
@@ -419,20 +442,71 @@ def to_text(solution) -> str:
 # ------------------------------------------------------------------
 
 
-def _build_gantt(solution):
-    """Retourne (header_row, rows_html) pour le Gantt
+def _split_spans(spans, mark_segs):
+    """Divise les spans aux points de repère (ticks horaires)."""
+    result = []
+    for s, e, typ, label in spans:
+        cuts = sorted(m for m in mark_segs if s < m < e)
+        boundaries = [s] + cuts + [e]
+        for i in range(len(boundaries) - 1):
+            result.append((boundaries[i], boundaries[i + 1], typ, label if i == 0 else ""))
+    return result
 
-    header_row : str  — un <div class="gantt-row gantt-header"> complet
-    rows_html  : list[str] — un <div class="gantt-row"> par coureur
-    """
-    c = solution.constraints
-    relays = solution.relays
 
+def _gantt_mark_segs(c) -> set:
+    """Calcule les segments correspondant aux ticks horaires (0h, 6h, 12h, 18h)."""
+    mark_segs = set()
+    for day in range(GANTT_DAYS):
+        for hh_mark in GANTT_HOUR_MARKS:
+            target_h = day * 24 + hh_mark
+            best = min(range(c.nb_segments + 1), key=lambda s: abs(c.segment_start_hour(s) - target_h))
+            if 0 < best <= c.nb_segments:
+                mark_segs.add(best)
+    return mark_segs
+
+
+def _gantt_header_row(c, mark_segs: set) -> str:
+    """Retourne les deux lignes d'en-tête du Gantt (ticks horaires + barre nuit/pause)."""
+    inactive_range_starts = {a: b for a, b in c.inactive_ranges}
+    night_segs = c.night_segments
+    sorted_marks = sorted(mark_segs)
+
+    # row1 : ticks horaires (blocs fusionnés entre ticks)
+    row1 = ['<div class="th-seg-label"></div>']
+    seg = 0
+    first_block = True
+    while seg < c.nb_segments:
+        block_end = next((m for m in sorted_marks if m > seg), c.nb_segments)
+        span = block_end - seg
+        h = c.segment_start_hour(seg)
+        h_mod = h % 24
+        closest_hh = min(GANTT_HOUR_MARKS, key=lambda hm: min(abs(h_mod - hm), 24 - abs(h_mod - hm)))
+        label = "" if first_block and abs(h_mod - closest_hh) * 60 > c.segment_duration * 60 else f"{closest_hh:02d}h"
+        first_block = False
+        row1.append(f'<div style="grid-column:span {span}" class="th-tick-block">{label}</div>')
+        seg = block_end
+
+    # row2 : segment par segment, fond nuit ou pause
+    row2 = ['<div class="th-seg-label"></div>']
+    seg = 0
+    while seg < c.nb_segments:
+        if seg in inactive_range_starts:
+            b = inactive_range_starts[seg]
+            row2.append(f'<div style="grid-column:span {b - seg}" class="th-seg-px th-pause-px"></div>')
+            seg = b
+        else:
+            night_class = " th-seg-night" if seg in night_segs else ""
+            row2.append(f'<div class="th-seg-px{night_class}"></div>')
+            seg += 1
+
+    return "".join(row1) + "".join(row2)
+
+
+def _gantt_runner_rows(c, relays, mark_segs: set) -> list[str]:
+    """Retourne une liste de div HTML, une par coureur."""
     by_runner = {r: {} for r in c.runners}
     for rel in relays:
         by_runner[rel["runner"]][rel["start"]] = rel
-
-    inactive_range_starts = {a: b for a, b in c.inactive_ranges}
 
     def unavail_segs(runner):
         specs = c.runners_data[runner].relais
@@ -444,43 +518,19 @@ def _build_gantt(solution):
             avail.update(range(s, e + 1))
         return set(range(c.nb_segments)) - avail
 
-    mark_segs = set()
-    for day in range(4):
-        for hh_mark in (0, 6, 12, 18):
-            target_h = day * 24 + hh_mark
-            best = min(range(c.nb_segments + 1), key=lambda s: abs(c.segment_start_hour(s) - target_h))
-            if 0 < best <= c.nb_segments:
-                mark_segs.add(best)
+    def first_relay_start(runner):
+        rels = by_runner[runner]
+        return min(rels.keys()) if rels else float("inf")
 
-    def split_spans(spans):
-        result = []
-        for s, e, typ, label in spans:
-            cuts = sorted(m for m in mark_segs if s < m < e)
-            boundaries = [s] + cuts + [e]
-            for i in range(len(boundaries) - 1):
-                result.append((boundaries[i], boundaries[i + 1], typ, label if i == 0 else ""))
-        return result
-
-    def _typ_to_css(typ, mark_class):
-        if typ == "free":
-            return f"seg-free{mark_class}"
-        elif typ == "rest":
-            return f"seg-rest{mark_class}"
-        elif typ == "relay_binome":
-            return f"seg-binome{mark_class}"
-        elif typ == "relay_flex":
-            return f"seg-flex{mark_class}"
-        elif typ == "relay_solo":
-            return f"seg-solo{mark_class}"
-        elif typ == "relay_fixe":
-            return f"seg-fixe{mark_class}"
-        elif typ == "unavail":
-            return f"seg-unavail{mark_class}"
-        else:
-            return f"seg-free{mark_class}"
+    if TRI_GANTT == "alpha":
+        runner_order = sorted(c.runners)
+    elif TRI_GANTT == "start":
+        runner_order = sorted(c.runners, key=first_relay_start)
+    else:  # "decl"
+        runner_order = c.runners
 
     rows_html = []
-    for r in sorted(c.runners):
+    for r in runner_order:
         unavail = unavail_segs(r)
         relais_by_start = by_runner[r]
         sorted_relais = sorted(relais_by_start.values(), key=lambda x: x["start"])
@@ -493,12 +543,12 @@ def _build_gantt(solution):
                 rel = relais_by_start[seg]
                 if rel["pinned"] is not None:
                     relay_typ = "relay_fixe"
-                elif rel["solo"]:
-                    relay_typ = "relay_solo"
-                elif rel["flex"] and rel["partner"]:
+                elif rel["partner"] and rel["flex"]:
                     relay_typ = "relay_flex"
+                elif rel["partner"]:
+                    relay_typ = "relay_binome"
                 else:
-                    relay_typ = "relay_binome" if rel["partner"] else "relay_solo"
+                    relay_typ = "relay_solo"
                 spans.append((seg, rel["end"], relay_typ, ""))
                 last_repos_end = min(rel["end"] + rel["rest_min_segs"], c.nb_segments)
                 seg = rel["end"]
@@ -528,103 +578,68 @@ def _build_gantt(solution):
                     spans.append((seg, end, "free", ""))
                 seg = end
 
-        spans = split_spans(spans)
-
         cells = []
-        for s, e, typ, label in spans:
+        for s, e, typ, label in _split_spans(spans, mark_segs):
             colspan = e - s
             if colspan == 0:
                 continue
             mark_class = " seg-mark" if s in mark_segs else ""
-            css_class = _typ_to_css(typ, mark_class)
-            cells.append(f'<div style="grid-column:span {colspan}" class="{css_class}">{label}</div>')
+            cells.append(f'<div style="grid-column:span {colspan}" class="{_CSS_CLASS_MAP.get(typ, "seg-free")}{mark_class}">{label}</div>')
 
-        rows_html.append(
-            f'<div class="th-runner">{r}</div>'
-            + "".join(cells)
-        )
+        rows_html.append(f'<div class="th-runner">{r}</div>' + "".join(cells))
 
-    night_segs = c.night_segments
-
-    # Ligne 1 : blocs entre ticks 6h (cellules fusionnées), label à gauche, sans fond
-    # Ligne 2 : 1 cellule par segment, sans texte, fond nuit ou pause
-    row1 = ['<div class="th-seg-label"></div>']
-    row2 = ['<div class="th-seg-label"></div>']
-
-    sorted_marks = sorted(mark_segs)
-
-    # row1 : ticks horaires uniquement, les pauses sont transparentes (span continu)
-    seg = 0
-    first_block = True
-    while seg < c.nb_segments:
-        block_end = next((m for m in sorted_marks if m > seg), c.nb_segments)
-        span = block_end - seg
-        h = c.segment_start_hour(seg)
-        h_mod = h % 24
-        closest_hh = min((0, 6, 12, 18), key=lambda hm: min(abs(h_mod - hm), 24 - abs(h_mod - hm)))
-        if first_block and abs(h_mod - closest_hh) * 60 > c.segment_duration * 60:
-            label = ""
-        else:
-            label = f"{closest_hh:02d}h"
-        first_block = False
-        row1.append(f'<div style="grid-column:span {span}" class="th-tick-block">{label}</div>')
-        seg = block_end
-
-    # row2 : segment par segment, barre orange sur les pauses
-    seg = 0
-    while seg < c.nb_segments:
-        if seg in inactive_range_starts:
-            b = inactive_range_starts[seg]
-            cs = b - seg
-            row2.append(f'<div style="grid-column:span {cs}" class="th-seg-px th-pause-px"></div>')
-            seg = b
-        else:
-            night_class = " th-seg-night" if seg in night_segs else ""
-            row2.append(f'<div class="th-seg-px{night_class}"></div>')
-            seg += 1
-
-    header_row = "".join(row1) + "".join(row2)
-
-    return header_row, rows_html
+    return rows_html
 
 
-def _build_html_detail(solution):
-    def row_class(rel):
-        if rel["pinned"] is not None:
-            return ' class="row-fixe"'
-        if rel["solo"]:
-            return ' class="row-solo"'
-        if rel["partner"]:
-            return ' class="row-binome"'
-        return ""
+def _build_gantt(solution) -> str:
+    """Retourne le div gantt-container complet (profil SVG + header + coureurs)."""
+    c = solution.constraints
+    mark_segs = _gantt_mark_segs(c)
+    header_row = _gantt_header_row(c, mark_segs)
+    rows_html = _gantt_runner_rows(c, solution.relays, mark_segs)
+    inner = _build_profil_svg_row(solution) + header_row + "".join(rows_html)
+    return f'<div class="gantt-container">\n{inner}\n</div>'
 
+
+def _row_class(rel):
+    if rel["pinned"] is not None:
+        return ' class="row-fixe"'
+    if rel["solo"]:
+        return ' class="row-solo"'
+    if rel["partner"]:
+        return ' class="row-binome"'
+    return ""
+
+
+def _build_html_chrono(solution) -> str:
     chrono_rows = []
     for entry in build_chrono_entries(solution.relays, solution.constraints):
-        if isinstance(entry, ChronoRelay):
+        if entry.kind == "relay":
             e = entry
             flags = ", ".join(e.tags)
             chrono_rows.append(
-                f'<tr{row_class(e.rel)}>'
+                f'<tr{_row_class(e.rel)}>'
                 f'<td class="td-time td-nowrap">{e.day_s} {e.hh:02d}h{e.mm:02d} → {e.hh_end:02d}h{e.mm_end:02d}</td>'
                 f'<td class="td-time td-right">{e.seg_start}</td>'
                 f'<td class="td-time td-right">{e.km_start:.1f} km</td>'
                 f'<td class="td-time td-right">{e.km_dist:.1f} km</td>'
-                f'<td class="td-time td-right">{_fmt_dplus(e.d_plus)}</td>'
-                f'<td class="td-time td-right">{_fmt_dmoins(e.d_moins)}</td>'
+                f'<td class="td-time td-right">{_fmt_deniv(e.d_plus, "+")}</td>'
+                f'<td class="td-time td-right">{_fmt_deniv(e.d_moins, "-")}</td>'
                 f'<td class="td-time td-bold">{e.coureurs}</td>'
                 f'<td class="td-time td-meta">{flags}</td>'
                 f'</tr>'
             )
         else:
-            p = entry
             chrono_rows.append(
                 f'<tr class="row-pause">'
-                f'<td class="td-pause td-nowrap">{p.ds} {p.hs:02d}h{p.ms:02d} → {p.de} {p.he:02d}h{p.me:02d}</td>'
-                f'<td class="td-pause" colspan="7">⏸&nbsp; PAUSE {p.dur_str}</td>'
+                f'<td class="td-pause td-nowrap">{entry.day_s} {entry.hh:02d}h{entry.mm:02d} → {entry.day_e} {entry.hh_end:02d}h{entry.mm_end:02d}</td>'
+                f'<td class="td-pause td-right">{entry.seg_start}</td>'
+                f'<td class="td-pause td-right">{entry.km_start:.1f} km</td>'
+                f'<td class="td-pause" colspan="5">⏸&nbsp; PAUSE {entry.dur_str}</td>'
                 f'</tr>'
             )
 
-    chrono_html = (
+    return (
         '<h3 class="section-title">Planning chronologique</h3>'
         '<table class="detail-table">'
         '<thead><tr class="thead-row">'
@@ -641,6 +656,8 @@ def _build_html_detail(solution):
         '</table>'
     )
 
+
+def _build_html_recap(solution) -> str:
     recap_sections = []
     for recap in build_runner_recaps(solution.relays, solution.constraints):
         flags = []
@@ -654,27 +671,30 @@ def _build_html_detail(solution):
         for rl in recap.relais:
             tags_str = ", ".join(rl.tags)
             detail_rows.append(
-                f'<tr{row_class(rl.rel)}>'
+                f'<tr{_row_class(rl.rel)}>'
                 f'<td class="td-recap td-nowrap">{rl.day_s} {rl.hh:02d}h{rl.mm:02d} → {rl.hh_e:02d}h{rl.mm_e:02d}</td>'
+                f'<td class="td-recap td-right">{rl.seg_start}</td>'
+                f'<td class="td-recap td-right">{rl.km_start:.1f} km</td>'
                 f'<td class="td-recap td-right">{rl.km_dist:.1f} km</td>'
-                f'<td class="td-recap td-right">{_fmt_dplus(rl.d_plus)}</td>'
-                f'<td class="td-recap td-right">{_fmt_dmoins(rl.d_moins)}</td>'
                 f'<td class="td-recap">{rl.partenaire}</td>'
+                f'<td class="td-recap td-right">{_fmt_deniv(rl.d_plus, "+")}</td>'
+                f'<td class="td-recap td-right">{_fmt_deniv(rl.d_moins, "-")}</td>'
                 f'<td class="td-recap td-meta">{rl.repos_str}</td>'
                 f'<td class="td-recap td-meta">{tags_str}</td>'
                 f'</tr>'
             )
 
-        dur_h = int(recap.total_duration_h)
-        dur_m = int((recap.total_duration_h % 1) * 60)
-        dur_str = f"{dur_h}h{dur_m:02d}"
+        dur_str = _fmt_duration(recap.total_duration_h)
         summary_row = (
             f'<tr class="row-summary">'
             f'<td class="td-recap td-summary td-nowrap">{recap.n_relais} relais &nbsp; {dur_str}</td>'
+            f'<td class="td-recap td-summary" colspan="2"></td>'
             f'<td class="td-recap td-summary td-right">{recap.total_km:.1f} km</td>'
-            f'<td class="td-recap td-summary td-right">{_fmt_dplus(recap.total_d_plus)}</td>'
-            f'<td class="td-recap td-summary td-right">{_fmt_dmoins(recap.total_d_moins)}</td>'
-            f'<td class="td-recap td-summary td-meta" colspan="3">{flags_str.strip()}</td>'
+            f'<td class="td-recap td-summary"></td>'
+            f'<td class="td-recap td-summary td-right">{_fmt_deniv(recap.total_d_plus, "+")}</td>'
+            f'<td class="td-recap td-summary td-right">{_fmt_deniv(recap.total_d_moins, "-")}</td>'
+            f'<td class="td-recap td-summary td-meta"></td>'
+            f'<td class="td-recap td-summary td-meta">{flags_str.strip()}</td>'
             f'</tr>'
         )
         recap_sections.append(
@@ -683,93 +703,42 @@ def _build_html_detail(solution):
             '<tbody>' + summary_row + "\n" + "\n".join(detail_rows) + '</tbody>'
             '</table>'
         )
-
-    recap_html = (
+    return (
         '<h3 class="section-title">Par coureur</h3>'
         + "\n".join(recap_sections)
     )
 
-    return chrono_html + "\n" + recap_html
 
-
-# ------------------------------------------------------------------
-# Export CSV
-# ------------------------------------------------------------------
-
-
-def _export_row(rel, constraints):
-    c = constraints
-    h_s = c.segment_start_hour(rel["start"])
-    day_s = DAY_SHORT[min(int(h_s // 24), 2)]
-    hh, mm = int(h_s) % 24, int((h_s % 1) * 60)
-    h_e = c.segment_start_hour(rel["end"])
-    hh_e, mm_e = int(h_e) % 24, int((h_e % 1) * 60)
-    def r3(v):
-        return round(v, 3) if v is not None else None
-    return {
-        "coureur": rel["runner"],
-        "partenaire": rel["partner"],
-        "debut_txt": f"{day_s} {hh:02d}h{mm:02d}",
-        "fin_txt": f"{day_s} {hh_e:02d}h{mm_e:02d}",
-        "debut_seg": rel["start"],
-        "fin_seg": rel["end"],
-        "debut_heure": r3(c.segment_start_hour(rel["start"])),
-        "fin_heure": r3(c.segment_start_hour(rel["end"])),
-        "debut_km": r3(c.time_seg_to_active(rel["start"]) * c.segment_km),
-        "fin_km": r3(c.time_seg_to_active(rel["end"]) * c.segment_km),
-        "distance_km": r3(rel["km"]),
-        "k": rel["k"],
-        "solo": rel["solo"],
-        "nuit": rel["night"],
-        "flex": rel["flex"],
-        "pinned": rel.get("pinned"),
-        "rest_h": r3(rel["rest_h"]),
-        "d_plus": r3(rel.get("d_plus")),
-        "d_moins": r3(rel.get("d_moins")),
-    }
-
-
-def to_csv(solution, filename):
-    """Sauvegarde la solution en CSV (format lisible)."""
-    rows = [_export_row(rel, solution.constraints) for rel in solution.relays]
-    with open(filename, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
-        writer.writeheader()
-        writer.writerows(rows)
+def _build_profil_svg_row(solution) -> str:
+    """Retourne la ligne SVG du profil altimétrique pour le Gantt, ou '' si absent."""
+    c = solution.constraints
+    if c.profil is None:
+        return ""
+    pauses = [
+        (c.time_seg_to_active(a) * c.segment_km, (b - a) * c.segment_duration)
+        for a, b in c.inactive_ranges
+    ]
+    svg = c.profil.to_svg(
+        width=900,
+        height=PROFIL_SVG_HEIGHT,
+        padding_left=0,
+        padding_right=0,
+        padding_top=10,
+        padding_bottom=30,
+        speed_kmh=c.speed_kmh,
+        pauses=pauses if pauses else None,
+        inline=True,
+    )
+    return (
+        f'<div class="th-seg-label" style="vertical-align:bottom;font-size:10px;color:#555;"></div>'
+        f'<div style="grid-column:span {c.nb_segments};padding:0;">{svg}</div>'
+    )
 
 
 def to_html(solution) -> str:
     """Retourne le planning complet en HTML (Gantt + planning détaillé)."""
     c = solution.constraints
-
-    header_row, rows_html = _build_gantt(solution)
-
-    profil_svg_row = ""
-    if c.profil is not None:
-        _pauses = [
-            (c.time_seg_to_active(a) * c.segment_km, (b - a) * c.segment_duration)
-            for a, b in c.inactive_ranges
-        ]
-        _svg = c.profil.to_svg(
-            width=900,
-            height=PROFIL_SVG_HEIGHT,
-            padding_left=0,
-            padding_right=0,
-            padding_top=10,
-            padding_bottom=30,
-            speed_kmh=c.speed_kmh,
-            pauses=_pauses if _pauses else None,
-            inline=True,
-        )
-        _span = c.nb_segments
-        profil_svg_row = (
-            f'<div class="th-seg-label" style="vertical-align:bottom;font-size:10px;color:#555;"></div>'
-            f'<div style="grid-column:span {_span};padding:0;">{_svg}</div>'
-        )
-
     d = _summary_data(solution)
-
-    text_section = _build_html_detail(solution)
 
     return f"""<!DOCTYPE html>
 <html lang="fr">
@@ -853,11 +822,8 @@ def to_html(solution) -> str:
   <span style="background:#b0bec5;padding:2px 8px;border:1px solid #546e7a;">Indisponible</span>&nbsp;
   <span style="background:#fff9e6;padding:2px 8px;border:1px solid #f9a825;">Repos</span>
 </p>
-<div class="gantt-container">
-{profil_svg_row}
-{header_row}
-{"".join(rows_html)}
-</div>
-{text_section}
+{_build_gantt(solution)}
+{_build_html_chrono(solution)}
+{_build_html_recap(solution)}
 </body>
 </html>"""

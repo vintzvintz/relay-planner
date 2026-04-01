@@ -1,4 +1,6 @@
+from copy import copy
 from dataclasses import dataclass
+import json
 import math
 
 # Noms des types de relais (clés du dict relay_types de Constraints)
@@ -57,21 +59,22 @@ class RelaySpec:
     window: list[tuple[int, int]] | None = None  # liste d'intervalles [start, end] inclus
     pinned: int | None = None
 
+    def to_dict(self) -> dict:
+        return {
+            "size": sorted(self.size),
+            "paired_with": list(self.paired_with) if self.paired_with else None,
+            "window": self.window,
+            "pinned": self.pinned,
+        }
 
-class RelayHandle:
-    """Référence interne à un relais spécifique d'un coureur.
-
-    Utilisé par SharedLeg pour enregistrer les pairings via _pair_with().
-    """
-
-    def __init__(self, runner_name: str, relay_index: int, spec: "RelaySpec"):
-        self.runner_name = runner_name
-        self.relay_index = relay_index
-        self._spec = spec
-
-    def _pair_with(self, other: "RelayHandle") -> None:
-        self._spec.paired_with = (other.runner_name, other.relay_index)
-        other._spec.paired_with = (self.runner_name, self.relay_index)
+    @classmethod
+    def from_dict(cls, d: dict) -> "RelaySpec":
+        return cls(
+            size=set(d["size"]),
+            paired_with=tuple(d["paired_with"]) if d["paired_with"] else None,
+            window=[tuple(iv) for iv in d["window"]] if d["window"] else None,
+            pinned=d["pinned"],
+        )
 
 
 class SharedLeg:
@@ -83,30 +86,64 @@ class SharedLeg:
 
     def __init__(self, size: set[int]):
         self.size = size
-        self._handles: list[RelayHandle] = []
+        self._entries: list[tuple[str, int, "RelaySpec"]] = []
 
-    def _register(self, handle: RelayHandle) -> None:
-        if len(self._handles) >= 2:
+    def _register(self, runner_name: str, relay_index: int, spec: "RelaySpec") -> None:
+        if len(self._entries) >= 2:
             raise ValueError("Un SharedLeg ne peut être partagé qu'entre 2 coureurs.")
-        for existing in self._handles:
-            handle._pair_with(existing)
-        self._handles.append(handle)
+        for other_name, other_idx, other_spec in self._entries:
+            spec.paired_with = (other_name, other_idx)
+            other_spec.paired_with = (runner_name, relay_index)
+        self._entries.append((runner_name, relay_index, spec))
+
+
+@dataclass
+class RunnerOptions:
+    """Options individuelles d'un coureur (ou valeurs par défaut globales dans Constraints).
+
+    Chaque champ vaut None si non défini (hérité du défaut global pour un Coureur,
+    ou absent pour les defaults de Constraints).
+    Les valeurs de repos sont en segments (pas en heures).
+    """
+    solo_max: int | None = None
+    nuit_max: int | None = None
+    repos_jour: int | None = None
+    repos_nuit: int | None = None
+    max_same_partenaire: int | None = None
+
+    def to_dict(self) -> dict:
+        return {
+            "solo_max": self.solo_max,
+            "nuit_max": self.nuit_max,
+            "repos_jour": self.repos_jour,
+            "repos_nuit": self.repos_nuit,
+            "max_same_partenaire": self.max_same_partenaire,
+        }
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "RunnerOptions":
+        return cls(
+            solo_max=d["solo_max"],
+            nuit_max=d["nuit_max"],
+            repos_jour=d["repos_jour"],
+            repos_nuit=d["repos_nuit"],
+            max_same_partenaire=d["max_same_partenaire"],
+        )
 
 
 @dataclass
 class Coureur:
-    """Contraintes sur chaque coureur avec valeurs par défaut.
+    """Contraintes sur chaque coureur.
 
     relais : liste de RelaySpec, un par relais.
-      Chaque RelaySpec encode la taille, l'éventuel partenaire, la fenêtre de placement,
-      et le départ fixé (pinned).
+    options : valeurs effectives (initialisées depuis les défauts globaux, puis écrasées par set_options).
     """
     relais: list[RelaySpec]
-    repos_jour: int | None = None         # None = utilise repos_jour_default du Constraints
-    repos_nuit: int | None = None         # None = utilise repos_nuit_default du Constraints
-    solo_max: int | None = None           # None = utilise solo_max_default du Constraints
-    nuit_max: int | None = None           # None = utilise nuit_max_default du Constraints
-    max_same_partenaire: int | None = None  # None = utilise max_same_partenaire_default
+    options: RunnerOptions = None
+
+    def __post_init__(self):
+        if self.options is None:
+            self.options = RunnerOptions()
 
 
 @dataclass
@@ -142,17 +179,18 @@ class RunnerBuilder:
         repos_nuit: float | None = None,
         max_same_partenaire: int | None = None,
     ) -> "RunnerBuilder":
-        """Surcharge les options individuelles du coureur (remplace les kwargs de new_runner)."""
+        """Surcharge les options individuelles du coureur."""
+        opts = self._coureur.options
         if solo_max is not None:
-            self._coureur.solo_max = solo_max
+            opts.solo_max = solo_max
         if nuit_max is not None:
-            self._coureur.nuit_max = nuit_max
+            opts.nuit_max = nuit_max
         if repos_jour is not None:
-            self._coureur.repos_jour = self._constraints.duration_to_segs(repos_jour)
+            opts.repos_jour = self._constraints.duration_to_segs(repos_jour)
         if repos_nuit is not None:
-            self._coureur.repos_nuit = self._constraints.duration_to_segs(repos_nuit)
+            opts.repos_nuit = self._constraints.duration_to_segs(repos_nuit)
         if max_same_partenaire is not None:
-            self._coureur.max_same_partenaire = max_same_partenaire
+            opts.max_same_partenaire = max_same_partenaire
         return self
 
     def add_relay(
@@ -200,7 +238,8 @@ class RunnerBuilder:
             idx = len(self._coureur.relais)
             spec = RelaySpec(size=size.size, window=window_list, pinned=time_pinned)
             self._coureur.relais.append(spec)
-            size._register(RelayHandle(self.name, idx, spec))
+            #TODO: verifier si le paramètre spec est nécessaire dans _register()
+            size._register(self.name, idx, spec)
             return self
 
         for _ in range(nb):
@@ -246,14 +285,17 @@ class Constraints:
             **{(b, a): v for (a, b), v in compat_matrix.items()},
         }
         self.solo_max_size = int(solo_max_km * nb_segments / total_km)
-        self.solo_max_default = solo_max_default
-        self.nuit_max_default = nuit_max_default
         self.nuit_debut = nuit_debut
         self.nuit_fin = nuit_fin
         self.solo_autorise_debut: float = solo_autorise_debut
         self.solo_autorise_fin: float = solo_autorise_fin
-        self.repos_jour_default: int = self.duration_to_segs(repos_jour_heures)
-        self.repos_nuit_default: int = self.duration_to_segs(repos_nuit_heures)
+        self.defaults = RunnerOptions(
+            solo_max=solo_max_default,
+            nuit_max=nuit_max_default,
+            repos_jour=self.duration_to_segs(repos_jour_heures),
+            repos_nuit=self.duration_to_segs(repos_nuit_heures),
+            max_same_partenaire=max_same_partenaire,
+        )
 
         # Pauses : plages de segments inactifs dans l'espace-temps.
         # inactive_ranges[i] = (time_start, time_end) — segment inactifs [start, end)
@@ -265,7 +307,6 @@ class Constraints:
 
         self.runners_data: dict[str, Coureur] = {}
         self.once_max: list[tuple[str, str, int]] = []
-        self.max_same_partenaire: int | None = max_same_partenaire
         self.relay_types: dict[str, set[int]] = make_relay_types(nb_segments, total_km, enable_flex)
         self.allow_flex_flex: bool = allow_flex_flex
         self.profil_csv = profil_csv
@@ -317,7 +358,7 @@ class Constraints:
         """Crée un nouveau coureur et retourne son RunnerBuilder."""
         if name not in self._known_runners:
             raise ValueError(f"Coureur '{name}' absent de la matrice de compatibilité")
-        coureur = Coureur(relais=[])
+        coureur = Coureur(relais=[], options=copy(self.defaults))
         self.runners_data[name] = coureur
         return RunnerBuilder(name, coureur, self)
 
@@ -396,22 +437,6 @@ class Constraints:
     def relay_sizes(self):
         """Retourne les tailles nominales (max du set) de chaque relais."""
         return {r: [max(spec.size) for spec in cd.relais] for r, cd in self.runners_data.items()}
-
-    @property
-    def runner_nuit_max(self):
-        return {r: self._resolved_nuit_max(cd) for r, cd in self.runners_data.items()}
-
-    @property
-    def runner_solo_max(self):
-        return {r: self._resolved_solo_max(cd) for r, cd in self.runners_data.items()}
-
-    @property
-    def runner_repos_jour(self):
-        return {r: self._resolved_repos_jour(cd) for r, cd in self.runners_data.items()}
-
-    @property
-    def runner_repos_nuit(self):
-        return {r: self._resolved_repos_nuit(cd) for r, cd in self.runners_data.items()}
 
     @property
     def has_flex(self) -> bool:
@@ -521,25 +546,11 @@ class Constraints:
         time_seg = int((h_abs - self.start_hour) / self.segment_duration)
         return self.time_seg_to_active(time_seg)
 
-    def is_compatible(self, coureur_1: str, coureur_2: str) -> bool:
-        """Retourne True si coureur_1 et coureur_2 peuvent former un binôme."""
-        return self.compat_matrix.get((coureur_1, coureur_2), 0) > 0
 
     def compat_score(self, coureur_1: str, coureur_2: str) -> int:
         """Retourne le score de compatibilité (0, 1 ou 2)."""
         return self.compat_matrix.get((coureur_1, coureur_2), 0)
 
-    def _resolved_repos_jour(self, coureur: Coureur) -> int:
-        return coureur.repos_jour if coureur.repos_jour is not None else self.repos_jour_default
-
-    def _resolved_repos_nuit(self, coureur: Coureur) -> int:
-        return coureur.repos_nuit if coureur.repos_nuit is not None else self.repos_nuit_default
-
-    def _resolved_solo_max(self, coureur: Coureur) -> int:
-        return coureur.solo_max if coureur.solo_max is not None else self.solo_max_default
-
-    def _resolved_nuit_max(self, coureur: Coureur) -> int:
-        return coureur.nuit_max if coureur.nuit_max is not None else self.nuit_max_default
 
     @property
     def lp_bounds(self):
@@ -547,6 +558,118 @@ class Constraints:
             from relay.upper_bound import compute_upper_bound
             compute_upper_bound(self)
         return self._lp_bounds
+
+    # ------------------------------------------------------------------
+    # Sérialisation
+    # ------------------------------------------------------------------
+
+    def to_dict(self) -> dict:
+        """Sérialise le Constraints en dict (sans I/O)."""
+        return {
+            "total_km": self.total_km,
+            "nb_active_segments": self.nb_active_segments,
+            "speed_kmh": self.speed_kmh,
+            "start_hour": self.start_hour,
+            "solo_max_size": self.solo_max_size,
+            "defaults": self.defaults.to_dict(),
+            "nuit_debut": self.nuit_debut,
+            "nuit_fin": self.nuit_fin,
+            "solo_autorise_debut": self.solo_autorise_debut,
+            "solo_autorise_fin": self.solo_autorise_fin,
+            "allow_flex_flex": self.allow_flex_flex,
+            #inutile de serialiser les relay_types - redondant avec la taille en nb de segments
+            #"relay_types": {k: sorted(v) for k, v in self.relay_types.items()},
+            "profil_csv": self.profil_csv,
+            # compat_matrix: clés tuple → "r1|r2" (triangle inférieur reconstruit à l'init)
+            "compat_matrix": {
+                f"{a}|{b}": v
+                for (a, b), v in self.compat_matrix.items()
+                if a <= b  # ne sérialise que le triangle inférieur
+            },
+            "pauses": [
+                {"seg": seg, "inactive_range": list(rng)}
+                for seg, rng in zip(self._pause_active_segs, self.inactive_ranges)
+            ],
+            "once_max": [[r1, r2, nb] for r1, r2, nb in self.once_max],
+            "runners": {
+                name: {
+                    "relais": [s.to_dict() for s in cd.relais],
+                    "options": cd.options.to_dict(),
+                }
+                for name, cd in self.runners_data.items()
+            },
+        }
+
+    def to_json(self, filename: str) -> None:
+        """Sérialise le Constraints dans un fichier JSON."""
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(self.to_dict(), f, ensure_ascii=False, indent=2)
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Constraints":
+        """Reconstruit un Constraints depuis un dict produit par to_dict()."""
+        compat_matrix = {
+            (a, b): v
+            for key, v in data["compat_matrix"].items()
+            for a, b in [key.split("|", 1)]
+        }
+
+        d = data["defaults"]
+        # Reconstruit via __init__ avec des valeurs déjà converties en segments.
+        # On passe repos_jour_heures=0 / repos_nuit_heures=0 puis on écrase juste après.
+        c = cls(
+            total_km=data["total_km"],
+            nb_segments=data["nb_active_segments"],
+            speed_kmh=data["speed_kmh"],
+            start_hour=data["start_hour"],
+            compat_matrix=compat_matrix,
+            solo_max_km=0,  # remplacé ci-dessous
+            solo_max_default=d["solo_max"],
+            nuit_max_default=d["nuit_max"],
+            repos_jour_heures=0,  # remplacé ci-dessous
+            repos_nuit_heures=0,  # remplacé ci-dessous
+            nuit_debut=data["nuit_debut"],
+            nuit_fin=data["nuit_fin"],
+            solo_autorise_debut=data["solo_autorise_debut"],
+            solo_autorise_fin=data["solo_autorise_fin"],
+            max_same_partenaire=d["max_same_partenaire"],
+            # TODO: pass enable_flex=True, de toute façons ce paramètre est ignoré 
+            # la désérialisation reprend directement les tailles de relais en segments sans utiliser les noms
+            #enable_flex=len(data["relay_types"][R13_F]) > 1,
+            allow_flex_flex=data["allow_flex_flex"],
+            profil_csv=data["profil_csv"],
+        )
+        # Corrige les valeurs déjà converties en segments (évite une double conversion)
+        c.solo_max_size = data["solo_max_size"]
+        c.defaults.repos_jour = d["repos_jour"]
+        c.defaults.repos_nuit = d["repos_nuit"]
+        # relay_types n'est pas utilisé pour déserialiser une solution
+        #c.relay_types = {k: set(v) for k, v in data["relay_types"].items()}
+
+        # Rejoue les pauses pour reconstruire l'espace-temps
+        for pause in data["pauses"]:
+            seg = pause["seg"]
+            a, b = pause["inactive_range"]
+            dur_segs = b - a
+            # add_pause attend des heures ; on reconvertit depuis les segments
+            c.add_pause(seg, dur_segs * c.segment_duration)
+
+        # Reconstruit runners_data directement (sans passer par le builder)
+        for name, cd_data in data["runners"].items():
+            coureur = Coureur(
+                relais=[RelaySpec.from_dict(s) for s in cd_data["relais"]],
+                options=RunnerOptions.from_dict(cd_data["options"]),
+            )
+            c.runners_data[name] = coureur
+
+        c.once_max = [tuple(entry) for entry in data["once_max"]]
+        return c
+
+    @classmethod
+    def from_json(cls, filename: str) -> "Constraints":
+        """Reconstruit un Constraints depuis un fichier JSON produit par to_json()."""
+        with open(filename, encoding="utf-8") as f:
+            return cls.from_dict(json.load(f))
 
     def print_summary(self) -> None:
         """Affiche un résumé complet des données d'entrée du problème."""
@@ -562,8 +685,10 @@ class Constraints:
             f"  Vitesse     : {self.speed_kmh} km/h → {self.segment_duration * 60:.1f} min/segment"
         )
         print(f"  Départ      : mercredi {self.start_hour}h00")
-        print(f"  Repos jour  : {self.repos_jour_default} segments = {self.repos_jour_default * self.segment_duration:.1f}h")  # fmt: skip
-        print(f"  Repos nuit  : {self.repos_nuit_default} segments = {self.repos_nuit_default * self.segment_duration:.1f}h")  # fmt: skip
+        rj = self.defaults.repos_jour
+        rn = self.defaults.repos_nuit
+        print(f"  Repos jour  : {rj} segments = {rj * self.segment_duration:.1f}h")  # fmt: skip
+        print(f"  Repos nuit  : {rn} segments = {rn * self.segment_duration:.1f}h")  # fmt: skip
         print(f"  Nuit (repos): {self.nuit_debut}h–{self.nuit_fin}h")
         print(f"  Solo autorisé: {self.solo_autorise_debut}h–{self.solo_autorise_fin}h")
 
@@ -599,22 +724,19 @@ class Constraints:
             km = sum(req_sizes) * self.segment_km
             km_engages += km
             flags = []
-            nuit_max = self._resolved_nuit_max(coureur)
-            solo_max = self._resolved_solo_max(coureur)
-            repos_jour = self._resolved_repos_jour(coureur)
-            repos_nuit = self._resolved_repos_nuit(coureur)
-            if nuit_max == 0:
+            opts = coureur.options
+            if opts.nuit_max == 0:
                 flags.append("nuit interdit")
-            elif nuit_max != self.nuit_max_default:
-                flags.append(f"nuit_max={nuit_max}")
-            if solo_max == 0:
+            elif opts.nuit_max != self.defaults.nuit_max:
+                flags.append(f"nuit_max={opts.nuit_max}")
+            if opts.solo_max == 0:
                 flags.append("solo interdit")
-            elif solo_max != self.solo_max_default:
-                flags.append(f"solo_max={solo_max}")
-            if repos_jour != self.repos_jour_default:
-                flags.append(f"repos_jour={repos_jour} segs ({repos_jour * self.segment_duration:.1f}h)")  # fmt: skip
-            if repos_nuit != self.repos_nuit_default:
-                flags.append(f"repos_nuit={repos_nuit} segs ({repos_nuit * self.segment_duration:.1f}h)")  # fmt: skip
+            elif opts.solo_max != self.defaults.solo_max:
+                flags.append(f"solo_max={opts.solo_max}")
+            if opts.repos_jour != self.defaults.repos_jour:
+                flags.append(f"repos_jour={opts.repos_jour} segs ({opts.repos_jour * self.segment_duration:.1f}h)")  # fmt: skip
+            if opts.repos_nuit != self.defaults.repos_nuit:
+                flags.append(f"repos_nuit={opts.repos_nuit} segs ({opts.repos_nuit * self.segment_duration:.1f}h)")  # fmt: skip
             n_pinned = sum(1 for spec in coureur.relais if spec.pinned is not None)
             if n_pinned:
                 flags.append(f"fixes×{n_pinned}")
@@ -638,7 +760,7 @@ class Constraints:
         print("COMPATIBILITÉS (binômes possibles)")
         print("-" * 60)
         for name in self.runners:
-            partners = sorted(r for r in self.runners if r != name and self.is_compatible(name, r))
+            partners = sorted(r for r in self.runners if r != name and self.compat_score(name, r)>0)
             compat_str = ", ".join(partners) if partners else "— aucune"
             print(f"  {name:12s} : {compat_str}")
 

@@ -557,7 +557,7 @@ class TestSolverRespectsRestWithPause:
         """gap en heures réelles >= repos_h (la pause est incluse dans le gap)."""
         sols, c = solutions_with_pause
         sd = c.segment_duration
-        repos_h = c._resolved_repos_jour(c.runners_data["A"]) * sd
+        repos_h = c.runners_data["A"].options.repos_jour * sd
         rels_a = sorted(
             [r for r in sols[0].relays if r["runner"] == "A"],
             key=lambda x: x["start"]
@@ -571,7 +571,7 @@ class TestSolverRespectsRestWithPause:
     def test_gap_in_time_segs_at_least_repos_segs(self, solutions_with_pause):
         """Dans le modèle temps, gap_segs >= repos_segs (la pause est dans le gap)."""
         sols, c = solutions_with_pause
-        repos_segs = c._resolved_repos_jour(c.runners_data["A"])
+        repos_segs = c.runners_data["A"].options.repos_jour
         rels_a = sorted(
             [r for r in sols[0].relays if r["runner"] == "A"],
             key=lambda x: x["start"]
@@ -585,7 +585,7 @@ class TestSolverRespectsRestWithPause:
     def test_no_pause_gap_equals_repos_segs(self, solutions_without_pause):
         """Sans pause, le gap en time segs est au moins repos_segs."""
         sols, c = solutions_without_pause
-        repos_segs = c._resolved_repos_jour(c.runners_data["A"])
+        repos_segs = c.runners_data["A"].options.repos_jour
         rels_a = sorted(
             [r for r in sols[0].relays if r["runner"] == "A"],
             key=lambda x: x["start"]

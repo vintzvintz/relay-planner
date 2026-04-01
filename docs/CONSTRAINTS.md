@@ -265,39 +265,47 @@ Retourne un `Intervals` couvrant toutes les plages nocturnes (`nuit_debut`–`nu
 ### Compatibilité
 
 ```python
-c.is_compatible(r1, r2) -> bool   # True si compat_score > 0
 c.compat_score(r1, r2) -> int     # 0, 1 ou 2
 ```
+
+`is_compatible()` a été supprimé — utiliser `c.compat_score(r1, r2) > 0` à la place.
 
 ### Propriétés dérivées
 
 | Propriété              | Type                          | Description                                                     |
 |------------------------|-------------------------------|-----------------------------------------------------------------|
 | `c.runners`            | `list[str]`                   | Noms des coureurs dans l'ordre de déclaration                   |
-| `c.relay_sizes`        | `dict[str, list[int]]`        | Taille nominale (`max(size)`) de chaque relais                  |
-| `c.runner_nuit_max`    | `dict[str, int]`              | Nb max de relais de nuit par coureur (résolu)                   |
-| `c.runner_solo_max`    | `dict[str, int]`              | Nb max de solos par coureur (résolu)                            |
-| `c.runner_repos_jour`  | `dict[str, int]`              | Repos jour en segments (résolu)                                 |
-| `c.runner_repos_nuit`  | `dict[str, int]`              | Repos nuit en segments (résolu)                                 |
+| `c.relay_sizes`        | `dict[str, list[int]]`        | Taille nominale (`max(size)`) de chaque relais par coureur      |
+| `c.defaults`           | `RunnerOptions`               | Valeurs par défaut globales (repos, solo_max, nuit_max, …)      |
 | `c.night_segments`     | `set[int]`                    | Ensemble des numéros de segments de nuit                        |
 | `c.segment_km`         | `float`                       | Longueur d'un segment en km                                     |
 | `c.segment_duration`   | `float`                       | Durée d'un segment en heures                                    |
 | `c.paired_relays`      | `list[tuple[str,int,str,int]]`| Tous les pairings `(r1,k1,r2,k2)` déclarés                     |
 | `c.solo_max_size`      | `int`                         | Taille max d'un solo en segments                                |
+| `c.has_flex`           | `bool`                        | `True` si au moins un relais a une taille variable              |
 | `c.last_active_seg`    | `int`                         | Borne supérieure pour les `Intervals` et `pinned` — à utiliser comme borne "jusqu'à la fin" |
 
 ### Vérification et diagnostic
 
 ```python
-c.print_summary()          # Affiche le résumé complet (coureurs, compat, relais épinglés, borne LP)
-c.compute_upper_bound()    # Calcule le majorant LP (résultat mémorisé dans lp_upper_bound, etc.)
+c.print_summary()   # Affiche le résumé complet (coureurs, compat, relais épinglés, borne LP)
 ```
 
-La borne LP est calculée automatiquement lors du premier appel à `print_summary()`. Les résultats sont stockés dans :
-- `c.lp_upper_bound` (`int`) : borne supérieure arrondie
-- `c.lp_upper_bound_exact` (`float`) : valeur LP exacte
-- `c.lp_solo_nb` (`float`) : nombre de solos estimé par la relaxation LP
-- `c.lp_solo_km` (`float`) : km en solo estimés par la relaxation LP
+La borne LP est calculée à la demande via la propriété `c.lp_bounds` (lazy, mémorisée). `print_summary()` l'utilise automatiquement. Le résultat expose :
+- `c.lp_bounds.upper_bound` (`int`) : borne supérieure arrondie
+- `c.lp_bounds.solo_nb` (`float`) : nombre de solos estimé par la relaxation LP
+- `c.lp_bounds.solo_km` (`float`) : km en solo estimés par la relaxation LP
+
+### Sérialisation
+
+```python
+c.to_dict() -> dict          # sérialise en dict (sans I/O)
+c.to_json(filename)          # sauvegarde en JSON
+Constraints.from_dict(data)  # reconstruit depuis un dict
+Constraints.from_json(path)  # charge depuis un fichier JSON
+```
+
+Le JSON produit contient les contraintes complètes (coureurs, relais, pauses, compat_matrix) et permet de reconstruire un `Constraints` identique sans l'`example.py` d'origine. `relay_types` n'est pas sérialisé car redondant — les tailles sont stockées directement en segments dans chaque `RelaySpec`.
 
 ---
 
@@ -316,6 +324,24 @@ class RelaySpec:
     pinned: int | None                      # segment de départ fixé
 ```
 
+Supporte `to_dict()` / `from_dict()`.
+
+### `RunnerOptions`
+
+Options individuelles d'un coureur (ou valeurs par défaut globales dans `Constraints.defaults`) :
+
+```python
+@dataclass
+class RunnerOptions:
+    solo_max: int | None = None
+    nuit_max: int | None = None
+    repos_jour: int | None = None    # en segments
+    repos_nuit: int | None = None    # en segments
+    max_same_partenaire: int | None = None
+```
+
+Supporte `to_dict()` / `from_dict()`.
+
 ### `Coureur`
 
 Contraintes résumées d'un coureur :
@@ -324,11 +350,7 @@ Contraintes résumées d'un coureur :
 @dataclass
 class Coureur:
     relais: list[RelaySpec]
-    repos_jour: int | None           # en segments ; None = utilise le défaut global
-    repos_nuit: int | None
-    solo_max: int | None
-    nuit_max: int | None
-    max_same_partenaire: int | None  # None = utilise max_same_partenaire global
+    options: RunnerOptions   # initialisé depuis Constraints.defaults, écrasé par set_options()
 ```
 
 ---

@@ -22,10 +22,10 @@ class TestInit:
         assert c.solo_max_size == 1
 
     def test_repos_jour_segs(self, c):
-        assert c.repos_jour_default == 7
+        assert c.defaults.repos_jour == 7
 
     def test_repos_nuit_segs(self, c):
-        assert c.repos_nuit_default == 9
+        assert c.defaults.repos_nuit == 9
 
 
 # ---------------------------------------------------------------------------
@@ -41,39 +41,38 @@ class TestNewRunner:
         c.new_runner("Alice").add_relay("R10")
         assert "Alice" in c.runners
 
-    def test_default_overrides_are_none(self, c):
+    def test_options_initialized_from_defaults(self, c):
         c.new_runner("Alice").add_relay("R10")
-        coureur = c.runners_data["Alice"]
-        assert coureur.solo_max is None
-        assert coureur.nuit_max is None
-        assert coureur.repos_jour is None
-        assert coureur.repos_nuit is None
+        opts = c.runners_data["Alice"].options
+        assert opts.solo_max == c.defaults.solo_max
+        assert opts.nuit_max == c.defaults.nuit_max
+        assert opts.repos_jour == c.defaults.repos_jour
+        assert opts.repos_nuit == c.defaults.repos_nuit
 
     def test_solo_max_override(self, c):
         c.new_runner("Alice").set_options(solo_max=0).add_relay("R10")
-        assert c.runners_data["Alice"].solo_max == 0
-        assert c.runner_solo_max["Alice"] == 0
+        assert c.runners_data["Alice"].options.solo_max == 0
 
     def test_nuit_max_override(self, c):
         c.new_runner("Alice").set_options(nuit_max=3).add_relay("R10")
-        assert c.runner_nuit_max["Alice"] == 3
+        assert c.runners_data["Alice"].options.nuit_max == 3
 
     def test_repos_jour_override_converted_to_segs(self, c):
         # 3.5h * 10/100 * 10 = 3.5 → ceil = 4 segments
         c.new_runner("Alice").set_options(repos_jour=3.5).add_relay("R10")
-        assert c.runner_repos_jour["Alice"] == 4
+        assert c.runners_data["Alice"].options.repos_jour == 4
 
     def test_repos_nuit_override_converted_to_segs(self, c):
         c.new_runner("Alice").set_options(repos_nuit=5.0).add_relay("R10")
-        assert c.runner_repos_nuit["Alice"] == 5
+        assert c.runners_data["Alice"].options.repos_nuit == 5
 
     def test_default_repos_jour_when_no_override(self, c):
         c.new_runner("Alice").add_relay("R10")
-        assert c.runner_repos_jour["Alice"] == c.repos_jour_default
+        assert c.runners_data["Alice"].options.repos_jour == c.defaults.repos_jour
 
     def test_default_repos_nuit_when_no_override(self, c):
         c.new_runner("Alice").add_relay("R10")
-        assert c.runner_repos_nuit["Alice"] == c.repos_nuit_default
+        assert c.runners_data["Alice"].options.repos_nuit == c.defaults.repos_nuit
 
     def test_multiple_runners_independent(self, c):
         c.new_runner("Alice").add_relay("R10")
@@ -234,7 +233,7 @@ class TestAddMaxBinomes:
 
 class TestMaxSamePartenaire:
     def test_global_max_same_partenaire_none_by_default(self, c):
-        assert c.max_same_partenaire is None
+        assert c.defaults.max_same_partenaire is None
 
     def test_global_max_same_partenaire_set(self):
         rc = Constraints(
@@ -243,15 +242,15 @@ class TestMaxSamePartenaire:
             nuit_max_default=1, repos_jour_heures=7.0, repos_nuit_heures=9.0,
             nuit_debut=0.0, nuit_fin=6.0, max_same_partenaire=3,
         )
-        assert rc.max_same_partenaire == 3
+        assert rc.defaults.max_same_partenaire == 3
 
     def test_coureur_max_same_partenaire_none_by_default(self, c):
         c.new_runner("Alice").add_relay("R10")
-        assert c.runners_data["Alice"].max_same_partenaire is None
+        assert c.runners_data["Alice"].options.max_same_partenaire is None
 
     def test_set_max_same_partenaire_stores_value(self, c):
         c.new_runner("Alice").set_options(max_same_partenaire=2).add_relay("R10")
-        assert c.runners_data["Alice"].max_same_partenaire == 2
+        assert c.runners_data["Alice"].options.max_same_partenaire == 2
 
     def test_set_options_is_chainable(self, c):
         builder = c.new_runner("Alice")
@@ -261,8 +260,8 @@ class TestMaxSamePartenaire:
     def test_set_max_same_partenaire_independent_per_runner(self, c):
         c.new_runner("Alice").set_options(max_same_partenaire=1).add_relay("R10")
         c.new_runner("Bob").add_relay("R10")
-        assert c.runners_data["Alice"].max_same_partenaire == 1
-        assert c.runners_data["Bob"].max_same_partenaire is None
+        assert c.runners_data["Alice"].options.max_same_partenaire == 1
+        assert c.runners_data["Bob"].options.max_same_partenaire is None
 
 
 # ---------------------------------------------------------------------------
@@ -270,14 +269,9 @@ class TestMaxSamePartenaire:
 # ---------------------------------------------------------------------------
 
 class TestCompat:
-    def test_compatible_pair(self, c):
-        assert c.is_compatible("Alice", "Bob") is True
 
     def test_compatible_score(self, c):
         assert c.compat_score("Alice", "Bob") == 2
-
-    def test_incompatible_pair(self, c):
-        assert c.is_compatible("Alice", "Dave") is False
 
     def test_compat_score_missing_pair(self, c):
         assert c.compat_score("Alice", "Dave") == 0

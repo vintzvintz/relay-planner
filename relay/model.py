@@ -169,7 +169,7 @@ class Model:
 
         for r in c.runners:
             rd = c.runners_data[r]
-            nuit_max = c._resolved_nuit_max(rd)
+            nuit_max = rd.options.nuit_max
             if nuit_max < len(rd.relais):
                 model.add(sum(self.relais_nuit[r]) <= nuit_max)
 
@@ -227,8 +227,8 @@ class Model:
         model = self.model
         for r in c.runners:
             rd = c.runners_data[r]
-            repos_jour = c._resolved_repos_jour(rd)
-            repos_nuit = c._resolved_repos_nuit(rd)
+            repos_jour = rd.options.repos_jour
+            repos_nuit = rd.options.repos_nuit
             delta = repos_nuit - repos_jour
             n = len(rd.relais)
             for k in range(n):
@@ -314,7 +314,7 @@ class Model:
                 starts_r = self._feasible_start_ranges(spec_r, c.nb_segments)
                 for rpi in range(ri + 1, n_runners):
                     rp = c.runners[rpi]
-                    if not c.is_compatible(r, rp):
+                    if c.compat_score(r, rp) == 0:
                         continue
                     for kp, spec_rp in enumerate(c.runners_data[rp].relais):
                         lo_rp, hi_rp = min(spec_rp.size), max(spec_rp.size)
@@ -458,7 +458,7 @@ class Model:
                     model.add(self.size[r][k] <= c.solo_max_size).only_enforce_if(b)
 
         for r in c.runners:
-            model.add(sum(self.relais_solo[r]) <= c.runner_solo_max[r])
+            model.add(sum(self.relais_solo[r]) <= c.runners_data[r].options.solo_max)
             for k in range(len(c.relay_sizes[r])):
                 model.add(self.relais_solo[r][k] + self.relais_solo_interdit[r][k] <= 1)
 
@@ -497,7 +497,7 @@ class Model:
         Si aucune limite n'est définie pour la paire, aucune contrainte n'est ajoutée.
         """
         c = constraints
-        default = c.max_same_partenaire
+        default = c.defaults.max_same_partenaire
         model = self.model
         seen: set[frozenset] = set()
         for (r1, _, r2, _) in self.same_relay:
@@ -505,8 +505,8 @@ class Model:
             if key in seen:
                 continue
             seen.add(key)
-            lim1 = c.runners_data[r1].max_same_partenaire
-            lim2 = c.runners_data[r2].max_same_partenaire
+            lim1 = c.runners_data[r1].options.max_same_partenaire
+            lim2 = c.runners_data[r2].options.max_same_partenaire
             # Si au moins une surcharge individuelle est définie, elle prend le dessus sur le défaut.
             # La limite effective est le min des surcharges présentes (le coureur le plus restrictif
             # l'emporte), ou le défaut global si aucune surcharge n'est définie.
