@@ -1,127 +1,126 @@
 =====================================================================================
-  Planning LYS-FES  440.0 km     Mer 15h00 -> Ven 17h50
-  15 coureurs - 780.0 km engagés - 176 segments - 6'40" min/km - 17 min/segment
-  score 88/94 - 0 km flex - 9 relais solo
+  Planning LYS-FES  430.0 km     Mer 14h00 -> Ven 15h43
+  15 coureurs - 780.0 km engagés - 172 segments - 6'40" min/km - 17 min/segment
+  score 94/94 - 0 km flex - 7 relais solo
 =====================================================================================
-  Mer 15h00 → 16h06     0      0.0 km   10.0 km   Alexis + Olivier       ↑38m   ↓35m  [fixe]
-  Mer 16h06 → 17h46     4     10.0 km   15.0 km   Eric + Yacine         ↑225m  ↓170m
-  Mer 17h46 → 18h53    10     25.0 km   10.0 km   Vincent                ↑96m   ↓39m  [solo]
-  Mer 18h53 → 21h06    14     35.0 km   20.0 km   Guillaume + Pierre    ↑182m  ↓240m
-  Mer 21h06 → 22h13    22     55.0 km   10.0 km   Clemence + Nelly       ↑91m   ↓50m
-  Mer 22h13 → 23h20    26     65.0 km   10.0 km   Gaelle + Leo          ↑154m  ↓128m
-  Mer 23h20 → 02h40    30     75.0 km   30.0 km   Alexis + Olivier      ↑297m  ↓286m  [nuit]
-  Jeu 02h40 → 04h20    42    105.0 km   15.0 km   Eric + Yacine         ↑213m  ↓100m  [nuit]
-  Jeu 04h20 → 06h33    48    120.0 km   20.0 km   Guillaume + Ludovic   ↑420m  ↓328m  [nuit]
-  Jeu 06h33 → 08h13    56    140.0 km   15.0 km   Matthieu + Pierre     ↑219m  ↓270m
-  Jeu 08h13 → 09h36    62    155.0 km   12.5 km   Antoine + Vincent     ↑123m   ↓73m
-  Jeu 09h36 → 11h00    67    167.5 km   12.5 km   Alexandre              ↑72m   ↓41m  [solo]
-  Jeu 11h00 → 12h06    72    180.0 km   10.0 km   Leo + Nelly            ↑97m   ↓39m
-  Jeu 12h06 → 13h13    76    190.0 km   10.0 km   Olivier                ↑55m  ↓358m  [solo]
-  Jeu 13h13 → 14h20    80    200.0 km   10.0 km   Alexis + Gaelle       ↑130m  ↓154m
-  Jeu 14h20 → 15h26    84    210.0 km   10.0 km   Yacine                 ↑46m   ↓70m  [solo]
-  Jeu 15h26 → 17h06    88    220.0 km   15.0 km   Matthieu + Pierre     ↑292m  ↓319m
-  Jeu 17h06 → 18h46    94    235.0 km   15.0 km   Antoine + Ludovic     ↑354m  ↓221m
-  Jeu 18h46 → 20h43   ⏸  PAUSE 1h56
-  Jeu 20h43 → 22h06   100    250.0 km   12.5 km   Alexandre + Vincent   ↑327m  ↓208m
-  Jeu 22h06 → 23h13   105    262.5 km   10.0 km   Gaelle + Nelly        ↑230m  ↓203m
-  Jeu 23h13 → 02h33   109    272.5 km   30.0 km   Alexis + Olivier      ↑584m  ↓709m  [nuit]
-  Ven 02h33 → 04h13   121    302.5 km   15.0 km   Antoine + Matthieu    ↑259m  ↓254m  [nuit]
-  Ven 04h13 → 05h20   127    317.5 km   10.0 km   Leo + Vincent         ↑187m  ↓212m  [nuit]
-  Ven 05h20 → 07h00   131    327.5 km   15.0 km   Alexandre + Pierre    ↑251m  ↓251m  [nuit]
-  Ven 07h00 → 08h40   137    342.5 km   15.0 km   Ludovic               ↑238m  ↓224m  [solo]
-  Ven 08h40 → 09h46   143    357.5 km   10.0 km   Nelly                  ↑94m  ↓116m  [solo]
-  Ven 09h46 → 10h53   147    367.5 km   10.0 km   Clemence               ↑89m   ↓63m  [solo]
-  Ven 10h53 → 12h16   151    377.5 km   12.5 km   Gaelle                ↑136m  ↓180m  [solo]
-  Ven 12h16 → 13h23   156    390.0 km   10.0 km   Alexis                 ↑46m   ↓86m  [solo]
-  Ven 13h23 → 15h03   160    400.0 km   15.0 km   Antoine + Matthieu      ↑9m   ↓82m
-  Ven 15h03 → 16h10   166    415.0 km   10.0 km   Leo + Olivier          ↑20m   ↓25m
-  Ven 16h10 → 17h50   170    425.0 km   15.0 km   Alexandre + Ludovic    ↑17m   ↓26m
+  Mer 14h00 → 15h06     0      0.0 km   10.2 km   Alexis + Gaelle        ↑44m   ↓42m  [fixe]
+  Mer 15h06 → 16h13     4     10.0 km   10.0 km   Olivier + Vincent     ↑215m  ↓160m
+  Mer 16h13 → 17h19     8     20.0 km    9.8 km   Leo                   ↑175m  ↓138m  [solo]
+  Mer 17h19 → 19h33    12     30.0 km   20.0 km   Guillaume + Ludovic   ↑196m  ↓224m
+  Mer 19h33 → 21h13    20     50.0 km   15.0 km   Pierre + Yacine       ↑117m   ↓74m
+  Mer 21h13 → 22h20    26     65.0 km   10.0 km   Clemence + Nelly      ↑155m  ↓148m
+  Mer 22h20 → 23h43    30     75.0 km   12.4 km   Alexandre + Antoine   ↑368m  ↓125m
+  Mer 23h43 → 03h03    35     87.5 km   30.1 km   Alexis + Olivier      ↑340m  ↓513m  [nuit]
+  Jeu 03h03 → 04h43    47    117.5 km   15.1 km   Eric + Yacine         ↑543m  ↓318m  [nuit]
+  Jeu 04h43 → 06h56    53    132.5 km   20.1 km   Guillaume + Pierre    ↑362m  ↓478m  [nuit]
+  Jeu 06h56 → 08h36    61    152.5 km   14.8 km   Antoine + Matthieu    ↑146m   ↓83m
+  Jeu 08h36 → 09h43    67    167.5 km   10.0 km   Gaelle + Nelly         ↑69m   ↓46m
+  Jeu 09h43 → 11h06    71    177.5 km   12.5 km   Alexandre             ↑128m   ↓85m  [solo]
+  Jeu 11h06 → 12h13    76    190.0 km    9.2 km   Leo + Vincent         ↑115m  ↓352m
+  Jeu 12h13 → 13h20    80    200.0 km   10.1 km   Alexis                 ↑87m  ↓203m  [solo]
+  Jeu 13h20 → 14h26    84    210.0 km   10.7 km   Olivier + Yacine      ↑112m   ↓82m
+  Jeu 14h26 → 16h06    88    220.0 km   15.1 km   Eric + Ludovic        ↑397m  ↓404m
+  Jeu 16h06 → 17h46    94    235.0 km   14.8 km   Antoine + Matthieu    ↑426m  ↓232m
+  Jeu 17h46 → 19h43   100    250.0 km             ⏸  PAUSE 1h56      
+  Jeu 19h43 → 21h23   100    250.0 km   15.1 km   Alexandre + Pierre    ↑352m  ↓381m
+  Jeu 21h23 → 22h46   106    265.0 km   12.5 km   Gaelle + Vincent      ↑353m  ↓280m
+  Jeu 22h46 → 02h06   111    277.5 km   30.0 km   Alexis + Olivier      ↑859m ↓1014m  [nuit]
+  Ven 02h06 → 03h46   123    307.5 km   15.2 km   Ludovic + Matthieu    ↑297m  ↓279m  [nuit]
+  Ven 03h46 → 04h53   129    322.5 km   10.1 km   Leo + Nelly           ↑199m  ↓207m  [nuit]
+  Ven 04h53 → 06h33   133    332.5 km   15.0 km   Alexandre + Antoine   ↑350m  ↓334m  [nuit]
+  Ven 06h33 → 08h13   139    347.5 km   15.0 km   Pierre                ↑165m  ↓168m  [solo]
+  Ven 08h13 → 09h20   145    362.5 km   10.0 km   Gaelle                ↑106m   ↓86m  [solo]
+  Ven 09h20 → 10h26   149    372.5 km   10.4 km   Clemence              ↑127m  ↓178m  [solo]
+  Ven 10h26 → 11h50   153    382.5 km   11.8 km   Vincent                ↑18m  ↓101m  [solo]
+  Ven 11h50 → 12h56   158    395.0 km   10.0 km   Alexis + Olivier       ↑24m   ↓59m
+  Ven 12h56 → 14h36   162    405.0 km   15.2 km   Ludovic + Matthieu     ↑29m   ↓39m
+  Ven 14h36 → 15h43   168    420.0 km    9.8 km   Leo + Nelly            ↑10m   ↓20m
 
 ─────────────────────────────────────────────────────────────────────────────────────
   PAR COUREUR
 ─────────────────────────────────────────────────────────────────────────────────────
 
-Alexandre                               55.0 km                    +667m  -526m  (1 seul, 1 nuit)
-  Jeu 09h36 → 11h00    67    167.5 km   12.5 km   seul              +72m   -41m  repos  9h43  [solo]
-  Jeu 20h43 → 22h06   100    250.0 km   12.5 km   avec Vincent     +327m  -208m  repos  7h13
-  Ven 05h20 → 07h00   131    327.5 km   15.0 km   avec Pierre      +251m  -251m  repos  9h10  [nuit]
-  Ven 16h10 → 17h50   170    425.0 km   15.0 km   avec Ludovic      +17m   -26m             
+Alexandre                               55.0 km                   +1198m  -925m  (1 seul, 1 nuit)
+  Mer 22h20 → 23h43    30     75.0 km   12.4 km   avec Antoine     +368m  -125m  repos 10h00
+  Jeu 09h43 → 11h06    71    177.5 km   12.5 km   seul             +128m   -85m  repos  8h36  [solo]
+  Jeu 19h43 → 21h23   100    250.0 km   15.1 km   avec Pierre      +352m  -381m  repos  7h30
+  Ven 04h53 → 06h33   133    332.5 km   15.0 km   avec Antoine     +350m  -334m               [nuit]
 
-Alexis                                  90.0 km                   +1095m -1270m  (1 seul, 2 nuit)
-  Mer 15h00 → 16h06     0      0.0 km   10.0 km   avec Olivier      +38m   -35m  repos  7h13  [fixe]
-  Mer 23h20 → 02h40    30     75.0 km   30.0 km   avec Olivier     +297m  -286m  repos 10h33  [nuit]
-  Jeu 13h13 → 14h20    80    200.0 km   10.0 km   avec Gaelle      +130m  -154m  repos  8h53
-  Jeu 23h13 → 02h33   109    272.5 km   30.0 km   avec Olivier     +584m  -709m  repos  9h43  [nuit]
-  Ven 12h16 → 13h23   156    390.0 km   10.0 km   seul              +46m   -86m               [solo]
+Alexis                                  90.4 km                   +1354m -1830m  (1 seul, 2 nuit)
+  Mer 14h00 → 15h06     0      0.0 km   10.2 km   avec Gaelle       +44m   -42m  repos  8h36  [fixe]
+  Mer 23h43 → 03h03    35     87.5 km   30.1 km   avec Olivier     +340m  -513m  repos  9h10  [nuit]
+  Jeu 12h13 → 13h20    80    200.0 km   10.1 km   seul              +87m  -203m  repos  9h26  [solo]
+  Jeu 22h46 → 02h06   111    277.5 km   30.0 km   avec Olivier     +859m -1014m  repos  9h43  [nuit]
+  Ven 11h50 → 12h56   158    395.0 km   10.0 km   avec Olivier      +24m   -59m             
 
-Antoine                                 57.5 km                    +745m  -630m  (1 nuit)
-  Jeu 08h13 → 09h36    62    155.0 km   12.5 km   avec Vincent     +123m   -73m  repos  7h30
-  Jeu 17h06 → 18h46    94    235.0 km   15.0 km   avec Ludovic     +354m  -221m  repos  7h46
-  Ven 02h33 → 04h13   121    302.5 km   15.0 km   avec Matthieu    +259m  -254m  repos  9h10  [nuit]
-  Ven 13h23 → 15h03   160    400.0 km   15.0 km   avec Matthieu      +9m   -82m             
+Antoine                                 57.0 km                   +1289m  -774m  (1 nuit)
+  Mer 22h20 → 23h43    30     75.0 km   12.4 km   avec Alexandre   +368m  -125m  repos  7h13
+  Jeu 06h56 → 08h36    61    152.5 km   14.8 km   avec Matthieu    +146m   -83m  repos  7h30
+  Jeu 16h06 → 17h46    94    235.0 km   14.8 km   avec Matthieu    +426m  -232m  repos 11h06
+  Ven 04h53 → 06h33   133    332.5 km   15.0 km   avec Alexandre   +350m  -334m               [nuit]
 
-Clemence                                20.0 km                    +180m  -113m  (1 seul)
-  Mer 21h06 → 22h13    22     55.0 km   10.0 km   avec Nelly        +91m   -50m  repos 35h33
-  Ven 09h46 → 10h53   147    367.5 km   10.0 km   seul              +89m   -63m               [solo]
+Clemence                                20.4 km                    +282m  -327m  (1 seul)
+  Mer 21h13 → 22h20    26     65.0 km   10.0 km   avec Nelly       +155m  -148m  repos 35h00
+  Ven 09h20 → 10h26   149    372.5 km   10.4 km   seul             +127m  -178m               [solo]
 
-Eric                                    30.0 km                    +438m  -270m  (1 nuit)
-  Mer 16h06 → 17h46     4     10.0 km   15.0 km   avec Yacine      +225m  -170m  repos  8h53
-  Jeu 02h40 → 04h20    42    105.0 km   15.0 km   avec Yacine      +213m  -100m               [nuit]
+Eric                                    30.2 km                    +940m  -722m  (1 nuit)
+  Jeu 03h03 → 04h43    47    117.5 km   15.1 km   avec Yacine      +543m  -318m  repos  9h43  [nuit]
+  Jeu 14h26 → 16h06    88    220.0 km   15.1 km   avec Ludovic     +397m  -404m             
 
-Gaelle                                  42.5 km                    +650m  -665m  (1 seul)
-  Mer 22h13 → 23h20    26     65.0 km   10.0 km   avec Leo         +154m  -128m  repos 13h53
-  Jeu 13h13 → 14h20    80    200.0 km   10.0 km   avec Alexis      +130m  -154m  repos  7h46
-  Jeu 22h06 → 23h13   105    262.5 km   10.0 km   avec Nelly       +230m  -203m  repos 11h40
-  Ven 10h53 → 12h16   151    377.5 km   12.5 km   seul             +136m  -180m               [solo]
+Gaelle                                  42.7 km                    +572m  -454m  (1 seul)
+  Mer 14h00 → 15h06     0      0.0 km   10.2 km   avec Alexis       +44m   -42m  repos 17h30
+  Jeu 08h36 → 09h43    67    167.5 km   10.0 km   avec Nelly        +69m   -46m  repos 11h40
+  Jeu 21h23 → 22h46   106    265.0 km   12.5 km   avec Vincent     +353m  -280m  repos  9h26
+  Ven 08h13 → 09h20   145    362.5 km   10.0 km   seul             +106m   -86m               [solo]
 
-Guillaume                               40.0 km                    +602m  -568m  (1 nuit)
-  Mer 18h53 → 21h06    14     35.0 km   20.0 km   avec Pierre      +182m  -240m  repos  7h13
-  Jeu 04h20 → 06h33    48    120.0 km   20.0 km   avec Ludovic     +420m  -328m               [nuit]
+Guillaume                               40.1 km                    +558m  -701m  (1 nuit)
+  Mer 17h19 → 19h33    12     30.0 km   20.0 km   avec Ludovic     +196m  -224m  repos  9h10
+  Jeu 04h43 → 06h56    53    132.5 km   20.1 km   avec Pierre      +362m  -478m               [nuit]
 
-Leo                                     40.0 km                    +458m  -404m  (1 nuit)
-  Mer 22h13 → 23h20    26     65.0 km   10.0 km   avec Gaelle      +154m  -128m  repos 11h40
-  Jeu 11h00 → 12h06    72    180.0 km   10.0 km   avec Nelly        +97m   -39m  repos 16h06
-  Ven 04h13 → 05h20   127    317.5 km   10.0 km   avec Vincent     +187m  -212m  repos  9h43  [nuit]
-  Ven 15h03 → 16h10   166    415.0 km   10.0 km   avec Olivier      +20m   -25m             
+Leo                                     38.9 km                    +499m  -716m  (1 seul, 1 nuit)
+  Mer 16h13 → 17h19     8     20.0 km    9.8 km   seul             +175m  -138m  repos 17h46  [solo]
+  Jeu 11h06 → 12h13    76    190.0 km    9.2 km   avec Vincent     +115m  -352m  repos 15h33
+  Ven 03h46 → 04h53   129    322.5 km   10.1 km   avec Nelly       +199m  -207m  repos  9h43  [nuit]
+  Ven 14h36 → 15h43   168    420.0 km    9.8 km   avec Nelly        +10m   -20m             
 
-Ludovic                                 65.0 km                   +1029m  -799m  (1 seul, 1 nuit)
-  Jeu 04h20 → 06h33    48    120.0 km   20.0 km   avec Guillaume   +420m  -328m  repos 10h33  [nuit]
-  Jeu 17h06 → 18h46    94    235.0 km   15.0 km   avec Antoine     +354m  -221m  repos 12h13
-  Ven 07h00 → 08h40   137    342.5 km   15.0 km   seul             +238m  -224m  repos  7h30  [solo]
-  Ven 16h10 → 17h50   170    425.0 km   15.0 km   avec Alexandre    +17m   -26m             
+Ludovic                                 65.5 km                    +919m  -946m  (1 nuit)
+  Mer 17h19 → 19h33    12     30.0 km   20.0 km   avec Guillaume   +196m  -224m  repos 18h53
+  Jeu 14h26 → 16h06    88    220.0 km   15.1 km   avec Eric        +397m  -404m  repos 10h00
+  Ven 02h06 → 03h46   123    307.5 km   15.2 km   avec Matthieu    +297m  -279m  repos  9h10  [nuit]
+  Ven 12h56 → 14h36   162    405.0 km   15.2 km   avec Matthieu     +29m   -39m             
 
-Matthieu                                60.0 km                    +779m  -925m  (1 nuit)
-  Jeu 06h33 → 08h13    56    140.0 km   15.0 km   avec Pierre      +219m  -270m  repos  7h13
-  Jeu 15h26 → 17h06    88    220.0 km   15.0 km   avec Pierre      +292m  -319m  repos  9h26
-  Ven 02h33 → 04h13   121    302.5 km   15.0 km   avec Antoine     +259m  -254m  repos  9h10  [nuit]
-  Ven 13h23 → 15h03   160    400.0 km   15.0 km   avec Antoine       +9m   -82m             
+Matthieu                                60.0 km                    +898m  -633m  (1 nuit)
+  Jeu 06h56 → 08h36    61    152.5 km   14.8 km   avec Antoine     +146m   -83m  repos  7h30
+  Jeu 16h06 → 17h46    94    235.0 km   14.8 km   avec Antoine     +426m  -232m  repos  8h20
+  Ven 02h06 → 03h46   123    307.5 km   15.2 km   avec Ludovic     +297m  -279m  repos  9h10  [nuit]
+  Ven 12h56 → 14h36   162    405.0 km   15.2 km   avec Ludovic      +29m   -39m             
 
-Nelly                                   40.0 km                    +512m  -408m  (1 seul)
-  Mer 21h06 → 22h13    22     55.0 km   10.0 km   avec Clemence     +91m   -50m  repos 12h46
-  Jeu 11h00 → 12h06    72    180.0 km   10.0 km   avec Leo          +97m   -39m  repos 10h00
-  Jeu 22h06 → 23h13   105    262.5 km   10.0 km   avec Gaelle      +230m  -203m  repos  9h26
-  Ven 08h40 → 09h46   143    357.5 km   10.0 km   seul              +94m  -116m               [solo]
+Nelly                                   39.9 km                    +434m  -420m  (1 nuit)
+  Mer 21h13 → 22h20    26     65.0 km   10.0 km   avec Clemence    +155m  -148m  repos 10h16
+  Jeu 08h36 → 09h43    67    167.5 km   10.0 km   avec Gaelle       +69m   -46m  repos 18h03
+  Ven 03h46 → 04h53   129    322.5 km   10.1 km   avec Leo         +199m  -207m  repos  9h43  [nuit]
+  Ven 14h36 → 15h43   168    420.0 km    9.8 km   avec Leo          +10m   -20m             
 
-Olivier                                 90.0 km                    +994m -1413m  (1 seul, 2 nuit)
-  Mer 15h00 → 16h06     0      0.0 km   10.0 km   avec Alexis       +38m   -35m  repos  7h13
-  Mer 23h20 → 02h40    30     75.0 km   30.0 km   avec Alexis      +297m  -286m  repos  9h26  [nuit]
-  Jeu 12h06 → 13h13    76    190.0 km   10.0 km   seul              +55m  -358m  repos 10h00  [solo]
-  Jeu 23h13 → 02h33   109    272.5 km   30.0 km   avec Alexis      +584m  -709m  repos 12h30  [nuit]
-  Ven 15h03 → 16h10   166    415.0 km   10.0 km   avec Leo          +20m   -25m             
+Olivier                                 90.8 km                   +1550m -1828m  (2 nuit)
+  Mer 15h06 → 16h13     4     10.0 km   10.0 km   avec Vincent     +215m  -160m  repos  7h30
+  Mer 23h43 → 03h03    35     87.5 km   30.1 km   avec Alexis      +340m  -513m  repos 10h16  [nuit]
+  Jeu 13h20 → 14h26    84    210.0 km   10.7 km   avec Yacine      +112m   -82m  repos  8h20
+  Jeu 22h46 → 02h06   111    277.5 km   30.0 km   avec Alexis      +859m -1014m  repos  9h43  [nuit]
+  Ven 11h50 → 12h56   158    395.0 km   10.0 km   avec Alexis       +24m   -59m             
 
-Pierre                                  65.0 km                    +944m -1080m  (1 nuit)
-  Mer 18h53 → 21h06    14     35.0 km   20.0 km   avec Guillaume   +182m  -240m  repos  9h26
-  Jeu 06h33 → 08h13    56    140.0 km   15.0 km   avec Matthieu    +219m  -270m  repos  7h13
-  Jeu 15h26 → 17h06    88    220.0 km   15.0 km   avec Matthieu    +292m  -319m  repos 12h13
-  Ven 05h20 → 07h00   131    327.5 km   15.0 km   avec Alexandre   +251m  -251m               [nuit]
+Pierre                                  65.1 km                    +995m -1100m  (1 seul, 1 nuit)
+  Mer 19h33 → 21h13    20     50.0 km   15.0 km   avec Yacine      +117m   -74m  repos  7h30
+  Jeu 04h43 → 06h56    53    132.5 km   20.1 km   avec Guillaume   +362m  -478m  repos 12h46  [nuit]
+  Jeu 19h43 → 21h23   100    250.0 km   15.1 km   avec Alexandre   +352m  -381m  repos  9h10
+  Ven 06h33 → 08h13   139    347.5 km   15.0 km   seul             +165m  -168m               [solo]
 
-Vincent                                 45.0 km                    +733m  -532m  (1 seul, 1 nuit)
-  Mer 17h46 → 18h53    10     25.0 km   10.0 km   seul              +96m   -39m  repos 13h20  [solo]
-  Jeu 08h13 → 09h36    62    155.0 km   12.5 km   avec Antoine     +123m   -73m  repos 11h06
-  Jeu 20h43 → 22h06   100    250.0 km   12.5 km   avec Alexandre   +327m  -208m  repos  6h06
-  Ven 04h13 → 05h20   127    317.5 km   10.0 km   avec Leo         +187m  -212m               [nuit]
+Vincent                                 43.5 km                    +700m  -894m  (1 seul)
+  Mer 15h06 → 16h13     4     10.0 km   10.0 km   avec Olivier     +215m  -160m  repos 18h53
+  Jeu 11h06 → 12h13    76    190.0 km    9.2 km   avec Leo         +115m  -352m  repos  9h10
+  Jeu 21h23 → 22h46   106    265.0 km   12.5 km   avec Gaelle      +353m  -280m  repos 11h40
+  Ven 10h26 → 11h50   153    382.5 km   11.8 km   seul              +18m  -101m               [solo]
 
-Yacine                                  40.0 km                    +484m  -340m  (1 seul, 1 nuit)
-  Mer 16h06 → 17h46     4     10.0 km   15.0 km   avec Eric        +225m  -170m  repos  8h53
-  Jeu 02h40 → 04h20    42    105.0 km   15.0 km   avec Eric        +213m  -100m  repos 10h00  [nuit]
-  Jeu 14h20 → 15h26    84    210.0 km   10.0 km   seul              +46m   -70m               [solo]
+Yacine                                  40.8 km                    +771m  -474m  (1 nuit)
+  Mer 19h33 → 21h13    20     50.0 km   15.0 km   avec Pierre      +117m   -74m  repos  5h50
+  Jeu 03h03 → 04h43    47    117.5 km   15.1 km   avec Eric        +543m  -318m  repos  8h36  [nuit]
+  Jeu 13h20 → 14h26    84    210.0 km   10.7 km   avec Olivier     +112m   -82m             

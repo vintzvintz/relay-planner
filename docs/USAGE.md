@@ -39,11 +39,45 @@ python example.py                                      # résoudre (défaut)
 python example.py --summary                            # résumé des données et borne LP
 python example.py --diag                               # diagnostic de faisabilité
 python example.py --model                              # construire le modèle sans résoudre
+python example.py --dplus                              # résoudre en maximisant D+/D- pondéré
+python example.py --dplus --min-score 88               # idem avec score minimal garanti
 python example.py --replanif ref.json                  # replanifier (minimiser écarts)
 python example.py --replanif ref.json --min-score 88   # idem avec score minimal garanti
 ```
 
 Les plannings produits (`.txt`, `.csv`, `.json`, `.html`) sont écrits dans `plannings/` avec un horodatage.
+
+### Mode `--dplus` — maximiser le dénivelé des coureurs forts
+
+Ce mode remplace l'objectif par défaut (maximiser les binômes compatibles) par une maximisation pondérée du dénivelé total D+ + D− cumulé sur tous les relais, avec un poids par coureur défini par `lvl`.
+
+**Prérequis :**
+1. `Constraints` créé avec `profil_csv="gpx/altitude.csv"` (ou tout chemin vers un CSV d'altitude)
+2. Au moins un coureur avec `set_options(lvl=...)` — les coureurs sans `lvl` ont un poids nul
+
+```python
+c = Constraints(
+    ...,
+    profil_csv="gpx/altitude.csv",
+)
+
+alice = c.new_runner("Alice").set_options(lvl=5)   # coureur fort → poids 5
+bob   = c.new_runner("Bob").set_options(lvl=1)     # coureur plus léger → poids 1
+carol = c.new_runner("Carol")                      # pas de lvl → ignoré dans l'objectif
+```
+
+```bash
+python example.py --dplus                 # maximise sum(lvl[r] * (D+ + D-)[r])
+python example.py --dplus --min-score 80  # idem, score binômes >= 80 garanti
+```
+
+**Contrainte `dplus_max` sur un relais individuel :** indépendamment du mode solveur, il est possible de limiter le dénivelé d'un relais donné directement dans la déclaration :
+
+```python
+runner.add_relay(R20, dplus_max=500)   # D+ + D- ≤ 500 m pour ce relais
+```
+
+Cette contrainte est active dans tous les modes (solve, --dplus, --replanif). Voir [CONSTRAINTS.md](CONSTRAINTS.md#paramètre-dplus_max) pour les détails.
 
 ### Avantages / inconvénients
 
@@ -85,6 +119,7 @@ m.add_min_score(c, 80)           # score de compatibilité minimal
 
 # 4. Choisir la fonction objectif
 m.add_optimisation_func(c)       # maximise score binômes - pénalité flex
+# ou : m.add_optimise_dplus(c)   # maximise D+/D- pondéré par lvl (requiert profil_csv=)
 
 # 5. Lancer le solveur (itérateur streaming)
 solver = Solver(m, c)

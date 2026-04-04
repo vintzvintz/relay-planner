@@ -1,0 +1,1203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="find_access_points" xmlns="http://www.topografix.com/GPX/1/1">
+  <wpt lat="45.7650699" lon="4.8617593"><name>km 0.04 (jalon 0) – Avenue Thiers</name><desc>secondary, Δkm=+0.036, 36 m du jalon</desc></wpt>
+  <wpt lat="45.7651721" lon="4.8616623"><name>km 0.06 (jalon 0)</name><desc>service, Δkm=+0.055, 48 m du jalon</desc></wpt>
+  <wpt lat="45.7662828" lon="4.8615860"><name>km 0.18 (jalon 0) – Rue de la Viabert</name><desc>tertiary, Δkm=+0.179, 171 m du jalon</desc></wpt>
+  <wpt lat="45.7682525" lon="4.8610344"><name>km 0.41 (jalon 0)</name><desc>service, Δkm=+0.407, 394 m du jalon</desc></wpt>
+  <wpt lat="45.7690138" lon="4.8604286"><name>km 0.50 (jalon 0) – Rue des Émeraudes</name><desc>secondary, Δkm=+0.504, 486 m du jalon</desc></wpt>
+  <wpt lat="45.7691234" lon="4.8604209"><name>km 0.52 (jalon 0) – Rue Michel Rambaud</name><desc>secondary, Δkm=+0.520, 498 m du jalon</desc></wpt>
+  <wpt lat="45.7701763" lon="4.8597888"><name>km 0.66 (jalon 0) – Cours Vitton</name><desc>primary, Δkm=+0.656, 623 m du jalon</desc></wpt>
+  <wpt lat="45.7706399" lon="4.8594704"><name>km 0.72 (jalon 0) – Rue Louis Guérin</name><desc>residential, Δkm=+0.723, 679 m du jalon</desc></wpt>
+  <wpt lat="45.7721211" lon="4.8589344"><name>km 0.90 (jalon 0) – Rue Jean Novel</name><desc>residential, Δkm=+0.897, 849 m du jalon</desc></wpt>
+  <wpt lat="45.7728304" lon="4.8590666"><name>km 0.98 (jalon 0) – Cours André Philip</name><desc>tertiary, Δkm=+0.977, 923 m du jalon</desc></wpt>
+  <wpt lat="45.7728995" lon="4.8590998"><name>km 0.98 (jalon 0) – Cours André Philip</name><desc>tertiary, Δkm=+0.985, 930 m du jalon</desc></wpt>
+  <wpt lat="45.7796477" lon="4.8594098"><name>km 1.76 (jalon 1)</name><desc>service, Δkm=-0.741, 606 m du jalon</desc></wpt>
+  <wpt lat="45.7847048" lon="4.8569055"><name>km 2.49 (jalon 1) – Allée Achille Lignon</name><desc>service, Δkm=-0.015, 11 m du jalon</desc></wpt>
+  <wpt lat="45.7848001" lon="4.8559818"><name>km 2.57 (jalon 1)</name><desc>service, Δkm=+0.070, 67 m du jalon</desc></wpt>
+  <wpt lat="45.7858378" lon="4.8548367"><name>km 2.77 (jalon 1) – Quai Charles de Gaulle</name><desc>primary, Δkm=+0.267, 194 m du jalon</desc></wpt>
+  <wpt lat="45.7859542" lon="4.8548026"><name>km 2.78 (jalon 1) – Quai Charles de Gaulle</name><desc>primary, Δkm=+0.280, 204 m du jalon</desc></wpt>
+  <wpt lat="45.7875528" lon="4.8604348"><name>km 3.45 (jalon 1) – Pont Raymond Poincaré</name><desc>primary, Δkm=+0.947, 415 m du jalon</desc></wpt>
+  <wpt lat="45.7875479" lon="4.8605420"><name>km 3.46 (jalon 1) – Pont Raymond Poincaré</name><desc>primary, Δkm=+0.956, 420 m du jalon</desc></wpt>
+  <wpt lat="45.7875418" lon="4.8606718"><name>km 3.47 (jalon 1) – Bretelle 2 - La Pape</name><desc>primary_link, Δkm=+0.966, 426 m du jalon</desc></wpt>
+  <wpt lat="45.7963634" lon="4.8775969"><name>km 5.22 (jalon 2) – Chemin du Bac à Traille</name><desc>unclassified, Δkm=+0.221, 221 m du jalon</desc></wpt>
+  <wpt lat="45.8035693" lon="4.8921734"><name>km 6.62 (jalon 3) – Chemin des Îles</name><desc>residential, Δkm=-0.876, 871 m du jalon</desc></wpt>
+  <wpt lat="45.8143474" lon="4.9345381"><name>km 10.23 (jalon 4)</name><desc>service, Δkm=+0.234, 234 m du jalon</desc></wpt>
+  <wpt lat="45.8154093" lon="4.9369182"><name>km 10.45 (jalon 4) – Chemin du Bac à Traille</name><desc>service, Δkm=+0.453, 453 m du jalon</desc></wpt>
+  <wpt lat="45.8165868" lon="4.9390124"><name>km 10.67 (jalon 4) – Chemin de la Traille</name><desc>unclassified, Δkm=+0.673, 661 m du jalon</desc></wpt>
+  <wpt lat="45.8168383" lon="4.9397550"><name>km 10.74 (jalon 4)</name><desc>service, Δkm=+0.737, 724 m du jalon</desc></wpt>
+  <wpt lat="45.8170647" lon="4.9404341"><name>km 10.80 (jalon 4)</name><desc>service, Δkm=+0.796, 782 m du jalon</desc></wpt>
+  <wpt lat="45.8194729" lon="4.9459182"><name>km 11.30 (jalon 5)</name><desc>service, Δkm=-1.202, 996 m du jalon</desc></wpt>
+  <wpt lat="45.8196278" lon="4.9463383"><name>km 11.34 (jalon 5)</name><desc>unclassified, Δkm=-1.160, 960 m du jalon</desc></wpt>
+  <wpt lat="45.8198181" lon="4.9471086"><name>km 11.40 (jalon 5) – Quai du Rhône</name><desc>unclassified, Δkm=-1.096, 900 m du jalon</desc></wpt>
+  <wpt lat="45.8199129" lon="4.9473822"><name>km 11.43 (jalon 5) – Pont de l'Île</name><desc>unclassified, Δkm=-1.073, 877 m du jalon</desc></wpt>
+  <wpt lat="45.8203461" lon="4.9486322"><name>km 11.54 (jalon 5)</name><desc>service, Δkm=-0.965, 772 m du jalon</desc></wpt>
+  <wpt lat="45.8206359" lon="4.9496935"><name>km 11.62 (jalon 5) – Quai du Rhône</name><desc>unclassified, Δkm=-0.876, 690 m du jalon</desc></wpt>
+  <wpt lat="45.8214203" lon="4.9533099"><name>km 11.92 (jalon 5) – Quai du Rhône</name><desc>unclassified, Δkm=-0.583, 448 m du jalon</desc></wpt>
+  <wpt lat="45.8218879" lon="4.9531408"><name>km 11.97 (jalon 5)</name><desc>residential, Δkm=-0.529, 410 m du jalon</desc></wpt>
+  <wpt lat="45.8218906" lon="4.9531404"><name>km 11.97 (jalon 5)</name><desc>residential, Δkm=-0.529, 410 m du jalon</desc></wpt>
+  <wpt lat="45.8222345" lon="4.9539690"><name>km 12.05 (jalon 5) – Avenue de la Gare</name><desc>unclassified, Δkm=-0.450, 344 m du jalon</desc></wpt>
+  <wpt lat="45.8229632" lon="4.9551469"><name>km 12.18 (jalon 5) – Montée de la Gare</name><desc>unclassified, Δkm=-0.319, 233 m du jalon</desc></wpt>
+  <wpt lat="45.8230588" lon="4.9553416"><name>km 12.20 (jalon 5) – Montée de la Gare</name><desc>unclassified, Δkm=-0.296, 219 m du jalon</desc></wpt>
+  <wpt lat="45.8234008" lon="4.9567496"><name>km 12.32 (jalon 5) – Avenue des Balmes</name><desc>residential, Δkm=-0.181, 181 m du jalon</desc></wpt>
+  <wpt lat="45.8241358" lon="4.9563920"><name>km 12.41 (jalon 5)</name><desc>service, Δkm=-0.095, 94 m du jalon</desc></wpt>
+  <wpt lat="45.8244884" lon="4.9562205"><name>km 12.45 (jalon 5) – Rue du Rhône</name><desc>residential, Δkm=-0.053, 53 m du jalon</desc></wpt>
+  <wpt lat="45.8247153" lon="4.9561513"><name>km 12.47 (jalon 5) – Impasse de la Treille</name><desc>unclassified, Δkm=-0.027, 27 m du jalon</desc></wpt>
+  <wpt lat="45.8252781" lon="4.9559905"><name>km 12.54 (jalon 5) – Grande Rue</name><desc>primary, Δkm=+0.037, 37 m du jalon</desc></wpt>
+  <wpt lat="45.8254549" lon="4.9565046"><name>km 12.58 (jalon 5) – Impasse Pierre Blanche</name><desc>unclassified, Δkm=+0.081, 64 m du jalon</desc></wpt>
+  <wpt lat="45.8255147" lon="4.9566807"><name>km 12.60 (jalon 5)</name><desc>unclassified, Δkm=+0.096, 78 m du jalon</desc></wpt>
+  <wpt lat="45.8256913" lon="4.9572002"><name>km 12.64 (jalon 5) – Impasse Malpas</name><desc>unclassified, Δkm=+0.141, 119 m du jalon</desc></wpt>
+  <wpt lat="45.8257985" lon="4.9575156"><name>km 12.67 (jalon 5)</name><desc>service, Δkm=+0.168, 145 m du jalon</desc></wpt>
+  <wpt lat="45.8266290" lon="4.9566703"><name>km 12.79 (jalon 5) – Place de la République</name><desc>service, Δkm=+0.290, 192 m du jalon</desc></wpt>
+  <wpt lat="45.8273730" lon="4.9567228"><name>km 12.89 (jalon 5) – Place de la République</name><desc>service, Δkm=+0.395, 273 m du jalon</desc></wpt>
+  <wpt lat="45.8274458" lon="4.9567107"><name>km 12.90 (jalon 5) – Avenue Joséphine Guillon</name><desc>residential, Δkm=+0.403, 281 m du jalon</desc></wpt>
+  <wpt lat="45.8275015" lon="4.9572300"><name>km 12.94 (jalon 5) – Avenue Joséphine Guillon</name><desc>residential, Δkm=+0.444, 297 m du jalon</desc></wpt>
+  <wpt lat="45.8275406" lon="4.9572300"><name>km 12.95 (jalon 5) – Rue des Garines</name><desc>residential, Δkm=+0.449, 301 m du jalon</desc></wpt>
+  <wpt lat="45.8289711" lon="4.9585897"><name>km 13.15 (jalon 5) – Allée des Garines</name><desc>residential, Δkm=+0.652, 487 m du jalon</desc></wpt>
+  <wpt lat="45.8299111" lon="4.9628115"><name>km 13.50 (jalon 5) – Rue de Saint-Martin</name><desc>residential, Δkm=+0.996, 759 m du jalon</desc></wpt>
+  <wpt lat="45.8300368" lon="4.9630011"><name>km 13.52 (jalon 5) – Rue Victor Hugo</name><desc>residential, Δkm=+1.017, 779 m du jalon</desc></wpt>
+  <wpt lat="45.8304481" lon="4.9653573"><name>km 13.71 (jalon 5) – Impasse Lamartine</name><desc>residential, Δkm=+1.215, 943 m du jalon</desc></wpt>
+  <wpt lat="45.8304415" lon="4.9653972"><name>km 13.72 (jalon 5) – Rue Victor Hugo</name><desc>residential, Δkm=+1.218, 945 m du jalon</desc></wpt>
+  <wpt lat="45.8315313" lon="4.9684351"><name>km 14.00 (jalon 6) – Rue Victor Hugo</name><desc>residential, Δkm=-1.003, 830 m du jalon</desc></wpt>
+  <wpt lat="45.8315400" lon="4.9685399"><name>km 14.01 (jalon 6) – Rue du Pré Barry</name><desc>residential, Δkm=-0.995, 824 m du jalon</desc></wpt>
+  <wpt lat="45.8318692" lon="4.9695460"><name>km 14.09 (jalon 6) – Rue du Pré Barry</name><desc>residential, Δkm=-0.905, 740 m du jalon</desc></wpt>
+  <wpt lat="45.8318314" lon="4.9696367"><name>km 14.10 (jalon 6) – Avenue de Saint-Maurice</name><desc>residential, Δkm=-0.897, 737 m du jalon</desc></wpt>
+  <wpt lat="45.8319101" lon="4.9700208"><name>km 14.13 (jalon 6)</name><desc>service, Δkm=-0.866, 709 m du jalon</desc></wpt>
+  <wpt lat="45.8319479" lon="4.9705432"><name>km 14.17 (jalon 6) – Avenue de Saint-Maurice</name><desc>residential, Δkm=-0.825, 677 m du jalon</desc></wpt>
+  <wpt lat="45.8319671" lon="4.9708093"><name>km 14.20 (jalon 6)</name><desc>service, Δkm=-0.805, 661 m du jalon</desc></wpt>
+  <wpt lat="45.8320393" lon="4.9716174"><name>km 14.26 (jalon 6) – Chemin de Saint-Martin</name><desc>residential, Δkm=-0.741, 612 m du jalon</desc></wpt>
+  <wpt lat="45.8322988" lon="4.9726550"><name>km 14.34 (jalon 6) – Chemin de Saint-Martin</name><desc>residential, Δkm=-0.656, 539 m du jalon</desc></wpt>
+  <wpt lat="45.8329084" lon="4.9744290"><name>km 14.50 (jalon 6) – Chemin de Saint-Martin</name><desc>residential, Δkm=-0.502, 408 m du jalon</desc></wpt>
+  <wpt lat="45.8333682" lon="4.9741506"><name>km 14.56 (jalon 6) – Montée de la Pissette</name><desc>residential, Δkm=-0.444, 375 m du jalon</desc></wpt>
+  <wpt lat="45.8357651" lon="4.9762967"><name>km 14.92 (jalon 6) – Rue du Côteau</name><desc>residential, Δkm=-0.075, 61 m du jalon</desc></wpt>
+  <wpt lat="45.8357688" lon="4.9763068"><name>km 14.93 (jalon 6) – Montée de la Paroche</name><desc>residential, Δkm=-0.074, 61 m du jalon</desc></wpt>
+  <wpt lat="45.8357003" lon="4.9764593"><name>km 14.94 (jalon 6) – Chemin des Montelières</name><desc>residential, Δkm=-0.060, 60 m du jalon</desc></wpt>
+  <wpt lat="45.8361592" lon="4.9768294"><name>km 15.00 (jalon 6) – Rue du Torrent</name><desc>residential, Δkm=-0.001, 1 m du jalon</desc></wpt>
+  <wpt lat="45.8361770" lon="4.9768373"><name>km 15.00 (jalon 6) – Chemin des Montelières</name><desc>residential, Δkm=+0.001, 1 m du jalon</desc></wpt>
+  <wpt lat="45.8407244" lon="4.9944942"><name>km 16.58 (jalon 7)</name><desc>service, Δkm=-0.917, 760 m du jalon</desc></wpt>
+  <wpt lat="45.8405130" lon="4.9965696"><name>km 16.75 (jalon 7) – Chemin de la Fontaine du Soleil</name><desc>residential, Δkm=-0.753, 619 m du jalon</desc></wpt>
+  <wpt lat="45.8419581" lon="5.0003805"><name>km 17.16 (jalon 7) – Chemin du Mont</name><desc>residential, Δkm=-0.339, 285 m du jalon</desc></wpt>
+  <wpt lat="45.8430588" lon="5.0019146"><name>km 17.34 (jalon 7) – Avenue du Mont</name><desc>unclassified, Δkm=-0.158, 152 m du jalon</desc></wpt>
+  <wpt lat="45.8430112" lon="5.0020943"><name>km 17.36 (jalon 7) – Chemin du Coteau</name><desc>residential, Δkm=-0.143, 137 m du jalon</desc></wpt>
+  <wpt lat="45.8425027" lon="5.0087690"><name>km 17.94 (jalon 7) – Montée de Saint-Germain</name><desc>residential, Δkm=+0.436, 383 m du jalon</desc></wpt>
+  <wpt lat="45.8427706" lon="5.0142250"><name>km 18.47 (jalon 7)</name><desc>service, Δkm=+0.969, 804 m du jalon</desc></wpt>
+  <wpt lat="45.8426210" lon="5.0144187"><name>km 18.49 (jalon 7)</name><desc>service, Δkm=+0.991, 820 m du jalon</desc></wpt>
+  <wpt lat="45.8474272" lon="5.0301527"><name>km 19.98 (jalon 8) – Route de Tramoyes</name><desc>tertiary, Δkm=-0.017, 17 m du jalon</desc></wpt>
+  <wpt lat="45.8477394" lon="5.0324774"><name>km 20.21 (jalon 8) – Chemin Henri IV</name><desc>residential, Δkm=+0.206, 173 m du jalon</desc></wpt>
+  <wpt lat="45.8513885" lon="5.0488696"><name>km 21.62 (jalon 9) – Chemin Henri IV</name><desc>residential, Δkm=-0.879, 753 m du jalon</desc></wpt>
+  <wpt lat="45.8512491" lon="5.0491929"><name>km 21.65 (jalon 9) – Montée du Chemin Neuf</name><desc>residential, Δkm=-0.850, 734 m du jalon</desc></wpt>
+  <wpt lat="45.8512706" lon="5.0504607"><name>km 21.75 (jalon 9) – Chemin de la Pierre</name><desc>residential, Δkm=-0.749, 640 m du jalon</desc></wpt>
+  <wpt lat="45.8513110" lon="5.0523222"><name>km 21.90 (jalon 9) – Montée du Chemin Neuf</name><desc>residential, Δkm=-0.603, 506 m du jalon</desc></wpt>
+  <wpt lat="45.8514276" lon="5.0537210"><name>km 22.01 (jalon 9) – Rue Pied des Vignes</name><desc>residential, Δkm=-0.493, 404 m du jalon</desc></wpt>
+  <wpt lat="45.8517292" lon="5.0560029"><name>km 22.19 (jalon 9)</name><desc>service, Δkm=-0.313, 243 m du jalon</desc></wpt>
+  <wpt lat="45.8517878" lon="5.0565977"><name>km 22.23 (jalon 9) – Montée du Chemin Neuf</name><desc>residential, Δkm=-0.266, 208 m du jalon</desc></wpt>
+  <wpt lat="45.8517895" lon="5.0566150"><name>km 22.23 (jalon 9) – Place Carnot</name><desc>tertiary, Δkm=-0.265, 207 m du jalon</desc></wpt>
+  <wpt lat="45.8518604" lon="5.0566026"><name>km 22.24 (jalon 9) – Place Carnot</name><desc>tertiary, Δkm=-0.257, 202 m du jalon</desc></wpt>
+  <wpt lat="45.8519098" lon="5.0568989"><name>km 22.27 (jalon 9) – Place Carnot</name><desc>tertiary, Δkm=-0.233, 184 m du jalon</desc></wpt>
+  <wpt lat="45.8519123" lon="5.0569000"><name>km 22.27 (jalon 9) – Grande Rue</name><desc>tertiary, Δkm=-0.233, 183 m du jalon</desc></wpt>
+  <wpt lat="45.8519800" lon="5.0568964"><name>km 22.28 (jalon 9) – Rue Notre-Dame-des-Marais</name><desc>tertiary, Δkm=-0.225, 177 m du jalon</desc></wpt>
+  <wpt lat="45.8523497" lon="5.0569352"><name>km 22.32 (jalon 9) – Rue Notre-Dame-des-Marais</name><desc>tertiary, Δkm=-0.181, 143 m du jalon</desc></wpt>
+  <wpt lat="45.8528749" lon="5.0571300"><name>km 22.38 (jalon 9)</name><desc>service, Δkm=-0.120, 95 m du jalon</desc></wpt>
+  <wpt lat="45.8531296" lon="5.0573343"><name>km 22.41 (jalon 9) – Avenue Pierre Cormorèche</name><desc>secondary, Δkm=-0.087, 70 m du jalon</desc></wpt>
+  <wpt lat="45.8532874" lon="5.0578426"><name>km 22.46 (jalon 9) – Avenue des Sports</name><desc>secondary, Δkm=-0.040, 28 m du jalon</desc></wpt>
+  <wpt lat="45.8532056" lon="5.0580909"><name>km 22.49 (jalon 9) – Cours de la Portelle</name><desc>secondary, Δkm=-0.015, 13 m du jalon</desc></wpt>
+  <wpt lat="45.8538978" lon="5.0591291"><name>km 22.60 (jalon 9)</name><desc>service, Δkm=+0.101, 99 m du jalon</desc></wpt>
+  <wpt lat="45.8543653" lon="5.0598933"><name>km 22.68 (jalon 9) – Rue du Chatel</name><desc>residential, Δkm=+0.180, 177 m du jalon</desc></wpt>
+  <wpt lat="45.8552983" lon="5.0610498"><name>km 22.82 (jalon 9) – Chemin de la Croix-Blanche</name><desc>residential, Δkm=+0.317, 314 m du jalon</desc></wpt>
+  <wpt lat="45.8563373" lon="5.0626047"><name>km 22.99 (jalon 9)</name><desc>service, Δkm=+0.485, 481 m du jalon</desc></wpt>
+  <wpt lat="45.8569910" lon="5.0648666"><name>km 23.18 (jalon 9) – Lotissement les Entremonts</name><desc>service, Δkm=+0.675, 660 m du jalon</desc></wpt>
+  <wpt lat="45.8579401" lon="5.0682279"><name>km 23.46 (jalon 9) – Rue des Granges</name><desc>residential, Δkm=+0.957, 933 m du jalon</desc></wpt>
+  <wpt lat="45.8652107" lon="5.0792807"><name>km 25.00 (jalon 10) – Route de Bourg</name><desc>secondary, Δkm=+0.000, 268 m du jalon</desc></wpt>
+  <wpt lat="45.8767564" lon="5.0916835"><name>km 27.01 (jalon 11) – Chemin de la Léchère</name><desc>tertiary, Δkm=-0.493, 245 m du jalon</desc></wpt>
+  <wpt lat="45.8768204" lon="5.0911618"><name>km 27.05 (jalon 11) – Chemin de la Léchère</name><desc>tertiary, Δkm=-0.451, 215 m du jalon</desc></wpt>
+  <wpt lat="45.8767484" lon="5.0908351"><name>km 27.08 (jalon 11) – Chemin de la Léchère</name><desc>tertiary, Δkm=-0.424, 210 m du jalon</desc></wpt>
+  <wpt lat="45.8761347" lon="5.0895146"><name>km 27.20 (jalon 11) – Chemin de la Léchère</name><desc>tertiary, Δkm=-0.301, 258 m du jalon</desc></wpt>
+  <wpt lat="45.8910933" lon="5.1102740"><name>km 30.00 (jalon 12)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="45.8979633" lon="5.1248024"><name>km 32.00 (jalon 13) – Chemin de la Côte Voyant</name><desc>unclassified, Δkm=-0.499, 469 m du jalon</desc></wpt>
+  <wpt lat="45.8979112" lon="5.1249504"><name>km 32.01 (jalon 13) – Route de Bressolles</name><desc>unclassified, Δkm=-0.486, 458 m du jalon</desc></wpt>
+  <wpt lat="45.8978114" lon="5.1300611"><name>km 32.43 (jalon 13) – Chemin des Vivannes</name><desc>unclassified, Δkm=-0.073, 73 m du jalon</desc></wpt>
+  <wpt lat="45.8990095" lon="5.1352065"><name>km 32.85 (jalon 13) – Route de Bourg Saint-Christophe</name><desc>unclassified, Δkm=+0.353, 350 m du jalon</desc></wpt>
+  <wpt lat="45.8990191" lon="5.1352211"><name>km 32.85 (jalon 13)</name><desc>unclassified, Δkm=+0.354, 351 m du jalon</desc></wpt>
+  <wpt lat="45.9020014" lon="5.1425194"><name>km 33.52 (jalon 13)</name><desc>unclassified, Δkm=+1.019, 998 m du jalon</desc></wpt>
+  <wpt lat="45.9022600" lon="5.1491300"><name>km 34.04 (jalon 14)</name><desc>unclassified, Δkm=-0.965, 953 m du jalon</desc></wpt>
+  <wpt lat="45.9028741" lon="5.1542506"><name>km 34.44 (jalon 14)</name><desc>unclassified, Δkm=-0.558, 551 m du jalon</desc></wpt>
+  <wpt lat="45.9035749" lon="5.1611408"><name>km 34.99 (jalon 14)</name><desc>unclassified, Δkm=-0.013, 13 m du jalon</desc></wpt>
+  <wpt lat="45.9040681" lon="5.1634158"><name>km 35.19 (jalon 14)</name><desc>unclassified, Δkm=+0.186, 171 m du jalon</desc></wpt>
+  <wpt lat="45.9022403" lon="5.1685816"><name>km 35.68 (jalon 14) – Chemin de Ramboz</name><desc>unclassified, Δkm=+0.677, 585 m du jalon</desc></wpt>
+  <wpt lat="45.9023568" lon="5.1692179"><name>km 35.73 (jalon 14) – Chemin de la Pierrière</name><desc>unclassified, Δkm=+0.728, 629 m du jalon</desc></wpt>
+  <wpt lat="45.9047284" lon="5.1731771"><name>km 36.14 (jalon 14) – Chemin de Mingeat</name><desc>unclassified, Δkm=+1.140, 928 m du jalon</desc></wpt>
+  <wpt lat="45.9049999" lon="5.1735778"><name>km 36.18 (jalon 14) – Chemin de Mingeat</name><desc>residential, Δkm=+1.184, 963 m du jalon</desc></wpt>
+  <wpt lat="45.9062794" lon="5.1747406"><name>km 36.35 (jalon 15) – D 4B</name><desc>tertiary, Δkm=-1.147, 963 m du jalon</desc></wpt>
+  <wpt lat="45.9059409" lon="5.1751244"><name>km 36.40 (jalon 15) – Parking des Combes</name><desc>service, Δkm=-1.099, 930 m du jalon</desc></wpt>
+  <wpt lat="45.9055547" lon="5.1755620"><name>km 36.46 (jalon 15) – Route de la Cité</name><desc>tertiary, Δkm=-1.045, 895 m du jalon</desc></wpt>
+  <wpt lat="45.9050025" lon="5.1765625"><name>km 36.55 (jalon 15) – Route de la Cité</name><desc>tertiary, Δkm=-0.945, 819 m du jalon</desc></wpt>
+  <wpt lat="45.9050784" lon="5.1766384"><name>km 36.56 (jalon 15) – Chemin du Saut</name><desc>unclassified, Δkm=-0.935, 813 m du jalon</desc></wpt>
+  <wpt lat="45.9051095" lon="5.1767286"><name>km 36.57 (jalon 15)</name><desc>service, Δkm=-0.927, 805 m du jalon</desc></wpt>
+  <wpt lat="45.9055590" lon="5.1778178"><name>km 36.67 (jalon 15)</name><desc>service, Δkm=-0.829, 720 m du jalon</desc></wpt>
+  <wpt lat="45.9060347" lon="5.1797353"><name>km 36.83 (jalon 15) – Chemin de Refurieux</name><desc>unclassified, Δkm=-0.670, 575 m du jalon</desc></wpt>
+  <wpt lat="45.9061359" lon="5.1817320"><name>km 36.99 (jalon 15) – Chemin de l'Olivet</name><desc>unclassified, Δkm=-0.514, 424 m du jalon</desc></wpt>
+  <wpt lat="45.9061218" lon="5.1819348"><name>km 37.00 (jalon 15) – Chemin des Musatières</name><desc>unclassified, Δkm=-0.498, 408 m du jalon</desc></wpt>
+  <wpt lat="45.9055198" lon="5.1868512"><name>km 37.48 (jalon 15) – Chemin de Borel</name><desc>residential, Δkm=-0.022, 22 m du jalon</desc></wpt>
+  <wpt lat="45.9054001" lon="5.1873507"><name>km 37.52 (jalon 15) – Impasse du Fouilloux</name><desc>residential, Δkm=+0.018, 18 m du jalon</desc></wpt>
+  <wpt lat="45.9055734" lon="5.1886438"><name>km 37.62 (jalon 15) – Rue du Fouilloux</name><desc>residential, Δkm=+0.120, 118 m du jalon</desc></wpt>
+  <wpt lat="45.9056592" lon="5.1892841"><name>km 37.67 (jalon 15) – Rue du Fouilloux</name><desc>residential, Δkm=+0.171, 169 m du jalon</desc></wpt>
+  <wpt lat="45.9053297" lon="5.1902824"><name>km 37.77 (jalon 15) – Avenue Docteur Berthier</name><desc>residential, Δkm=+0.266, 245 m du jalon</desc></wpt>
+  <wpt lat="45.9052715" lon="5.1907311"><name>km 37.80 (jalon 15) – Place Chantabeau</name><desc>residential, Δkm=+0.302, 280 m du jalon</desc></wpt>
+  <wpt lat="45.9052579" lon="5.1908215"><name>km 37.81 (jalon 15) – Rue de l'Ancienne Cure</name><desc>residential, Δkm=+0.309, 287 m du jalon</desc></wpt>
+  <wpt lat="45.9048800" lon="5.1912641"><name>km 37.87 (jalon 15) – Place de Blonay</name><desc>residential, Δkm=+0.366, 326 m du jalon</desc></wpt>
+  <wpt lat="45.9048474" lon="5.1913633"><name>km 37.87 (jalon 15) – Place du Général Davison</name><desc>residential, Δkm=+0.375, 335 m du jalon</desc></wpt>
+  <wpt lat="45.9048125" lon="5.1914082"><name>km 37.88 (jalon 15) – Rue de l'Église</name><desc>residential, Δkm=+0.380, 339 m du jalon</desc></wpt>
+  <wpt lat="45.9036201" lon="5.1923990"><name>km 38.04 (jalon 15) – Place Vaugelas</name><desc>secondary, Δkm=+0.545, 456 m du jalon</desc></wpt>
+  <wpt lat="45.9035639" lon="5.1924280"><name>km 38.05 (jalon 15) – Place Vaugelas</name><desc>secondary, Δkm=+0.551, 461 m du jalon</desc></wpt>
+  <wpt lat="45.9040765" lon="5.1943181"><name>km 38.21 (jalon 15) – Rue Boisset</name><desc>residential, Δkm=+0.711, 577 m du jalon</desc></wpt>
+  <wpt lat="45.9041394" lon="5.1945726"><name>km 38.23 (jalon 15) – Rue de Genève</name><desc>tertiary, Δkm=+0.731, 594 m du jalon</desc></wpt>
+  <wpt lat="45.9042030" lon="5.1948305"><name>km 38.25 (jalon 15) – Place de l'Europe</name><desc>service, Δkm=+0.753, 612 m du jalon</desc></wpt>
+  <wpt lat="45.9046095" lon="5.1964779"><name>km 38.39 (jalon 15) – Rue du Ban Thévenin</name><desc>unclassified, Δkm=+0.888, 730 m du jalon</desc></wpt>
+  <wpt lat="45.9046299" lon="5.1966556"><name>km 38.40 (jalon 15) – Rue de Genève</name><desc>tertiary, Δkm=+0.902, 743 m du jalon</desc></wpt>
+  <wpt lat="45.9047138" lon="5.1973949"><name>km 38.46 (jalon 15) – Rue de Genève</name><desc>tertiary, Δkm=+0.960, 799 m du jalon</desc></wpt>
+  <wpt lat="45.9047360" lon="5.1975905"><name>km 38.48 (jalon 15) – Rue de Genève</name><desc>tertiary, Δkm=+0.975, 814 m du jalon</desc></wpt>
+  <wpt lat="45.9047531" lon="5.1977412"><name>km 38.49 (jalon 15)</name><desc>tertiary, Δkm=+0.987, 825 m du jalon</desc></wpt>
+  <wpt lat="45.9048387" lon="5.1979096"><name>km 38.51 (jalon 15) – Rue Saint-Julien</name><desc>residential, Δkm=+1.006, 837 m du jalon</desc></wpt>
+  <wpt lat="45.9060418" lon="5.2036382"><name>km 39.00 (jalon 16) – Route de Villieu</name><desc>tertiary, Δkm=-1.004, 897 m du jalon</desc></wpt>
+  <wpt lat="45.9064770" lon="5.2042821"><name>km 39.07 (jalon 16) – Rue Laplantaz</name><desc>residential, Δkm=-0.929, 829 m du jalon</desc></wpt>
+  <wpt lat="45.9078743" lon="5.2077193"><name>km 39.39 (jalon 16) – Voie Pour Pompiers</name><desc>residential, Δkm=-0.610, 572 m du jalon</desc></wpt>
+  <wpt lat="45.9080507" lon="5.2081490"><name>km 39.43 (jalon 16) – Rue de Chavagneux</name><desc>residential, Δkm=-0.571, 544 m du jalon</desc></wpt>
+  <wpt lat="45.9089919" lon="5.2088722"><name>km 39.55 (jalon 16) – Impasse Champollon</name><desc>residential, Δkm=-0.452, 428 m du jalon</desc></wpt>
+  <wpt lat="45.9094011" lon="5.2091100"><name>km 39.60 (jalon 16) – Rue de Chavagneux</name><desc>residential, Δkm=-0.403, 380 m du jalon</desc></wpt>
+  <wpt lat="45.9098265" lon="5.2094287"><name>km 39.65 (jalon 16) – Rue de Chavagneux</name><desc>residential, Δkm=-0.350, 329 m du jalon</desc></wpt>
+  <wpt lat="45.9112207" lon="5.2102731"><name>km 39.82 (jalon 16) – Rue de Chavagneux</name><desc>residential, Δkm=-0.181, 172 m du jalon</desc></wpt>
+  <wpt lat="45.9127089" lon="5.2100272"><name>km 39.99 (jalon 16) – Rue de la Croze</name><desc>residential, Δkm=-0.006, 6 m du jalon</desc></wpt>
+  <wpt lat="45.9161123" lon="5.2134504"><name>km 40.46 (jalon 16) – Chemin de Chavagneux</name><desc>unclassified, Δkm=+0.464, 456 m du jalon</desc></wpt>
+  <wpt lat="45.9181709" lon="5.2167906"><name>km 40.81 (jalon 16) – Rue de la Chatillonnière</name><desc>residential, Δkm=+0.809, 796 m du jalon</desc></wpt>
+  <wpt lat="45.9186350" lon="5.2177652"><name>km 40.90 (jalon 16) – Rue du Clos de la Chatillonière</name><desc>residential, Δkm=+0.900, 885 m du jalon</desc></wpt>
+  <wpt lat="45.9188969" lon="5.2183230"><name>km 40.95 (jalon 16) – Impasse le Petit Chatillon</name><desc>residential, Δkm=+0.953, 936 m du jalon</desc></wpt>
+  <wpt lat="45.9230170" lon="5.2238711"><name>km 41.61 (jalon 17) – Impasse le Pont Vieux</name><desc>residential, Δkm=-0.886, 784 m du jalon</desc></wpt>
+  <wpt lat="45.9240787" lon="5.2242330"><name>km 41.74 (jalon 17) – Rue de la Croze</name><desc>unclassified, Δkm=-0.764, 676 m du jalon</desc></wpt>
+  <wpt lat="45.9270055" lon="5.2265859"><name>km 42.11 (jalon 17) – Impasse des Rameaux</name><desc>residential, Δkm=-0.388, 326 m du jalon</desc></wpt>
+  <wpt lat="45.9274723" lon="5.2271872"><name>km 42.18 (jalon 17) – Chemin du Pont Vieux</name><desc>unclassified, Δkm=-0.318, 260 m du jalon</desc></wpt>
+  <wpt lat="45.9274894" lon="5.2272092"><name>km 42.18 (jalon 17)</name><desc>unclassified, Δkm=-0.315, 258 m du jalon</desc></wpt>
+  <wpt lat="45.9274997" lon="5.2292494"><name>km 42.35 (jalon 17) – Rue des Terreaux</name><desc>residential, Δkm=-0.145, 136 m du jalon</desc></wpt>
+  <wpt lat="45.9279484" lon="5.2300494"><name>km 42.43 (jalon 17) – Rue de la Côte du Fourg</name><desc>residential, Δkm=-0.066, 65 m du jalon</desc></wpt>
+  <wpt lat="45.9284892" lon="5.2301852"><name>km 42.50 (jalon 17) – Rue Royale</name><desc>tertiary, Δkm=-0.004, 4 m du jalon</desc></wpt>
+  <wpt lat="45.9299672" lon="5.2303928"><name>km 42.66 (jalon 17) – Rue de la Pie</name><desc>residential, Δkm=+0.161, 161 m du jalon</desc></wpt>
+  <wpt lat="45.9306596" lon="5.2304404"><name>km 42.74 (jalon 17) – Impasse du Vernay</name><desc>residential, Δkm=+0.238, 238 m du jalon</desc></wpt>
+  <wpt lat="45.9309628" lon="5.2304612"><name>km 42.77 (jalon 17) – Impasse de la Croisette</name><desc>residential, Δkm=+0.272, 272 m du jalon</desc></wpt>
+  <wpt lat="45.9310871" lon="5.2304698"><name>km 42.79 (jalon 17) – Rue de la Charrière</name><desc>residential, Δkm=+0.286, 285 m du jalon</desc></wpt>
+  <wpt lat="45.9312590" lon="5.2309581"><name>km 42.83 (jalon 17) – Rue de Bellevue</name><desc>residential, Δkm=+0.330, 310 m du jalon</desc></wpt>
+  <wpt lat="45.9315302" lon="5.2315371"><name>km 42.88 (jalon 17) – Rue de la Jonction</name><desc>residential, Δkm=+0.384, 350 m du jalon</desc></wpt>
+  <wpt lat="45.9322071" lon="5.2326194"><name>km 43.00 (jalon 17) – Chemin de la Fontaine</name><desc>residential, Δkm=+0.498, 450 m du jalon</desc></wpt>
+  <wpt lat="45.9340048" lon="5.2330814"><name>km 43.22 (jalon 17) – Rue de Montaplan</name><desc>tertiary, Δkm=+0.721, 649 m du jalon</desc></wpt>
+  <wpt lat="45.9414690" lon="5.2411510"><name>km 44.33 (jalon 18) – D 108</name><desc>tertiary, Δkm=-0.669, 625 m du jalon</desc></wpt>
+  <wpt lat="45.9423195" lon="5.2429670"><name>km 44.51 (jalon 18) – D 108</name><desc>tertiary, Δkm=-0.489, 473 m du jalon</desc></wpt>
+  <wpt lat="45.9423287" lon="5.2429870"><name>km 44.51 (jalon 18) – D 984</name><desc>secondary, Δkm=-0.487, 471 m du jalon</desc></wpt>
+  <wpt lat="45.9425420" lon="5.2431561"><name>km 44.55 (jalon 18) – Rue du Gardon</name><desc>residential, Δkm=-0.450, 444 m du jalon</desc></wpt>
+  <wpt lat="45.9430476" lon="5.2434187"><name>km 44.61 (jalon 18) – Lotissement les Sablons</name><desc>residential, Δkm=-0.390, 385 m du jalon</desc></wpt>
+  <wpt lat="45.9446117" lon="5.2444161"><name>km 44.80 (jalon 18)</name><desc>service, Δkm=-0.200, 195 m du jalon</desc></wpt>
+  <wpt lat="45.9449915" lon="5.2446166"><name>km 44.85 (jalon 18)</name><desc>residential, Δkm=-0.151, 151 m du jalon</desc></wpt>
+  <wpt lat="45.9451415" lon="5.2447562"><name>km 44.87 (jalon 18) – Rue des Brotteaux</name><desc>residential, Δkm=-0.131, 131 m du jalon</desc></wpt>
+  <wpt lat="45.9458603" lon="5.2454119"><name>km 44.96 (jalon 18) – Grande Rue</name><desc>secondary, Δkm=-0.036, 36 m du jalon</desc></wpt>
+  <wpt lat="45.9467621" lon="5.2460188"><name>km 45.07 (jalon 18) – Grande Rue</name><desc>secondary, Δkm=+0.075, 75 m du jalon</desc></wpt>
+  <wpt lat="45.9477131" lon="5.2459002"><name>km 45.18 (jalon 18) – Chemin de Chez Magnin</name><desc>unclassified, Δkm=+0.181, 175 m du jalon</desc></wpt>
+  <wpt lat="45.9489110" lon="5.2457310"><name>km 45.32 (jalon 18) – D 984</name><desc>secondary, Δkm=+0.315, 307 m du jalon</desc></wpt>
+  <wpt lat="45.9489159" lon="5.2457359"><name>km 45.32 (jalon 18)</name><desc>secondary, Δkm=+0.316, 308 m du jalon</desc></wpt>
+  <wpt lat="45.9588799" lon="5.2462921"><name>km 46.46 (jalon 19) – Route de Meximieux</name><desc>secondary, Δkm=-1.039, 894 m du jalon</desc></wpt>
+  <wpt lat="45.9656060" lon="5.2519998"><name>km 47.47 (jalon 19) – Impasse des Granges</name><desc>residential, Δkm=-0.027, 27 m du jalon</desc></wpt>
+  <wpt lat="45.9656499" lon="5.2520299"><name>km 47.48 (jalon 19) – Route d'Amberieu</name><desc>secondary, Δkm=-0.022, 22 m du jalon</desc></wpt>
+  <wpt lat="45.9657122" lon="5.2520467"><name>km 47.49 (jalon 19) – Rue du Plomb</name><desc>residential, Δkm=-0.015, 15 m du jalon</desc></wpt>
+  <wpt lat="45.9668553" lon="5.2522499"><name>km 47.61 (jalon 19) – Clos La Verchère</name><desc>residential, Δkm=+0.114, 113 m du jalon</desc></wpt>
+  <wpt lat="45.9671454" lon="5.2522566"><name>km 47.65 (jalon 19) – Rue du Puits</name><desc>residential, Δkm=+0.146, 146 m du jalon</desc></wpt>
+  <wpt lat="45.9684976" lon="5.2527784"><name>km 47.80 (jalon 19) – Rue de la Bonne</name><desc>residential, Δkm=+0.305, 300 m du jalon</desc></wpt>
+  <wpt lat="45.9688390" lon="5.2522313"><name>km 47.86 (jalon 19) – Route de Gévrieux</name><desc>secondary, Δkm=+0.363, 333 m du jalon</desc></wpt>
+  <wpt lat="45.9691876" lon="5.2524713"><name>km 47.91 (jalon 19) – Montée de Trevouges</name><desc>unclassified, Δkm=+0.406, 373 m du jalon</desc></wpt>
+  <wpt lat="45.9713198" lon="5.2539513"><name>km 48.17 (jalon 19)</name><desc>service, Δkm=+0.669, 626 m du jalon</desc></wpt>
+  <wpt lat="45.9731164" lon="5.2551984"><name>km 48.39 (jalon 19) – Chemin de l'École</name><desc>residential, Δkm=+0.891, 844 m du jalon</desc></wpt>
+  <wpt lat="45.9737890" lon="5.2556652"><name>km 48.47 (jalon 19) – Route de Gévrieux</name><desc>secondary, Δkm=+0.974, 926 m du jalon</desc></wpt>
+  <wpt lat="45.9738257" lon="5.2556907"><name>km 48.48 (jalon 19)</name><desc>residential, Δkm=+0.978, 931 m du jalon</desc></wpt>
+  <wpt lat="45.9796118" lon="5.2596073"><name>km 49.20 (jalon 20) – Route de Bublanne</name><desc>secondary, Δkm=-0.798, 785 m du jalon</desc></wpt>
+  <wpt lat="45.9800708" lon="5.2597257"><name>km 49.25 (jalon 20) – Clos de l'Église</name><desc>residential, Δkm=-0.746, 739 m du jalon</desc></wpt>
+  <wpt lat="45.9801945" lon="5.2597545"><name>km 49.27 (jalon 20)</name><desc>residential, Δkm=-0.732, 727 m du jalon</desc></wpt>
+  <wpt lat="45.9811885" lon="5.2606082"><name>km 49.40 (jalon 20) – Route de Bublanne</name><desc>secondary, Δkm=-0.600, 601 m du jalon</desc></wpt>
+  <wpt lat="45.9813886" lon="5.2608711"><name>km 49.43 (jalon 20) – Montée du Mas Durand</name><desc>tertiary, Δkm=-0.570, 570 m du jalon</desc></wpt>
+  <wpt lat="45.9854187" lon="5.2661678"><name>km 50.04 (jalon 20) – Grande Rue</name><desc>secondary, Δkm=+0.037, 37 m du jalon</desc></wpt>
+  <wpt lat="45.9862225" lon="5.2672241"><name>km 50.16 (jalon 20) – Grande Rue</name><desc>secondary, Δkm=+0.158, 158 m du jalon</desc></wpt>
+  <wpt lat="45.9864453" lon="5.2675169"><name>km 50.19 (jalon 20)</name><desc>residential, Δkm=+0.191, 191 m du jalon</desc></wpt>
+  <wpt lat="45.9868290" lon="5.2680213"><name>km 50.25 (jalon 20) – Impasse des Vignes</name><desc>residential, Δkm=+0.249, 249 m du jalon</desc></wpt>
+  <wpt lat="45.9884211" lon="5.2701137"><name>km 50.49 (jalon 20) – Grande Rue</name><desc>secondary, Δkm=+0.489, 489 m du jalon</desc></wpt>
+  <wpt lat="45.9885760" lon="5.2703156"><name>km 50.51 (jalon 20) – Grande Rue</name><desc>secondary, Δkm=+0.512, 512 m du jalon</desc></wpt>
+  <wpt lat="45.9895870" lon="5.2715957"><name>km 50.66 (jalon 20) – Rue des Mas</name><desc>residential, Δkm=+0.662, 662 m du jalon</desc></wpt>
+  <wpt lat="45.9968227" lon="5.2809728"><name>km 51.74 (jalon 21) – D 984</name><desc>secondary, Δkm=-0.755, 748 m du jalon</desc></wpt>
+  <wpt lat="45.9970916" lon="5.2813032"><name>km 51.79 (jalon 21)</name><desc>secondary, Δkm=-0.709, 708 m du jalon</desc></wpt>
+  <wpt lat="45.9976486" lon="5.2821706"><name>km 51.88 (jalon 21) – Grande Rue de la Côtière</name><desc>secondary, Δkm=-0.617, 617 m du jalon</desc></wpt>
+  <wpt lat="46.0002881" lon="5.2856344"><name>km 52.28 (jalon 21) – Lotissement du Beau Rivage</name><desc>residential, Δkm=-0.220, 220 m du jalon</desc></wpt>
+  <wpt lat="46.0010892" lon="5.2866857"><name>km 52.40 (jalon 21) – Grande Rue de la Côtière</name><desc>secondary, Δkm=-0.100, 100 m du jalon</desc></wpt>
+  <wpt lat="46.0018907" lon="5.2877376"><name>km 52.52 (jalon 21) – Rue des Champagnes</name><desc>residential, Δkm=+0.021, 21 m du jalon</desc></wpt>
+  <wpt lat="46.0020444" lon="5.2879393"><name>km 52.54 (jalon 21) – Grande Rue de la Côtière</name><desc>secondary, Δkm=+0.044, 44 m du jalon</desc></wpt>
+  <wpt lat="46.0032653" lon="5.2895415"><name>km 52.73 (jalon 21)</name><desc>service, Δkm=+0.228, 228 m du jalon</desc></wpt>
+  <wpt lat="46.0034300" lon="5.2897576"><name>km 52.75 (jalon 21) – Rue de la Rivière</name><desc>residential, Δkm=+0.253, 253 m du jalon</desc></wpt>
+  <wpt lat="46.0040884" lon="5.2906217"><name>km 52.85 (jalon 21) – Grande Rue de la Côtière</name><desc>secondary, Δkm=+0.352, 352 m du jalon</desc></wpt>
+  <wpt lat="46.0042987" lon="5.2909318"><name>km 52.89 (jalon 21) – Grande Rue de la Côtière</name><desc>secondary, Δkm=+0.385, 385 m du jalon</desc></wpt>
+  <wpt lat="46.0043070" lon="5.2910578"><name>km 52.90 (jalon 21) – Route du Pont</name><desc>tertiary, Δkm=+0.395, 392 m du jalon</desc></wpt>
+  <wpt lat="46.0042744" lon="5.2921272"><name>km 52.98 (jalon 21) – Route du Pont</name><desc>tertiary, Δkm=+0.478, 451 m du jalon</desc></wpt>
+  <wpt lat="46.0036927" lon="5.2943664"><name>km 53.18 (jalon 21) – D 12</name><desc>tertiary, Δkm=+0.676, 569 m du jalon</desc></wpt>
+  <wpt lat="46.0028505" lon="5.2955993"><name>km 53.31 (jalon 21) – Route du Pont</name><desc>tertiary, Δkm=+0.809, 633 m du jalon</desc></wpt>
+  <wpt lat="46.0037016" lon="5.2984800"><name>km 53.58 (jalon 21)</name><desc>residential, Δkm=+1.083, 871 m du jalon</desc></wpt>
+  <wpt lat="46.0096583" lon="5.3127865"><name>km 55.00 (jalon 22) – D 12</name><desc>tertiary, Δkm=+0.000, 261 m du jalon</desc></wpt>
+  <wpt lat="46.0093279" lon="5.3103622"><name>km 55.00 (jalon 22)</name><desc>unclassified, Δkm=+0.000, 140 m du jalon</desc></wpt>
+  <wpt lat="46.0289728" lon="5.3137943"><name>km 57.50 (jalon 23)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="46.0428132" lon="5.3324296"><name>km 60.15 (jalon 24)</name><desc>unclassified, Δkm=+0.149, 127 m du jalon</desc></wpt>
+  <wpt lat="46.0433567" lon="5.3355822"><name>km 60.40 (jalon 24) – Rue des Lacs</name><desc>unclassified, Δkm=+0.402, 358 m du jalon</desc></wpt>
+  <wpt lat="46.0440566" lon="5.3354707"><name>km 60.48 (jalon 24)</name><desc>service, Δkm=+0.482, 359 m du jalon</desc></wpt>
+  <wpt lat="46.0440900" lon="5.3357403"><name>km 60.50 (jalon 25)</name><desc>service, Δkm=-1.997, 954 m du jalon</desc></wpt>
+  <wpt lat="46.0442530" lon="5.3362378"><name>km 60.55 (jalon 24)</name><desc>service, Δkm=+0.549, 422 m du jalon</desc></wpt>
+  <wpt lat="46.0443780" lon="5.3363777"><name>km 60.57 (jalon 24) – Rue Gabriel Vicaire</name><desc>primary, Δkm=+0.567, 436 m du jalon</desc></wpt>
+  <wpt lat="46.0450278" lon="5.3363003"><name>km 60.64 (jalon 24)</name><desc>residential, Δkm=+0.639, 456 m du jalon</desc></wpt>
+  <wpt lat="46.0450732" lon="5.3363695"><name>km 60.65 (jalon 25)</name><desc>residential, Δkm=-1.853, 840 m du jalon</desc></wpt>
+  <wpt lat="46.0452006" lon="5.3363498"><name>km 60.66 (jalon 24)</name><desc>residential, Δkm=+0.661, 468 m du jalon</desc></wpt>
+  <wpt lat="46.0460042" lon="5.3362257"><name>km 60.75 (jalon 24) – Avenue de l'Oiselon</name><desc>residential, Δkm=+0.751, 506 m du jalon</desc></wpt>
+  <wpt lat="46.0476179" lon="5.3359765"><name>km 60.93 (jalon 24) – Rue Brillat Savarin</name><desc>primary, Δkm=+0.931, 617 m du jalon</desc></wpt>
+  <wpt lat="46.0476605" lon="5.3359714"><name>km 60.94 (jalon 25) – Rue Brillat Savarin</name><desc>primary, Δkm=-1.564, 559 m du jalon</desc></wpt>
+  <wpt lat="46.0477394" lon="5.3361785"><name>km 60.95 (jalon 24)</name><desc>service, Δkm=+0.954, 638 m du jalon</desc></wpt>
+  <wpt lat="46.0481606" lon="5.3361025"><name>km 61.00 (jalon 25)</name><desc>service, Δkm=-1.498, 502 m du jalon</desc></wpt>
+  <wpt lat="46.0481991" lon="5.3362758"><name>km 61.02 (jalon 25)</name><desc>service, Δkm=-1.484, 496 m du jalon</desc></wpt>
+  <wpt lat="46.0480672" lon="5.3363503"><name>km 61.03 (jalon 24)</name><desc>service, Δkm=+1.032, 674 m du jalon</desc></wpt>
+  <wpt lat="46.0489410" lon="5.3399818"><name>km 61.35 (jalon 25)</name><desc>service, Δkm=-1.153, 458 m du jalon</desc></wpt>
+  <wpt lat="46.0496909" lon="5.3413827"><name>km 61.51 (jalon 25) – Rue Louise de Savoie</name><desc>secondary, Δkm=-0.990, 453 m du jalon</desc></wpt>
+  <wpt lat="46.0507157" lon="5.3432262"><name>km 61.80 (jalon 25) – Montée des Jouberts</name><desc>unclassified, Δkm=-0.704, 505 m du jalon</desc></wpt>
+  <wpt lat="46.0534883" lon="5.3372500"><name>km 62.60 (jalon 25)</name><desc>service, Δkm=+0.098, 98 m du jalon</desc></wpt>
+  <wpt lat="46.0600017" lon="5.3346129"><name>km 63.42 (jalon 25) – Avenue Philibert Le Beau</name><desc>residential, Δkm=+0.916, 848 m du jalon</desc></wpt>
+  <wpt lat="46.0680720" lon="5.3401593"><name>km 64.61 (jalon 26) – Route de la Ville</name><desc>residential, Δkm=-0.386, 384 m du jalon</desc></wpt>
+  <wpt lat="46.0693494" lon="5.3403899"><name>km 64.76 (jalon 26) – Chemin des Petits Tilliets</name><desc>residential, Δkm=-0.243, 243 m du jalon</desc></wpt>
+  <wpt lat="46.0715738" lon="5.3415671"><name>km 65.02 (jalon 26) – Route de Saint-André</name><desc>residential, Δkm=+0.021, 21 m du jalon</desc></wpt>
+  <wpt lat="46.0727622" lon="5.3423278"><name>km 65.17 (jalon 26)</name><desc>unclassified, Δkm=+0.165, 165 m du jalon</desc></wpt>
+  <wpt lat="46.0731089" lon="5.3425501"><name>km 65.21 (jalon 26) – Route de Saint-André</name><desc>residential, Δkm=+0.207, 207 m du jalon</desc></wpt>
+  <wpt lat="46.0746609" lon="5.3448407"><name>km 65.46 (jalon 26)</name><desc>residential, Δkm=+0.457, 446 m du jalon</desc></wpt>
+  <wpt lat="46.0762015" lon="5.3459045"><name>km 65.65 (jalon 26) – Route de Pampier</name><desc>unclassified, Δkm=+0.648, 634 m du jalon</desc></wpt>
+  <wpt lat="46.0799629" lon="5.3441793"><name>km 66.10 (jalon 26) – Montée de Lachat</name><desc>unclassified, Δkm=+1.098, 975 m du jalon</desc></wpt>
+  <wpt lat="46.0825666" lon="5.3646759"><name>km 67.83 (jalon 27)</name><desc>unclassified, Δkm=+0.333, 317 m du jalon</desc></wpt>
+  <wpt lat="46.0821144" lon="5.3657378"><name>km 67.93 (jalon 27)</name><desc>unclassified, Δkm=+0.430, 412 m du jalon</desc></wpt>
+  <wpt lat="46.0819204" lon="5.3665401"><name>km 68.00 (jalon 27) – Route de la Croze</name><desc>unclassified, Δkm=+0.496, 478 m du jalon</desc></wpt>
+  <wpt lat="46.0811998" lon="5.3684531"><name>km 68.16 (jalon 27) – Route de la Croze</name><desc>unclassified, Δkm=+0.664, 645 m du jalon</desc></wpt>
+  <wpt lat="46.0826363" lon="5.3713044"><name>km 68.47 (jalon 27) – Rue du Revermont</name><desc>secondary, Δkm=+0.973, 814 m du jalon</desc></wpt>
+  <wpt lat="46.0826907" lon="5.3717566"><name>km 68.51 (jalon 27) – Impasse des Cavets</name><desc>residential, Δkm=+1.008, 848 m du jalon</desc></wpt>
+  <wpt lat="46.0827524" lon="5.3722586"><name>km 68.55 (jalon 27) – Rue de la Ville</name><desc>residential, Δkm=+1.048, 886 m du jalon</desc></wpt>
+  <wpt lat="46.0828655" lon="5.3726564"><name>km 68.58 (jalon 27) – Chemin du Lavoir</name><desc>residential, Δkm=+1.081, 915 m du jalon</desc></wpt>
+  <wpt lat="46.0829959" lon="5.3731149"><name>km 68.62 (jalon 27) – Rue de la Ville</name><desc>residential, Δkm=+1.119, 949 m du jalon</desc></wpt>
+  <wpt lat="46.0832301" lon="5.3780305"><name>km 69.06 (jalon 28) – Rue Nicolas Aubry</name><desc>residential, Δkm=-0.940, 931 m du jalon</desc></wpt>
+  <wpt lat="46.0835034" lon="5.3802139"><name>km 69.23 (jalon 28) – Impasse de la Rivière</name><desc>residential, Δkm=-0.768, 760 m du jalon</desc></wpt>
+  <wpt lat="46.0835251" lon="5.3806893"><name>km 69.27 (jalon 28) – Rue de Montignieux</name><desc>residential, Δkm=-0.731, 723 m du jalon</desc></wpt>
+  <wpt lat="46.0835737" lon="5.3817575"><name>km 69.35 (jalon 28)</name><desc>residential, Δkm=-0.649, 641 m du jalon</desc></wpt>
+  <wpt lat="46.0836101" lon="5.3825564"><name>km 69.41 (jalon 28) – Chemin des Carrières</name><desc>residential, Δkm=-0.587, 580 m du jalon</desc></wpt>
+  <wpt lat="46.0836849" lon="5.3841975"><name>km 69.54 (jalon 28) – Rue de la Colombière</name><desc>residential, Δkm=-0.460, 454 m du jalon</desc></wpt>
+  <wpt lat="46.0852736" lon="5.3989459"><name>km 70.75 (jalon 28)</name><desc>service, Δkm=+0.755, 699 m du jalon</desc></wpt>
+  <wpt lat="46.0854857" lon="5.4000749"><name>km 70.85 (jalon 28)</name><desc>service, Δkm=+0.847, 788 m du jalon</desc></wpt>
+  <wpt lat="46.0900416" lon="5.4024060"><name>km 71.39 (jalon 29)</name><desc>unclassified, Δkm=-1.106, 949 m du jalon</desc></wpt>
+  <wpt lat="46.0917100" lon="5.4011260"><name>km 71.67 (jalon 29)</name><desc>unclassified, Δkm=-0.825, 778 m du jalon</desc></wpt>
+  <wpt lat="46.1026221" lon="5.4052312"><name>km 72.99 (jalon 29) – D 81</name><desc>tertiary, Δkm=+0.490, 478 m du jalon</desc></wpt>
+  <wpt lat="46.1027178" lon="5.4053439"><name>km 73.00 (jalon 29) – Descente d'Allement</name><desc>unclassified, Δkm=+0.504, 490 m du jalon</desc></wpt>
+  <wpt lat="46.1080729" lon="5.4149377"><name>km 74.01 (jalon 30) – Descente d'Allement</name><desc>unclassified, Δkm=-0.986, 906 m du jalon</desc></wpt>
+  <wpt lat="46.1080807" lon="5.4151010"><name>km 74.03 (jalon 30)</name><desc>unclassified, Δkm=-0.974, 901 m du jalon</desc></wpt>
+  <wpt lat="46.1100742" lon="5.4178337"><name>km 74.36 (jalon 30) – Rue du Pressoir</name><desc>residential, Δkm=-0.645, 632 m du jalon</desc></wpt>
+  <wpt lat="46.1114764" lon="5.4182384"><name>km 74.52 (jalon 30)</name><desc>residential, Δkm=-0.480, 473 m du jalon</desc></wpt>
+  <wpt lat="46.1156603" lon="5.4191599"><name>km 75.00 (jalon 30) – Rue du Pressoir</name><desc>residential, Δkm=-0.003, 3 m du jalon</desc></wpt>
+  <wpt lat="46.1158206" lon="5.4190948"><name>km 75.02 (jalon 30)</name><desc>unclassified, Δkm=+0.016, 16 m du jalon</desc></wpt>
+  <wpt lat="46.1226435" lon="5.4204674"><name>km 75.78 (jalon 30)</name><desc>unclassified, Δkm=+0.785, 780 m du jalon</desc></wpt>
+  <wpt lat="46.1230899" lon="5.4206433"><name>km 75.84 (jalon 30) – Route du Port</name><desc>unclassified, Δkm=+0.836, 831 m du jalon</desc></wpt>
+  <wpt lat="46.1277024" lon="5.4283223"><name>km 76.68 (jalon 31)</name><desc>service, Δkm=-0.817, 692 m du jalon</desc></wpt>
+  <wpt lat="46.1300766" lon="5.4304948"><name>km 77.00 (jalon 31)</name><desc>service, Δkm=-0.500, 466 m du jalon</desc></wpt>
+  <wpt lat="46.1309561" lon="5.4306688"><name>km 77.10 (jalon 31)</name><desc>service, Δkm=-0.398, 385 m du jalon</desc></wpt>
+  <wpt lat="46.1321913" lon="5.4294490"><name>km 77.28 (jalon 31) – Route du Port</name><desc>unclassified, Δkm=-0.220, 219 m du jalon</desc></wpt>
+  <wpt lat="46.1343546" lon="5.4279059"><name>km 77.55 (jalon 31) – Route du Port</name><desc>unclassified, Δkm=+0.051, 50 m du jalon</desc></wpt>
+  <wpt lat="46.1475376" lon="5.4238134"><name>km 79.46 (jalon 32) – Route du Port</name><desc>unclassified, Δkm=-0.539, 509 m du jalon</desc></wpt>
+  <wpt lat="46.1478316" lon="5.4235376"><name>km 79.50 (jalon 32) – Route du Port</name><desc>unclassified, Δkm=-0.500, 471 m du jalon</desc></wpt>
+  <wpt lat="46.1493532" lon="5.4205337"><name>km 79.79 (jalon 32) – Route du Port</name><desc>unclassified, Δkm=-0.212, 188 m du jalon</desc></wpt>
+  <wpt lat="46.1505208" lon="5.4195571"><name>km 79.95 (jalon 32) – Route de Neuville</name><desc>tertiary, Δkm=-0.049, 48 m du jalon</desc></wpt>
+  <wpt lat="46.1507132" lon="5.4187957"><name>km 80.01 (jalon 32) – Rue Joseph Marie Convert</name><desc>residential, Δkm=+0.015, 15 m du jalon</desc></wpt>
+  <wpt lat="46.1511011" lon="5.4184400"><name>km 80.07 (jalon 32) – Rue des Battages</name><desc>residential, Δkm=+0.068, 65 m du jalon</desc></wpt>
+  <wpt lat="46.1518129" lon="5.4183192"><name>km 80.15 (jalon 32) – Chemin de Corday</name><desc>residential, Δkm=+0.153, 140 m du jalon</desc></wpt>
+  <wpt lat="46.1519099" lon="5.4182936"><name>km 80.16 (jalon 32) – Route de Neuville</name><desc>tertiary, Δkm=+0.164, 151 m du jalon</desc></wpt>
+  <wpt lat="46.1524002" lon="5.4182264"><name>km 80.22 (jalon 32)</name><desc>unclassified, Δkm=+0.220, 204 m du jalon</desc></wpt>
+  <wpt lat="46.1543960" lon="5.4187207"><name>km 80.45 (jalon 32) – Chemin des Epinettes</name><desc>residential, Δkm=+0.448, 419 m du jalon</desc></wpt>
+  <wpt lat="46.1556796" lon="5.4182733"><name>km 80.60 (jalon 32) – Route de Neuville</name><desc>tertiary, Δkm=+0.596, 563 m du jalon</desc></wpt>
+  <wpt lat="46.1570867" lon="5.4177318"><name>km 80.76 (jalon 32) – Route de Neuville</name><desc>tertiary, Δkm=+0.758, 724 m du jalon</desc></wpt>
+  <wpt lat="46.1573069" lon="5.4175821"><name>km 80.78 (jalon 32)</name><desc>residential, Δkm=+0.785, 749 m du jalon</desc></wpt>
+  <wpt lat="46.1589676" lon="5.4170522"><name>km 80.99 (jalon 32)</name><desc>residential, Δkm=+0.987, 938 m du jalon</desc></wpt>
+  <wpt lat="46.1675287" lon="5.4129816"><name>km 82.50 (jalon 33)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="46.1878295" lon="5.4248768"><name>km 85.00 (jalon 34)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="46.2003990" lon="5.4313748"><name>km 86.52 (jalon 35) – Chemin du Lavoir</name><desc>residential, Δkm=-0.979, 958 m du jalon</desc></wpt>
+  <wpt lat="46.2006719" lon="5.4314807"><name>km 86.55 (jalon 35) – Route de Simandre</name><desc>tertiary, Δkm=-0.946, 927 m du jalon</desc></wpt>
+  <wpt lat="46.2006755" lon="5.4314821"><name>km 86.55 (jalon 35) – Route de Racouze</name><desc>residential, Δkm=-0.946, 926 m du jalon</desc></wpt>
+  <wpt lat="46.2015337" lon="5.4318050"><name>km 86.65 (jalon 35) – Rue de l'Église</name><desc>residential, Δkm=-0.847, 828 m du jalon</desc></wpt>
+  <wpt lat="46.2046057" lon="5.4340578"><name>km 87.04 (jalon 35) – Route de Racouze</name><desc>residential, Δkm=-0.456, 449 m du jalon</desc></wpt>
+  <wpt lat="46.2050308" lon="5.4343359"><name>km 87.10 (jalon 35) – Impasse des Chaplannes</name><desc>residential, Δkm=-0.403, 398 m du jalon</desc></wpt>
+  <wpt lat="46.2075766" lon="5.4355883"><name>km 87.40 (jalon 35) – Impasse des Chaplannes</name><desc>residential, Δkm=-0.104, 101 m du jalon</desc></wpt>
+  <wpt lat="46.2199107" lon="5.4458123"><name>km 89.14 (jalon 36) – Chemin de Corveissiat</name><desc>unclassified, Δkm=-0.859, 855 m du jalon</desc></wpt>
+  <wpt lat="46.2348309" lon="5.4693904"><name>km 91.75 (jalon 37)</name><desc>unclassified, Δkm=-0.750, 716 m du jalon</desc></wpt>
+  <wpt lat="46.2378004" lon="5.4715407"><name>km 92.13 (jalon 37)</name><desc>unclassified, Δkm=-0.372, 355 m du jalon</desc></wpt>
+  <wpt lat="46.2383542" lon="5.4725494"><name>km 92.23 (jalon 37) – Route de Bourg</name><desc>secondary, Δkm=-0.273, 257 m du jalon</desc></wpt>
+  <wpt lat="46.2385590" lon="5.4732395"><name>km 92.28 (jalon 37) – Route de Bourg</name><desc>secondary, Δkm=-0.215, 207 m du jalon</desc></wpt>
+  <wpt lat="46.2389696" lon="5.4739195"><name>km 92.36 (jalon 37) – Rue du Chanoz</name><desc>residential, Δkm=-0.144, 140 m du jalon</desc></wpt>
+  <wpt lat="46.2404957" lon="5.4763684"><name>km 92.63 (jalon 37) – Rue du Chanoz</name><desc>residential, Δkm=+0.132, 132 m du jalon</desc></wpt>
+  <wpt lat="46.2410307" lon="5.4789289"><name>km 92.85 (jalon 37) – Rue Sur La Roche</name><desc>residential, Δkm=+0.345, 338 m du jalon</desc></wpt>
+  <wpt lat="46.2410322" lon="5.4789319"><name>km 92.85 (jalon 37)</name><desc>residential, Δkm=+0.346, 338 m du jalon</desc></wpt>
+  <wpt lat="46.2420570" lon="5.4798572"><name>km 92.98 (jalon 37)</name><desc>residential, Δkm=+0.480, 449 m du jalon</desc></wpt>
+  <wpt lat="46.2432766" lon="5.4814410"><name>km 93.16 (jalon 37) – Pente à Gachy</name><desc>residential, Δkm=+0.664, 625 m du jalon</desc></wpt>
+  <wpt lat="46.2437991" lon="5.4824723"><name>km 93.27 (jalon 37) – Grande Rue</name><desc>tertiary, Δkm=+0.774, 723 m du jalon</desc></wpt>
+  <wpt lat="46.2446026" lon="5.4824594"><name>km 93.36 (jalon 37) – Route de Lavillat</name><desc>unclassified, Δkm=+0.863, 776 m du jalon</desc></wpt>
+  <wpt lat="46.2451037" lon="5.4824409"><name>km 93.42 (jalon 37) – Grande Rue</name><desc>tertiary, Δkm=+0.919, 812 m du jalon</desc></wpt>
+  <wpt lat="46.2469151" lon="5.4825949"><name>km 93.62 (jalon 37) – Route d'Arnans</name><desc>unclassified, Δkm=+1.123, 969 m du jalon</desc></wpt>
+  <wpt lat="46.2577693" lon="5.4879526"><name>km 94.92 (jalon 38) – D 59b</name><desc>tertiary, Δkm=-0.077, 74 m du jalon</desc></wpt>
+  <wpt lat="46.2588382" lon="5.4885175"><name>km 95.06 (jalon 38)</name><desc>unclassified, Δkm=+0.061, 61 m du jalon</desc></wpt>
+  <wpt lat="46.2588400" lon="5.4885200"><name>km 95.06 (jalon 38) – Rue de l'Ancienne Fontaine</name><desc>residential, Δkm=+0.062, 62 m du jalon</desc></wpt>
+  <wpt lat="46.2589470" lon="5.4893047"><name>km 95.12 (jalon 38) – Rue du Four</name><desc>residential, Δkm=+0.123, 117 m du jalon</desc></wpt>
+  <wpt lat="46.2589600" lon="5.4894000"><name>km 95.13 (jalon 38) – Rue du Four</name><desc>residential, Δkm=+0.131, 124 m du jalon</desc></wpt>
+  <wpt lat="46.2583085" lon="5.4909830"><name>km 95.29 (jalon 38) – Route de la Chapelle</name><desc>residential, Δkm=+0.288, 232 m du jalon</desc></wpt>
+  <wpt lat="46.2596772" lon="5.4924824"><name>km 95.49 (jalon 38) – Route de la Chapelle</name><desc>unclassified, Δkm=+0.491, 373 m du jalon</desc></wpt>
+  <wpt lat="46.2634699" lon="5.4962396"><name>km 96.04 (jalon 39) – Route de la Chapelle</name><desc>unclassified, Δkm=-1.463, 771 m du jalon</desc></wpt>
+  <wpt lat="46.2636948" lon="5.4976824"><name>km 96.15 (jalon 38)</name><desc>unclassified, Δkm=+1.150, 948 m du jalon</desc></wpt>
+  <wpt lat="46.2636166" lon="5.5000138"><name>km 96.35 (jalon 39)</name><desc>unclassified, Δkm=-1.147, 500 m du jalon</desc></wpt>
+  <wpt lat="46.2624110" lon="5.5040151"><name>km 97.25 (jalon 39) – D 59</name><desc>tertiary, Δkm=-0.254, 165 m du jalon</desc></wpt>
+  <wpt lat="46.2618180" lon="5.5060560"><name>km 97.51 (jalon 39) – Route de Chalea</name><desc>unclassified, Δkm=+0.006, 6 m du jalon</desc></wpt>
+  <wpt lat="46.2619715" lon="5.5085823"><name>km 97.88 (jalon 39) – Route de Thoirette</name><desc>secondary, Δkm=+0.380, 201 m du jalon</desc></wpt>
+  <wpt lat="46.2636063" lon="5.5092820"><name>km 98.07 (jalon 39) – Route de Thoirette</name><desc>secondary, Δkm=+0.571, 323 m du jalon</desc></wpt>
+  <wpt lat="46.2643603" lon="5.5096929"><name>km 98.16 (jalon 39) – Route de Thoirette</name><desc>secondary, Δkm=+0.660, 403 m du jalon</desc></wpt>
+  <wpt lat="46.2648199" lon="5.5105101"><name>km 98.24 (jalon 39)</name><desc>service, Δkm=+0.743, 483 m du jalon</desc></wpt>
+  <wpt lat="46.2652025" lon="5.5115867"><name>km 98.34 (jalon 39) – Route de Bourg</name><desc>secondary, Δkm=+0.836, 573 m du jalon</desc></wpt>
+  <wpt lat="46.2652832" lon="5.5191445"><name>km 98.95 (jalon 40)</name><desc>service, Δkm=-1.055, 968 m du jalon</desc></wpt>
+  <wpt lat="46.2658302" lon="5.5224161"><name>km 99.21 (jalon 40)</name><desc>service, Δkm=-0.791, 725 m du jalon</desc></wpt>
+  <wpt lat="46.2659597" lon="5.5228799"><name>km 99.25 (jalon 40) – Route de Bourg</name><desc>secondary, Δkm=-0.752, 688 m du jalon</desc></wpt>
+  <wpt lat="46.2662716" lon="5.5232349"><name>km 99.29 (jalon 40) – Route de Bourg</name><desc>secondary, Δkm=-0.708, 646 m du jalon</desc></wpt>
+  <wpt lat="46.2666178" lon="5.5236078"><name>km 99.34 (jalon 40) – Route de Bourg</name><desc>secondary, Δkm=-0.660, 600 m du jalon</desc></wpt>
+  <wpt lat="46.2692784" lon="5.5264736"><name>km 99.71 (jalon 40) – Route de Bourg</name><desc>secondary, Δkm=-0.291, 273 m du jalon</desc></wpt>
+  <wpt lat="46.2697374" lon="5.5274463"><name>km 99.81 (jalon 40)</name><desc>service, Δkm=-0.193, 193 m du jalon</desc></wpt>
+  <wpt lat="46.2697731" lon="5.5288822"><name>km 99.92 (jalon 40) – Grande Rue</name><desc>secondary, Δkm=-0.083, 83 m du jalon</desc></wpt>
+  <wpt lat="46.2697437" lon="5.5305691"><name>km 100.05 (jalon 40)</name><desc>service, Δkm=+0.047, 47 m du jalon</desc></wpt>
+  <wpt lat="46.2697270" lon="5.5313711"><name>km 100.11 (jalon 40) – Grande Rue</name><desc>secondary, Δkm=+0.109, 109 m du jalon</desc></wpt>
+  <wpt lat="46.2696682" lon="5.5317823"><name>km 100.14 (jalon 40) – Impasse Claudius Vuitton</name><desc>residential, Δkm=+0.141, 141 m du jalon</desc></wpt>
+  <wpt lat="46.2692616" lon="5.5342896"><name>km 100.34 (jalon 40) – Rue du Tilleul</name><desc>residential, Δkm=+0.339, 338 m du jalon</desc></wpt>
+  <wpt lat="46.2689701" lon="5.5359196"><name>km 100.47 (jalon 40)</name><desc>secondary, Δkm=+0.469, 467 m du jalon</desc></wpt>
+  <wpt lat="46.2689184" lon="5.5362556"><name>km 100.50 (jalon 40) – Route d'Arinthod</name><desc>secondary, Δkm=+0.495, 493 m du jalon</desc></wpt>
+  <wpt lat="46.2689110" lon="5.5363032"><name>km 100.50 (jalon 40) – Route d'Arinthod</name><desc>secondary, Δkm=+0.499, 497 m du jalon</desc></wpt>
+  <wpt lat="46.2689166" lon="5.5363443"><name>km 100.50 (jalon 40) – Route d'Arinthod</name><desc>secondary, Δkm=+0.502, 500 m du jalon</desc></wpt>
+  <wpt lat="46.2690081" lon="5.5368201"><name>km 100.54 (jalon 40) – Route d'Arinthod</name><desc>secondary, Δkm=+0.540, 534 m du jalon</desc></wpt>
+  <wpt lat="46.2690097" lon="5.5368282"><name>km 100.54 (jalon 40) – Route de Coisia</name><desc>tertiary, Δkm=+0.541, 535 m du jalon</desc></wpt>
+  <wpt lat="46.2710003" lon="5.5415629"><name>km 100.97 (jalon 40) – Route de Coisia</name><desc>tertiary, Δkm=+0.972, 903 m du jalon</desc></wpt>
+  <wpt lat="46.2818445" lon="5.5537707"><name>km 102.52 (jalon 41) – Route de Coisia</name><desc>tertiary, Δkm=+0.019, 19 m du jalon</desc></wpt>
+  <wpt lat="46.2874862" lon="5.5577564"><name>km 103.22 (jalon 41) – D 60</name><desc>tertiary, Δkm=+0.724, 716 m du jalon</desc></wpt>
+  <wpt lat="46.2967141" lon="5.5689855"><name>km 104.66 (jalon 42) – D 60</name><desc>tertiary, Δkm=-0.337, 331 m du jalon</desc></wpt>
+  <wpt lat="46.2977650" lon="5.5723183"><name>km 104.95 (jalon 42) – D 60</name><desc>tertiary, Δkm=-0.052, 52 m du jalon</desc></wpt>
+  <wpt lat="46.2986217" lon="5.5838122"><name>km 106.08 (jalon 43) – D 60</name><desc>tertiary, Δkm=-1.422, 960 m du jalon</desc></wpt>
+  <wpt lat="46.2967445" lon="5.5857264"><name>km 106.34 (jalon 43) – D 60</name><desc>tertiary, Δkm=-1.165, 834 m du jalon</desc></wpt>
+  <wpt lat="46.2955788" lon="5.5882555"><name>km 106.57 (jalon 43) – Place du Montain</name><desc>residential, Δkm=-0.926, 695 m du jalon</desc></wpt>
+  <wpt lat="46.2955258" lon="5.5882745"><name>km 106.58 (jalon 43) – Route du Lac</name><desc>tertiary, Δkm=-0.920, 697 m du jalon</desc></wpt>
+  <wpt lat="46.2941407" lon="5.5902540"><name>km 106.83 (jalon 43) – Route du Lac</name><desc>tertiary, Δkm=-0.673, 666 m du jalon</desc></wpt>
+  <wpt lat="46.2978639" lon="5.5956753"><name>km 107.42 (jalon 43) – D 60</name><desc>tertiary, Δkm=-0.080, 80 m du jalon</desc></wpt>
+  <wpt lat="46.3202195" lon="5.6047291"><name>km 110.10 (jalon 44) – D 60</name><desc>tertiary, Δkm=+0.105, 105 m du jalon</desc></wpt>
+  <wpt lat="46.3349039" lon="5.6216990"><name>km 112.22 (jalon 45) – D 60</name><desc>tertiary, Δkm=-0.279, 277 m du jalon</desc></wpt>
+  <wpt lat="46.3353301" lon="5.6220002"><name>km 112.27 (jalon 45) – Rue des Lacs</name><desc>tertiary, Δkm=-0.226, 225 m du jalon</desc></wpt>
+  <wpt lat="46.3364025" lon="5.6232718"><name>km 112.43 (jalon 45) – Rue du Levant</name><desc>residential, Δkm=-0.072, 72 m du jalon</desc></wpt>
+  <wpt lat="46.3371894" lon="5.6240335"><name>km 112.54 (jalon 45) – Rue des Lacs</name><desc>tertiary, Δkm=+0.037, 35 m du jalon</desc></wpt>
+  <wpt lat="46.3372001" lon="5.6240618"><name>km 112.54 (jalon 45) – Impasse des Sources</name><desc>residential, Δkm=+0.039, 37 m du jalon</desc></wpt>
+  <wpt lat="46.3372448" lon="5.6241803"><name>km 112.55 (jalon 45)</name><desc>service, Δkm=+0.049, 48 m du jalon</desc></wpt>
+  <wpt lat="46.3383288" lon="5.6247901"><name>km 112.69 (jalon 45) – Rue des Lacs</name><desc>tertiary, Δkm=+0.190, 172 m du jalon</desc></wpt>
+  <wpt lat="46.3386970" lon="5.6245817"><name>km 112.73 (jalon 45) – Rue des Lacs</name><desc>tertiary, Δkm=+0.234, 203 m du jalon</desc></wpt>
+  <wpt lat="46.3408414" lon="5.6248714"><name>km 113.00 (jalon 45) – D 60</name><desc>tertiary, Δkm=+0.505, 439 m du jalon</desc></wpt>
+  <wpt lat="46.3490930" lon="5.6311266"><name>km 114.08 (jalon 46) – D 60</name><desc>tertiary, Δkm=-0.917, 890 m du jalon</desc></wpt>
+  <wpt lat="46.3498055" lon="5.6315373"><name>km 114.17 (jalon 46) – D 60</name><desc>tertiary, Δkm=-0.832, 805 m du jalon</desc></wpt>
+  <wpt lat="46.3519357" lon="5.6334178"><name>km 114.45 (jalon 46) – D 60</name><desc>secondary, Δkm=-0.549, 531 m du jalon</desc></wpt>
+  <wpt lat="46.3565069" lon="5.6356737"><name>km 115.01 (jalon 46) – D 60</name><desc>secondary, Δkm=+0.006, 6 m du jalon</desc></wpt>
+  <wpt lat="46.3620589" lon="5.6373227"><name>km 115.65 (jalon 46)</name><desc>service, Δkm=+0.651, 636 m du jalon</desc></wpt>
+  <wpt lat="46.3728618" lon="5.6404101"><name>km 116.96 (jalon 47)</name><desc>unclassified, Δkm=-0.542, 531 m du jalon</desc></wpt>
+  <wpt lat="46.3776499" lon="5.6428955"><name>km 117.54 (jalon 47) – D 60</name><desc>secondary, Δkm=+0.035, 35 m du jalon</desc></wpt>
+  <wpt lat="46.3885573" lon="5.6448967"><name>km 118.78 (jalon 48) – Rue de la Chapelle Saint-Oyend</name><desc>tertiary, Δkm=-1.221, 966 m du jalon</desc></wpt>
+  <wpt lat="46.3894435" lon="5.6449874"><name>km 118.88 (jalon 48) – D 60</name><desc>secondary, Δkm=-1.123, 867 m du jalon</desc></wpt>
+  <wpt lat="46.3923805" lon="5.6474201"><name>km 119.28 (jalon 48) – Rue de la Vie de Cernon</name><desc>tertiary, Δkm=-0.718, 534 m du jalon</desc></wpt>
+  <wpt lat="46.3923824" lon="5.6474204"><name>km 119.28 (jalon 48) – D 60</name><desc>secondary, Δkm=-0.718, 534 m du jalon</desc></wpt>
+  <wpt lat="46.3947684" lon="5.6455337"><name>km 119.64 (jalon 48)</name><desc>unclassified, Δkm=-0.363, 280 m du jalon</desc></wpt>
+  <wpt lat="46.3950142" lon="5.6461849"><name>km 119.74 (jalon 48)</name><desc>unclassified, Δkm=-0.263, 241 m du jalon</desc></wpt>
+  <wpt lat="46.4216752" lon="5.6413271"><name>km 123.82 (jalon 49) – D 3</name><desc>secondary, Δkm=+1.319, 598 m du jalon</desc></wpt>
+  <wpt lat="46.4255436" lon="5.6493739"><name>km 124.92 (jalon 50) – D 3</name><desc>secondary, Δkm=-0.080, 77 m du jalon</desc></wpt>
+  <wpt lat="46.4388789" lon="5.6593226"><name>km 127.50 (jalon 51)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="46.4427395" lon="5.6715149"><name>km 129.52 (jalon 52) – Hameau de Chavia</name><desc>unclassified, Δkm=-0.482, 293 m du jalon</desc></wpt>
+  <wpt lat="46.4627596" lon="5.6624052"><name>km 132.64 (jalon 53)</name><desc>unclassified, Δkm=+0.138, 102 m du jalon</desc></wpt>
+  <wpt lat="46.4820600" lon="5.6652400"><name>km 135.55 (jalon 54) – D 3</name><desc>tertiary, Δkm=+0.555, 548 m du jalon</desc></wpt>
+  <wpt lat="46.4971452" lon="5.6698854"><name>km 137.50 (jalon 55)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="46.5199184" lon="5.6642697"><name>km 140.24 (jalon 56) – D 60</name><desc>tertiary, Δkm=+0.239, 231 m du jalon</desc></wpt>
+  <wpt lat="46.5204705" lon="5.6646169"><name>km 140.31 (jalon 56) – D 60</name><desc>tertiary, Δkm=+0.306, 292 m du jalon</desc></wpt>
+  <wpt lat="46.5233286" lon="5.6643049"><name>km 140.67 (jalon 56) – D 470</name><desc>primary, Δkm=+0.667, 610 m du jalon</desc></wpt>
+  <wpt lat="46.5236494" lon="5.6637711"><name>km 140.72 (jalon 56) – Rue du Jeu de Quille</name><desc>primary_link, Δkm=+0.722, 647 m du jalon</desc></wpt>
+  <wpt lat="46.5242717" lon="5.6637206"><name>km 140.79 (jalon 56)</name><desc>service, Δkm=+0.792, 716 m du jalon</desc></wpt>
+  <wpt lat="46.5253073" lon="5.6638940"><name>km 140.91 (jalon 56) – Rue du Jeu de Quille</name><desc>tertiary, Δkm=+0.908, 830 m du jalon</desc></wpt>
+  <wpt lat="46.5258833" lon="5.6639951"><name>km 140.97 (jalon 56)</name><desc>tertiary, Δkm=+0.972, 894 m du jalon</desc></wpt>
+  <wpt lat="46.5259361" lon="5.6640773"><name>km 140.98 (jalon 56) – Rue Royale</name><desc>tertiary, Δkm=+0.981, 900 m du jalon</desc></wpt>
+  <wpt lat="46.5259694" lon="5.6641319"><name>km 140.99 (jalon 56) – Rue Royale</name><desc>tertiary, Δkm=+0.987, 903 m du jalon</desc></wpt>
+  <wpt lat="46.5258457" lon="5.6645305"><name>km 141.02 (jalon 56) – Chemin du Château d'Eau</name><desc>service, Δkm=+1.020, 890 m du jalon</desc></wpt>
+  <wpt lat="46.5334772" lon="5.6658930"><name>km 142.20 (jalon 57) – Chemin de la Croix</name><desc>unclassified, Δkm=-0.300, 281 m du jalon</desc></wpt>
+  <wpt lat="46.5345193" lon="5.6663078"><name>km 142.32 (jalon 57)</name><desc>residential, Δkm=-0.176, 168 m du jalon</desc></wpt>
+  <wpt lat="46.5529888" lon="5.6690302"><name>km 145.35 (jalon 58) – Rue des Carrières</name><desc>unclassified, Δkm=+0.347, 313 m du jalon</desc></wpt>
+  <wpt lat="46.5535884" lon="5.6704434"><name>km 145.47 (jalon 58)</name><desc>service, Δkm=+0.475, 402 m du jalon</desc></wpt>
+  <wpt lat="46.5538848" lon="5.6716931"><name>km 145.58 (jalon 58)</name><desc>service, Δkm=+0.576, 472 m du jalon</desc></wpt>
+  <wpt lat="46.5543704" lon="5.6740065"><name>km 145.76 (jalon 58) – Rue de la Mairie</name><desc>residential, Δkm=+0.761, 619 m du jalon</desc></wpt>
+  <wpt lat="46.5549374" lon="5.6753445"><name>km 145.89 (jalon 58) – Rue de la Verne</name><desc>tertiary, Δkm=+0.889, 735 m du jalon</desc></wpt>
+  <wpt lat="46.5551418" lon="5.6758756"><name>km 145.94 (jalon 58) – Rue de la Treche</name><desc>tertiary, Δkm=+0.936, 780 m du jalon</desc></wpt>
+  <wpt lat="46.5553686" lon="5.6764664"><name>km 145.99 (jalon 58) – Rue de la Treche</name><desc>tertiary, Δkm=+0.987, 830 m du jalon</desc></wpt>
+  <wpt lat="46.5561284" lon="5.6769796"><name>km 146.08 (jalon 58) – Rue des Chênes</name><desc>tertiary, Δkm=+1.082, 917 m du jalon</desc></wpt>
+  <wpt lat="46.5584874" lon="5.6810469"><name>km 146.49 (jalon 59) – C 2</name><desc>tertiary, Δkm=-1.009, 962 m du jalon</desc></wpt>
+  <wpt lat="46.5585492" lon="5.6811980"><name>km 146.50 (jalon 59)</name><desc>unclassified, Δkm=-0.995, 950 m du jalon</desc></wpt>
+  <wpt lat="46.5743307" lon="5.6928005"><name>km 149.26 (jalon 60) – Chemin de l'Épinay</name><desc>unclassified, Δkm=-0.744, 642 m du jalon</desc></wpt>
+  <wpt lat="46.5743310" lon="5.6928007"><name>km 149.26 (jalon 60) – Rue du Château d'Eau</name><desc>residential, Δkm=-0.744, 642 m du jalon</desc></wpt>
+  <wpt lat="46.5755653" lon="5.6939999"><name>km 149.42 (jalon 60) – Rue du Château d'Eau</name><desc>tertiary, Δkm=-0.578, 504 m du jalon</desc></wpt>
+  <wpt lat="46.5755883" lon="5.6940280"><name>km 149.43 (jalon 60) – Rue du Château d'Eau</name><desc>residential, Δkm=-0.574, 502 m du jalon</desc></wpt>
+  <wpt lat="46.5758727" lon="5.6942708"><name>km 149.46 (jalon 60) – Route de Poitte</name><desc>tertiary, Δkm=-0.538, 472 m du jalon</desc></wpt>
+  <wpt lat="46.5759991" lon="5.6943785"><name>km 149.48 (jalon 60) – Rue du Château d'Eau</name><desc>residential, Δkm=-0.521, 459 m du jalon</desc></wpt>
+  <wpt lat="46.5797180" lon="5.6935417"><name>km 149.96 (jalon 60)</name><desc>service, Δkm=-0.041, 41 m du jalon</desc></wpt>
+  <wpt lat="46.5805409" lon="5.6934307"><name>km 150.05 (jalon 60) – Route de Poitte</name><desc>tertiary, Δkm=+0.051, 51 m du jalon</desc></wpt>
+  <wpt lat="46.5819658" lon="5.6933989"><name>km 150.21 (jalon 60) – Route de la Saisse</name><desc>tertiary, Δkm=+0.212, 209 m du jalon</desc></wpt>
+  <wpt lat="46.5834268" lon="5.6946871"><name>km 150.42 (jalon 60) – Route d'Orgelet</name><desc>secondary, Δkm=+0.415, 382 m du jalon</desc></wpt>
+  <wpt lat="46.5835585" lon="5.6947778"><name>km 150.43 (jalon 60) – Rue Gutt Grancher</name><desc>residential, Δkm=+0.435, 398 m du jalon</desc></wpt>
+  <wpt lat="46.5842960" lon="5.6953189"><name>km 150.54 (jalon 60) – Chemin du Stade</name><desc>residential, Δkm=+0.543, 488 m du jalon</desc></wpt>
+  <wpt lat="46.5844160" lon="5.6952937"><name>km 150.56 (jalon 60) – Chemin du Stade</name><desc>residential, Δkm=+0.561, 500 m du jalon</desc></wpt>
+  <wpt lat="46.5850425" lon="5.6958646"><name>km 150.64 (jalon 60)</name><desc>service, Δkm=+0.643, 580 m du jalon</desc></wpt>
+  <wpt lat="46.5851399" lon="5.6959342"><name>km 150.66 (jalon 60)</name><desc>service, Δkm=+0.655, 592 m du jalon</desc></wpt>
+  <wpt lat="46.5855234" lon="5.6962081"><name>km 150.70 (jalon 60)</name><desc>service, Δkm=+0.703, 639 m du jalon</desc></wpt>
+  <wpt lat="46.5860666" lon="5.6957483"><name>km 150.80 (jalon 60) – Grande Rue</name><desc>primary, Δkm=+0.801, 687 m du jalon</desc></wpt>
+  <wpt lat="46.5862195" lon="5.6954048"><name>km 150.84 (jalon 60) – Rue de la Gare</name><desc>residential, Δkm=+0.837, 697 m du jalon</desc></wpt>
+  <wpt lat="46.5864076" lon="5.6947772"><name>km 150.89 (jalon 60) – Chemin de la Plage</name><desc>residential, Δkm=+0.889, 709 m du jalon</desc></wpt>
+  <wpt lat="46.5873002" lon="5.6920429"><name>km 151.12 (jalon 60) – D 151</name><desc>tertiary, Δkm=+1.123, 810 m du jalon</desc></wpt>
+  <wpt lat="46.5917055" lon="5.6809039"><name>km 152.17 (jalon 61) – Rue des Craies</name><desc>service, Δkm=-0.328, 259 m du jalon</desc></wpt>
+  <wpt lat="46.5918362" lon="5.6803950"><name>km 152.22 (jalon 61) – Route de Mesnois</name><desc>tertiary, Δkm=-0.279, 218 m du jalon</desc></wpt>
+  <wpt lat="46.5913800" lon="5.6799306"><name>km 152.28 (jalon 61) – Route de Mesnois</name><desc>tertiary, Δkm=-0.217, 210 m du jalon</desc></wpt>
+  <wpt lat="46.5921521" lon="5.6786535"><name>km 152.42 (jalon 61) – Route de Lons</name><desc>primary, Δkm=-0.082, 81 m du jalon</desc></wpt>
+  <wpt lat="46.5922557" lon="5.6784423"><name>km 152.44 (jalon 61)</name><desc>unclassified, Δkm=-0.062, 62 m du jalon</desc></wpt>
+  <wpt lat="46.5923759" lon="5.6781452"><name>km 152.46 (jalon 61) – D 678</name><desc>primary, Δkm=-0.036, 36 m du jalon</desc></wpt>
+  <wpt lat="46.5930097" lon="5.6752959"><name>km 152.69 (jalon 61) – D 678</name><desc>primary, Δkm=+0.194, 193 m du jalon</desc></wpt>
+  <wpt lat="46.5931974" lon="5.6743517"><name>km 152.77 (jalon 61)</name><desc>unclassified, Δkm=+0.274, 268 m du jalon</desc></wpt>
+  <wpt lat="46.6060141" lon="5.6719378"><name>km 154.28 (jalon 62)</name><desc>unclassified, Δkm=-0.721, 715 m du jalon</desc></wpt>
+  <wpt lat="46.6121103" lon="5.6696421"><name>km 154.98 (jalon 62)</name><desc>unclassified, Δkm=-0.015, 15 m du jalon</desc></wpt>
+  <wpt lat="46.6153890" lon="5.6686327"><name>km 155.36 (jalon 62)</name><desc>unclassified, Δkm=+0.360, 358 m du jalon</desc></wpt>
+  <wpt lat="46.6380602" lon="5.6798172"><name>km 158.06 (jalon 63)</name><desc>tertiary, Δkm=+0.558, 542 m du jalon</desc></wpt>
+  <wpt lat="46.6407820" lon="5.6793508"><name>km 158.37 (jalon 63)</name><desc>tertiary, Δkm=+0.874, 811 m du jalon</desc></wpt>
+  <wpt lat="46.6532466" lon="5.6836634"><name>km 159.87 (jalon 64) – Rue du Château</name><desc>residential, Δkm=-0.133, 128 m du jalon</desc></wpt>
+  <wpt lat="46.6534072" lon="5.6833290"><name>km 159.90 (jalon 64) – Rue du Château</name><desc>residential, Δkm=-0.101, 97 m du jalon</desc></wpt>
+  <wpt lat="46.6536495" lon="5.6829307"><name>km 159.94 (jalon 64) – Rue du Château</name><desc>residential, Δkm=-0.060, 59 m du jalon</desc></wpt>
+  <wpt lat="46.6536528" lon="5.6829047"><name>km 159.94 (jalon 64) – Rue du Château</name><desc>residential, Δkm=-0.058, 57 m du jalon</desc></wpt>
+  <wpt lat="46.6536650" lon="5.6827925"><name>km 159.95 (jalon 64) – Impasse Saint-Michel</name><desc>service, Δkm=-0.049, 49 m du jalon</desc></wpt>
+  <wpt lat="46.6537104" lon="5.6823787"><name>km 159.98 (jalon 64) – Place Saint-Michel</name><desc>tertiary, Δkm=-0.017, 17 m du jalon</desc></wpt>
+  <wpt lat="46.6537208" lon="5.6823449"><name>km 159.99 (jalon 64) – Rue des Rochettes</name><desc>residential, Δkm=-0.014, 14 m du jalon</desc></wpt>
+  <wpt lat="46.6539549" lon="5.6815866"><name>km 160.05 (jalon 64) – Rue des Rochettes</name><desc>tertiary, Δkm=+0.049, 49 m du jalon</desc></wpt>
+  <wpt lat="46.6543543" lon="5.6810327"><name>km 160.11 (jalon 64) – Allée du Roussillon</name><desc>residential, Δkm=+0.111, 108 m du jalon</desc></wpt>
+  <wpt lat="46.6545814" lon="5.6807233"><name>km 160.15 (jalon 64)</name><desc>unclassified, Δkm=+0.145, 143 m du jalon</desc></wpt>
+  <wpt lat="46.6549737" lon="5.6801072"><name>km 160.21 (jalon 64) – Rue des Rochettes</name><desc>tertiary, Δkm=+0.210, 207 m du jalon</desc></wpt>
+  <wpt lat="46.6550984" lon="5.6800137"><name>km 160.23 (jalon 64) – Route des Tilleuls</name><desc>unclassified, Δkm=+0.225, 221 m du jalon</desc></wpt>
+  <wpt lat="46.6553584" lon="5.6798187"><name>km 160.26 (jalon 64) – Route des Tilleuls</name><desc>unclassified, Δkm=+0.258, 252 m du jalon</desc></wpt>
+  <wpt lat="46.6588395" lon="5.6804373"><name>km 160.65 (jalon 64) – Route des Tilleuls</name><desc>unclassified, Δkm=+0.650, 579 m du jalon</desc></wpt>
+  <wpt lat="46.6686122" lon="5.6790085"><name>km 161.77 (jalon 65) – Route des Tilleuls</name><desc>unclassified, Δkm=-0.729, 701 m du jalon</desc></wpt>
+  <wpt lat="46.6707914" lon="5.6789907"><name>km 162.01 (jalon 65)</name><desc>unclassified, Δkm=-0.486, 473 m du jalon</desc></wpt>
+  <wpt lat="46.6717238" lon="5.6783783"><name>km 162.13 (jalon 65) – D 39</name><desc>secondary, Δkm=-0.372, 359 m du jalon</desc></wpt>
+  <wpt lat="46.6908237" lon="5.6796946"><name>km 164.45 (jalon 66) – Route de Champagnole</name><desc>primary, Δkm=-0.550, 514 m du jalon</desc></wpt>
+  <wpt lat="46.7132723" lon="5.6919452"><name>km 167.50 (jalon 67)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="46.7316114" lon="5.6965176"><name>km 169.81 (jalon 68)</name><desc>unclassified, Δkm=-0.192, 183 m du jalon</desc></wpt>
+  <wpt lat="46.7330547" lon="5.6963798"><name>km 169.97 (jalon 68)</name><desc>unclassified, Δkm=-0.025, 24 m du jalon</desc></wpt>
+  <wpt lat="46.7330657" lon="5.6963728"><name>km 169.98 (jalon 68) – Route de Crançot</name><desc>tertiary, Δkm=-0.024, 24 m du jalon</desc></wpt>
+  <wpt lat="46.7346693" lon="5.6975930"><name>km 170.18 (jalon 68) – Route de Crançot</name><desc>tertiary, Δkm=+0.177, 177 m du jalon</desc></wpt>
+  <wpt lat="46.7350863" lon="5.6981219"><name>km 170.24 (jalon 68) – Place de l'Église</name><desc>tertiary, Δkm=+0.241, 238 m du jalon</desc></wpt>
+  <wpt lat="46.7350900" lon="5.6982741"><name>km 170.25 (jalon 68) – Rue de la Ranche</name><desc>residential, Δkm=+0.253, 244 m du jalon</desc></wpt>
+  <wpt lat="46.7356240" lon="5.6994653"><name>km 170.38 (jalon 68)</name><desc>service, Δkm=+0.378, 346 m du jalon</desc></wpt>
+  <wpt lat="46.7361720" lon="5.6990635"><name>km 170.45 (jalon 68) – Rue Haute</name><desc>tertiary, Δkm=+0.449, 378 m du jalon</desc></wpt>
+  <wpt lat="46.7368516" lon="5.6983055"><name>km 170.55 (jalon 68) – Rue Haute</name><desc>tertiary, Δkm=+0.545, 423 m du jalon</desc></wpt>
+  <wpt lat="46.7375423" lon="5.6993933"><name>km 170.67 (jalon 68) – Rue du Tartre</name><desc>residential, Δkm=+0.669, 525 m du jalon</desc></wpt>
+  <wpt lat="46.7376087" lon="5.6994885"><name>km 170.68 (jalon 68) – Rue Haute</name><desc>residential, Δkm=+0.680, 535 m du jalon</desc></wpt>
+  <wpt lat="46.7380014" lon="5.6999225"><name>km 170.73 (jalon 68) – Route de la Marre</name><desc>tertiary, Δkm=+0.735, 588 m du jalon</desc></wpt>
+  <wpt lat="46.7464986" lon="5.7145950"><name>km 172.24 (jalon 69) – Route de la Marre</name><desc>tertiary, Δkm=-0.263, 263 m du jalon</desc></wpt>
+  <wpt lat="46.7489897" lon="5.7212792"><name>km 172.85 (jalon 69) – Route de la Marre</name><desc>tertiary, Δkm=+0.348, 341 m du jalon</desc></wpt>
+  <wpt lat="46.7511989" lon="5.7235799"><name>km 173.26 (jalon 69) – Chemin de Blois</name><desc>unclassified, Δkm=+0.760, 604 m du jalon</desc></wpt>
+  <wpt lat="46.7512150" lon="5.7236055"><name>km 173.26 (jalon 69) – Route de la Marre</name><desc>tertiary, Δkm=+0.763, 607 m du jalon</desc></wpt>
+  <wpt lat="46.7526590" lon="5.7251492"><name>km 173.48 (jalon 69) – Rue des Fayards</name><desc>tertiary, Δkm=+0.984, 796 m du jalon</desc></wpt>
+  <wpt lat="46.7535414" lon="5.7253800"><name>km 173.58 (jalon 69)</name><desc>unclassified, Δkm=+1.084, 873 m du jalon</desc></wpt>
+  <wpt lat="46.7545326" lon="5.7259039"><name>km 173.70 (jalon 69) – Route du Fied</name><desc>tertiary, Δkm=+1.205, 979 m du jalon</desc></wpt>
+  <wpt lat="46.7625083" lon="5.7243616"><name>km 174.65 (jalon 70) – Route du Fied</name><desc>tertiary, Δkm=-0.353, 163 m du jalon</desc></wpt>
+  <wpt lat="46.7633053" lon="5.7219740"><name>km 174.85 (jalon 70) – D 5</name><desc>secondary, Δkm=-0.151, 126 m du jalon</desc></wpt>
+  <wpt lat="46.7686895" lon="5.7236231"><name>km 175.55 (jalon 70) – Rue de la Saugiat</name><desc>residential, Δkm=+0.550, 540 m du jalon</desc></wpt>
+  <wpt lat="46.7697423" lon="5.7222277"><name>km 175.71 (jalon 70)</name><desc>service, Δkm=+0.714, 663 m du jalon</desc></wpt>
+  <wpt lat="46.7703687" lon="5.7212419"><name>km 175.82 (jalon 70) – Rue des Setrettes</name><desc>residential, Δkm=+0.816, 746 m du jalon</desc></wpt>
+  <wpt lat="46.7713006" lon="5.7237356"><name>km 176.03 (jalon 70)</name><desc>service, Δkm=+1.034, 831 m du jalon</desc></wpt>
+  <wpt lat="46.7713846" lon="5.7240728"><name>km 176.06 (jalon 70)</name><desc>service, Δkm=+1.061, 841 m du jalon</desc></wpt>
+  <wpt lat="46.7715168" lon="5.7246035"><name>km 176.10 (jalon 70)</name><desc>service, Δkm=+1.104, 859 m du jalon</desc></wpt>
+  <wpt lat="46.7715963" lon="5.7249230"><name>km 176.13 (jalon 70) – Chemin des Carriaux</name><desc>residential, Δkm=+1.130, 870 m du jalon</desc></wpt>
+  <wpt lat="46.7717410" lon="5.7255018"><name>km 176.18 (jalon 70)</name><desc>service, Δkm=+1.177, 893 m du jalon</desc></wpt>
+  <wpt lat="46.7722736" lon="5.7265005"><name>km 176.27 (jalon 70)</name><desc>service, Δkm=+1.274, 967 m du jalon</desc></wpt>
+  <wpt lat="46.7798493" lon="5.7367637"><name>km 177.50 (jalon 71)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="46.7980791" lon="5.7507031"><name>km 180.00 (jalon 72)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="46.8168050" lon="5.7504621"><name>km 182.22 (jalon 73) – N 5</name><desc>primary, Δkm=-0.279, 239 m du jalon</desc></wpt>
+  <wpt lat="46.8306916" lon="5.7578118"><name>km 184.83 (jalon 74) – Route Forestière Médiane</name><desc>unclassified, Δkm=-0.171, 171 m du jalon</desc></wpt>
+  <wpt lat="46.8421314" lon="5.7668282"><name>km 186.55 (jalon 75) – Route Forestière de la Panne</name><desc>unclassified, Δkm=-0.951, 701 m du jalon</desc></wpt>
+  <wpt lat="46.8437829" lon="5.7626489"><name>km 186.94 (jalon 75) – Route Forestière de la Panne</name><desc>unclassified, Δkm=-0.564, 531 m du jalon</desc></wpt>
+  <wpt lat="46.8464678" lon="5.7626798"><name>km 187.23 (jalon 75) – Route Forestière de la Panne</name><desc>unclassified, Δkm=-0.265, 265 m du jalon</desc></wpt>
+  <wpt lat="46.8600254" lon="5.7488803"><name>km 190.00 (jalon 76)</name><desc>unclassified, Δkm=+0.000, 147 m du jalon</desc></wpt>
+  <wpt lat="46.8791696" lon="5.7553199"><name>km 192.37 (jalon 77) – Voie de Buvilly</name><desc>unclassified, Δkm=-0.129, 129 m du jalon</desc></wpt>
+  <wpt lat="46.8791728" lon="5.7553226"><name>km 192.37 (jalon 77) – Rue du Ploussard</name><desc>residential, Δkm=-0.128, 128 m du jalon</desc></wpt>
+  <wpt lat="46.8797239" lon="5.7558255"><name>km 192.44 (jalon 77)</name><desc>service, Δkm=-0.056, 56 m du jalon</desc></wpt>
+  <wpt lat="46.8816214" lon="5.7576425"><name>km 192.70 (jalon 77) – Chemin des Vignes</name><desc>residential, Δkm=+0.196, 196 m du jalon</desc></wpt>
+  <wpt lat="46.8827189" lon="5.7593177"><name>km 192.87 (jalon 77) – Rue de Savagnin</name><desc>residential, Δkm=+0.373, 370 m du jalon</desc></wpt>
+  <wpt lat="46.8828505" lon="5.7595220"><name>km 192.89 (jalon 77) – Rue du Ploussard</name><desc>residential, Δkm=+0.394, 391 m du jalon</desc></wpt>
+  <wpt lat="46.8832499" lon="5.7599799"><name>km 192.95 (jalon 77) – Rue Bagier</name><desc>residential, Δkm=+0.451, 448 m du jalon</desc></wpt>
+  <wpt lat="46.8832909" lon="5.7600026"><name>km 192.96 (jalon 77) – Rue du Ploussard</name><desc>residential, Δkm=+0.456, 452 m du jalon</desc></wpt>
+  <wpt lat="46.8835013" lon="5.7601193"><name>km 192.98 (jalon 77)</name><desc>service, Δkm=+0.481, 476 m du jalon</desc></wpt>
+  <wpt lat="46.8840819" lon="5.7604406"><name>km 193.05 (jalon 77) – Rue de Pupillin</name><desc>residential, Δkm=+0.550, 542 m du jalon</desc></wpt>
+  <wpt lat="46.8840903" lon="5.7604433"><name>km 193.05 (jalon 77) – Rue du Ploussard</name><desc>tertiary, Δkm=+0.551, 543 m du jalon</desc></wpt>
+  <wpt lat="46.8861755" lon="5.7620546"><name>km 193.32 (jalon 77) – D 246</name><desc>tertiary, Δkm=+0.818, 804 m du jalon</desc></wpt>
+  <wpt lat="46.8869977" lon="5.7628919"><name>km 193.43 (jalon 77) – D 246</name><desc>tertiary, Δkm=+0.929, 915 m du jalon</desc></wpt>
+  <wpt lat="46.8941690" lon="5.7690694"><name>km 194.37 (jalon 78) – Chemin de la Grange Jeanmaire Ancienne Route Impériale d'Arbois à Poligny</name><desc>unclassified, Δkm=-0.633, 627 m du jalon</desc></wpt>
+  <wpt lat="46.8941788" lon="5.7690770"><name>km 194.37 (jalon 78) – Rue de Pupillin</name><desc>tertiary, Δkm=-0.632, 626 m du jalon</desc></wpt>
+  <wpt lat="46.8964718" lon="5.7709107"><name>km 194.66 (jalon 78)</name><desc>residential, Δkm=-0.341, 338 m du jalon</desc></wpt>
+  <wpt lat="46.8981971" lon="5.7718307"><name>km 194.86 (jalon 78) – Rue Saint-Jean</name><desc>residential, Δkm=-0.137, 135 m du jalon</desc></wpt>
+  <wpt lat="46.8993971" lon="5.7722207"><name>km 195.00 (jalon 78) – Rue de Pupillin</name><desc>tertiary, Δkm=+0.002, 2 m du jalon</desc></wpt>
+  <wpt lat="46.9002800" lon="5.7732600"><name>km 195.14 (jalon 78) – Rue de Faramand</name><desc>secondary, Δkm=+0.137, 127 m du jalon</desc></wpt>
+  <wpt lat="46.9009692" lon="5.7726581"><name>km 195.23 (jalon 78) – Place Faramand</name><desc>service, Δkm=+0.226, 180 m du jalon</desc></wpt>
+  <wpt lat="46.9018180" lon="5.7745255"><name>km 195.41 (jalon 78) – Rue de Bourgogne</name><desc>residential, Δkm=+0.406, 323 m du jalon</desc></wpt>
+  <wpt lat="46.9024181" lon="5.7753374"><name>km 195.50 (jalon 78) – Grande Rue</name><desc>tertiary, Δkm=+0.497, 412 m du jalon</desc></wpt>
+  <wpt lat="46.9024237" lon="5.7756147"><name>km 195.52 (jalon 78) – Rue de la Résistance</name><desc>tertiary, Δkm=+0.519, 425 m du jalon</desc></wpt>
+  <wpt lat="46.9024630" lon="5.7757633"><name>km 195.53 (jalon 78) – Rue Maupré</name><desc>residential, Δkm=+0.531, 436 m du jalon</desc></wpt>
+  <wpt lat="46.9029801" lon="5.7761688"><name>km 195.60 (jalon 78) – Rue des Fossés</name><desc>residential, Δkm=+0.598, 500 m du jalon</desc></wpt>
+  <wpt lat="46.9029856" lon="5.7761695"><name>km 195.60 (jalon 78)</name><desc>service, Δkm=+0.599, 501 m du jalon</desc></wpt>
+  <wpt lat="46.9034100" lon="5.7758250"><name>km 195.65 (jalon 78)</name><desc>service, Δkm=+0.653, 525 m du jalon</desc></wpt>
+  <wpt lat="46.9040016" lon="5.7751143"><name>km 195.74 (jalon 78) – Rue des Fossés</name><desc>residential, Δkm=+0.738, 559 m du jalon</desc></wpt>
+  <wpt lat="46.9040105" lon="5.7750757"><name>km 195.74 (jalon 78) – Rue des Fossés</name><desc>residential, Δkm=+0.743, 559 m du jalon</desc></wpt>
+  <wpt lat="46.9044107" lon="5.7743192"><name>km 195.83 (jalon 78) – Avenue du Général Delort</name><desc>tertiary, Δkm=+0.833, 582 m du jalon</desc></wpt>
+  <wpt lat="46.9049193" lon="5.7737309"><name>km 195.90 (jalon 78) – Rue des Écoles</name><desc>residential, Δkm=+0.905, 626 m du jalon</desc></wpt>
+  <wpt lat="46.9051323" lon="5.7735696"><name>km 195.93 (jalon 78) – Avenue des Écoles</name><desc>residential, Δkm=+0.931, 648 m du jalon</desc></wpt>
+  <wpt lat="46.9052743" lon="5.7735433"><name>km 195.95 (jalon 78) – Rue des Écoles</name><desc>residential, Δkm=+0.947, 663 m du jalon</desc></wpt>
+  <wpt lat="46.9053992" lon="5.7735201"><name>km 195.96 (jalon 78) – Rue Morel</name><desc>residential, Δkm=+0.961, 676 m du jalon</desc></wpt>
+  <wpt lat="46.9066388" lon="5.7734017"><name>km 196.10 (jalon 78) – Rue du Clos Piffond</name><desc>residential, Δkm=+1.103, 812 m du jalon</desc></wpt>
+  <wpt lat="46.9083293" lon="5.7738099"><name>km 196.29 (jalon 79) – Rue de Changin</name><desc>residential, Δkm=-1.206, 966 m du jalon</desc></wpt>
+  <wpt lat="46.9083441" lon="5.7738207"><name>km 196.30 (jalon 79) – Rue Morel</name><desc>residential, Δkm=-1.204, 964 m du jalon</desc></wpt>
+  <wpt lat="46.9085368" lon="5.7739676"><name>km 196.32 (jalon 79) – Rue Saint-Roch</name><desc>residential, Δkm=-1.180, 941 m du jalon</desc></wpt>
+  <wpt lat="46.9085496" lon="5.7739668"><name>km 196.32 (jalon 79) – Rue du Petit Changin</name><desc>residential, Δkm=-1.178, 939 m du jalon</desc></wpt>
+  <wpt lat="46.9107891" lon="5.7720806"><name>km 196.62 (jalon 79) – Rue du Petit Changin</name><desc>residential, Δkm=-0.885, 742 m du jalon</desc></wpt>
+  <wpt lat="46.9113304" lon="5.7736614"><name>km 196.75 (jalon 79) – Rue de la Bésivette</name><desc>residential, Δkm=-0.750, 643 m du jalon</desc></wpt>
+  <wpt lat="46.9116241" lon="5.7748069"><name>km 196.84 (jalon 79) – Rue de la Tour Canoz</name><desc>residential, Δkm=-0.657, 592 m du jalon</desc></wpt>
+  <wpt lat="46.9116325" lon="5.7748313"><name>km 196.85 (jalon 79) – Rue du Clair Logis</name><desc>residential, Δkm=-0.655, 591 m du jalon</desc></wpt>
+  <wpt lat="46.9117294" lon="5.7748823"><name>km 196.86 (jalon 79) – Rue de la Tour Canoz</name><desc>residential, Δkm=-0.643, 579 m du jalon</desc></wpt>
+  <wpt lat="46.9119044" lon="5.7749023"><name>km 196.88 (jalon 79) – Rue de la Tour Canoz</name><desc>residential, Δkm=-0.623, 560 m du jalon</desc></wpt>
+  <wpt lat="46.9136027" lon="5.7746307"><name>km 197.07 (jalon 79) – Chemin des Corvées</name><desc>unclassified, Δkm=-0.429, 380 m du jalon</desc></wpt>
+  <wpt lat="46.9139404" lon="5.7756499"><name>km 197.17 (jalon 79)</name><desc>service, Δkm=-0.334, 328 m du jalon</desc></wpt>
+  <wpt lat="46.9211358" lon="5.7799970"><name>km 198.13 (jalon 79) – Chemin de Chanoux</name><desc>residential, Δkm=+0.632, 560 m du jalon</desc></wpt>
+  <wpt lat="46.9212589" lon="5.7811892"><name>km 198.22 (jalon 79) – Chemin de Chanoux</name><desc>residential, Δkm=+0.723, 623 m du jalon</desc></wpt>
+  <wpt lat="46.9224135" lon="5.7820242"><name>km 198.41 (jalon 79) – Quartier de l'Église</name><desc>tertiary, Δkm=+0.911, 764 m du jalon</desc></wpt>
+  <wpt lat="46.9228789" lon="5.7815909"><name>km 198.47 (jalon 79) – Rue de l'École</name><desc>residential, Δkm=+0.972, 788 m du jalon</desc></wpt>
+  <wpt lat="46.9238000" lon="5.7825600"><name>km 198.60 (jalon 79) – Rue du Pin</name><desc>residential, Δkm=+1.099, 914 m du jalon</desc></wpt>
+  <wpt lat="46.9268590" lon="5.7857214"><name>km 199.04 (jalon 80) – Rue de la Boutière</name><desc>residential, Δkm=-0.957, 794 m du jalon</desc></wpt>
+  <wpt lat="46.9276582" lon="5.7872499"><name>km 199.21 (jalon 80) – Rue de l'École</name><desc>residential, Δkm=-0.786, 670 m du jalon</desc></wpt>
+  <wpt lat="46.9464023" lon="5.7914491"><name>km 201.75 (jalon 81) – Chemin de la Molaine</name><desc>residential, Δkm=-0.748, 711 m du jalon</desc></wpt>
+  <wpt lat="46.9464122" lon="5.7914453"><name>km 201.75 (jalon 81) – Route de Montigny</name><desc>tertiary, Δkm=-0.747, 710 m du jalon</desc></wpt>
+  <wpt lat="46.9469167" lon="5.7912513"><name>km 201.81 (jalon 81) – Route de Salins</name><desc>secondary, Δkm=-0.689, 652 m du jalon</desc></wpt>
+  <wpt lat="46.9469468" lon="5.7914420"><name>km 201.83 (jalon 81) – Route de Salins</name><desc>secondary, Δkm=-0.673, 652 m du jalon</desc></wpt>
+  <wpt lat="46.9485851" lon="5.7910818"><name>km 202.03 (jalon 81) – Impasse de l'Église</name><desc>residential, Δkm=-0.471, 468 m du jalon</desc></wpt>
+  <wpt lat="46.9490510" lon="5.7909571"><name>km 202.08 (jalon 81)</name><desc>service, Δkm=-0.418, 415 m du jalon</desc></wpt>
+  <wpt lat="46.9492568" lon="5.7909022"><name>km 202.11 (jalon 81) – Rue de la Mirode</name><desc>residential, Δkm=-0.395, 392 m du jalon</desc></wpt>
+  <wpt lat="46.9528978" lon="5.7895256"><name>km 202.53 (jalon 81) – Grande Rue</name><desc>tertiary, Δkm=+0.027, 27 m du jalon</desc></wpt>
+  <wpt lat="46.9537966" lon="5.7889786"><name>km 202.63 (jalon 81) – Grande Rue</name><desc>tertiary, Δkm=+0.135, 135 m du jalon</desc></wpt>
+  <wpt lat="46.9544832" lon="5.7885298"><name>km 202.72 (jalon 81) – D 483</name><desc>tertiary, Δkm=+0.219, 218 m du jalon</desc></wpt>
+  <wpt lat="46.9533333" lon="5.7873732"><name>km 202.91 (jalon 81) – D 483</name><desc>tertiary, Δkm=+0.407, 189 m du jalon</desc></wpt>
+  <wpt lat="46.9532364" lon="5.7873396"><name>km 202.92 (jalon 81)</name><desc>primary_link, Δkm=+0.418, 187 m du jalon</desc></wpt>
+  <wpt lat="46.9528173" lon="5.7868829"><name>km 202.98 (jalon 81) – D 483</name><desc>tertiary, Δkm=+0.477, 212 m du jalon</desc></wpt>
+  <wpt lat="46.9530526" lon="5.7856743"><name>km 203.08 (jalon 81) – N 83</name><desc>primary, Δkm=+0.580, 306 m du jalon</desc></wpt>
+  <wpt lat="46.9538094" lon="5.7850501"><name>km 203.18 (jalon 81) – D 483</name><desc>tertiary, Δkm=+0.680, 372 m du jalon</desc></wpt>
+  <wpt lat="46.9546391" lon="5.7859296"><name>km 203.30 (jalon 81) – D 483</name><desc>tertiary, Δkm=+0.796, 358 m du jalon</desc></wpt>
+  <wpt lat="46.9558089" lon="5.7875286"><name>km 203.47 (jalon 81)</name><desc>service, Δkm=+0.974, 384 m du jalon</desc></wpt>
+  <wpt lat="46.9654259" lon="5.7769579"><name>km 204.98 (jalon 82) – Rue de Villeneuve d'Aval</name><desc>tertiary, Δkm=-0.020, 16 m du jalon</desc></wpt>
+  <wpt lat="46.9654859" lon="5.7769342"><name>km 204.99 (jalon 82) – Chemin de la Pommeraie</name><desc>unclassified, Δkm=-0.010, 10 m du jalon</desc></wpt>
+  <wpt lat="46.9851494" lon="5.7653460"><name>km 207.50 (jalon 83)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="46.9962925" lon="5.7605543"><name>km 208.81 (jalon 84) – Rue de la Chênée</name><desc>residential, Δkm=-1.190, 852 m du jalon</desc></wpt>
+  <wpt lat="46.9973627" lon="5.7601814"><name>km 208.93 (jalon 84) – Rue de la Chênée</name><desc>residential, Δkm=-1.067, 745 m du jalon</desc></wpt>
+  <wpt lat="46.9978401" lon="5.7594021"><name>km 209.04 (jalon 84) – Route Louis Pasteur</name><desc>primary, Δkm=-0.955, 717 m du jalon</desc></wpt>
+  <wpt lat="46.9990646" lon="5.7614843"><name>km 209.29 (jalon 84) – Rue de la Saline</name><desc>secondary, Δkm=-0.714, 536 m du jalon</desc></wpt>
+  <wpt lat="46.9997950" lon="5.7632164"><name>km 209.44 (jalon 84) – Rue de la Saline</name><desc>secondary, Δkm=-0.560, 438 m du jalon</desc></wpt>
+  <wpt lat="47.0048890" lon="5.7716631"><name>km 210.65 (jalon 84) – Rue de la Saline</name><desc>secondary, Δkm=+0.651, 651 m du jalon</desc></wpt>
+  <wpt lat="47.0075537" lon="5.7735155"><name>km 210.98 (jalon 84) – D 32</name><desc>secondary, Δkm=+0.980, 887 m du jalon</desc></wpt>
+  <wpt lat="47.0112466" lon="5.7761083"><name>km 211.44 (jalon 85) – Grande Rue</name><desc>secondary, Δkm=-1.064, 898 m du jalon</desc></wpt>
+  <wpt lat="47.0115211" lon="5.7764513"><name>km 211.48 (jalon 85) – Rue de l'Église</name><desc>residential, Δkm=-1.024, 858 m du jalon</desc></wpt>
+  <wpt lat="47.0115766" lon="5.7765207"><name>km 211.48 (jalon 85) – Grande Rue</name><desc>secondary, Δkm=-1.016, 850 m du jalon</desc></wpt>
+  <wpt lat="47.0117982" lon="5.7768572"><name>km 211.52 (jalon 85) – Rue du Colombier</name><desc>residential, Δkm=-0.980, 815 m du jalon</desc></wpt>
+  <wpt lat="47.0118215" lon="5.7768932"><name>km 211.52 (jalon 85) – Grande Rue</name><desc>secondary, Δkm=-0.976, 811 m du jalon</desc></wpt>
+  <wpt lat="47.0119888" lon="5.7771525"><name>km 211.55 (jalon 85)</name><desc>service, Δkm=-0.949, 784 m du jalon</desc></wpt>
+  <wpt lat="47.0162601" lon="5.7790683"><name>km 212.14 (jalon 85) – Rue Chevrey</name><desc>residential, Δkm=-0.357, 357 m du jalon</desc></wpt>
+  <wpt lat="47.0162677" lon="5.7790696"><name>km 212.14 (jalon 85) – Chemin des Nues</name><desc>unclassified, Δkm=-0.357, 356 m du jalon</desc></wpt>
+  <wpt lat="47.0162700" lon="5.7790702"><name>km 212.14 (jalon 85)</name><desc>unclassified, Δkm=-0.356, 356 m du jalon</desc></wpt>
+  <wpt lat="47.0177971" lon="5.7837341"><name>km 212.54 (jalon 85) – Rue du Portail</name><desc>residential, Δkm=+0.036, 36 m du jalon</desc></wpt>
+  <wpt lat="47.0174729" lon="5.7852704"><name>km 212.69 (jalon 85) – Grande Rue</name><desc>secondary, Δkm=+0.188, 150 m du jalon</desc></wpt>
+  <wpt lat="47.0191606" lon="5.7871239"><name>km 212.93 (jalon 85) – Grande Rue</name><desc>secondary, Δkm=+0.428, 334 m du jalon</desc></wpt>
+  <wpt lat="47.0191624" lon="5.7871355"><name>km 212.93 (jalon 85) – Rue du Port</name><desc>tertiary, Δkm=+0.429, 335 m du jalon</desc></wpt>
+  <wpt lat="47.0202367" lon="5.7891367"><name>km 213.12 (jalon 85) – Rue du Port</name><desc>tertiary, Δkm=+0.623, 527 m du jalon</desc></wpt>
+  <wpt lat="47.0226995" lon="5.7926038"><name>km 213.50 (jalon 85) – D 274</name><desc>tertiary, Δkm=+1.003, 901 m du jalon</desc></wpt>
+  <wpt lat="47.0240026" lon="5.8095936"><name>km 215.00 (jalon 86)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.0393171" lon="5.8147707"><name>km 216.79 (jalon 87) – Chemin des Laminoirs</name><desc>service, Δkm=-0.710, 622 m du jalon</desc></wpt>
+  <wpt lat="47.0398546" lon="5.8142255"><name>km 216.86 (jalon 87) – Chemin de Sous Le Touillon</name><desc>service, Δkm=-0.637, 580 m du jalon</desc></wpt>
+  <wpt lat="47.0401147" lon="5.8142376"><name>km 216.89 (jalon 87) – Route du Pont</name><desc>tertiary, Δkm=-0.608, 553 m du jalon</desc></wpt>
+  <wpt lat="47.0402249" lon="5.8142787"><name>km 216.90 (jalon 87) – Rue du Puits</name><desc>unclassified, Δkm=-0.595, 541 m du jalon</desc></wpt>
+  <wpt lat="47.0432969" lon="5.8148108"><name>km 217.26 (jalon 87) – Route du Pont</name><desc>tertiary, Δkm=-0.238, 236 m du jalon</desc></wpt>
+  <wpt lat="47.0434350" lon="5.8149805"><name>km 217.28 (jalon 87) – D 274</name><desc>tertiary, Δkm=-0.218, 216 m du jalon</desc></wpt>
+  <wpt lat="47.0447305" lon="5.8173722"><name>km 217.52 (jalon 87) – D 274</name><desc>tertiary, Δkm=+0.016, 16 m du jalon</desc></wpt>
+  <wpt lat="47.0455205" lon="5.8190228"><name>km 217.67 (jalon 87)</name><desc>unclassified, Δkm=+0.170, 169 m du jalon</desc></wpt>
+  <wpt lat="47.0620310" lon="5.8305178"><name>km 220.00 (jalon 88)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.0759276" lon="5.8443070"><name>km 221.93 (jalon 89) – D 441</name><desc>tertiary, Δkm=-0.572, 549 m du jalon</desc></wpt>
+  <wpt lat="47.0963955" lon="5.8571675"><name>km 225.00 (jalon 90)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.1134994" lon="5.8766299"><name>km 227.70 (jalon 91) – Rue du Chatelot</name><desc>residential, Δkm=+0.199, 191 m du jalon</desc></wpt>
+  <wpt lat="47.1179929" lon="5.8809150"><name>km 228.32 (jalon 91) – Rue Jouffroy d'Abbans</name><desc>tertiary, Δkm=+0.818, 781 m du jalon</desc></wpt>
+  <wpt lat="47.1243492" lon="5.8832988"><name>km 229.05 (jalon 92) – Rue Jouffroy d'Abbans</name><desc>tertiary, Δkm=-0.946, 910 m du jalon</desc></wpt>
+  <wpt lat="47.1251031" lon="5.8839242"><name>km 229.15 (jalon 92) – Rue Jouffroy d'Abbans</name><desc>tertiary, Δkm=-0.850, 814 m du jalon</desc></wpt>
+  <wpt lat="47.1280500" lon="5.8855452"><name>km 229.52 (jalon 92) – D 107</name><desc>tertiary, Δkm=-0.485, 474 m du jalon</desc></wpt>
+  <wpt lat="47.1283517" lon="5.8857020"><name>km 229.55 (jalon 92) – D 107</name><desc>tertiary, Δkm=-0.449, 440 m du jalon</desc></wpt>
+  <wpt lat="47.1515636" lon="5.9011594"><name>km 232.58 (jalon 93) – Chemin du Vigney</name><desc>residential, Δkm=+0.083, 83 m du jalon</desc></wpt>
+  <wpt lat="47.1546597" lon="5.9032997"><name>km 232.97 (jalon 93)</name><desc>service, Δkm=+0.470, 460 m du jalon</desc></wpt>
+  <wpt lat="47.1553354" lon="5.9023691"><name>km 233.07 (jalon 93) – Chemin du Bas des Vignes</name><desc>residential, Δkm=+0.573, 512 m du jalon</desc></wpt>
+  <wpt lat="47.1553987" lon="5.9022817"><name>km 233.08 (jalon 93) – Rue des Résistants</name><desc>residential, Δkm=+0.582, 517 m du jalon</desc></wpt>
+  <wpt lat="47.1553205" lon="5.9015991"><name>km 233.13 (jalon 93) – Rue des Résistants</name><desc>residential, Δkm=+0.635, 502 m du jalon</desc></wpt>
+  <wpt lat="47.1554480" lon="5.9013637"><name>km 233.16 (jalon 93) – Route de Quingey</name><desc>tertiary, Δkm=+0.657, 514 m du jalon</desc></wpt>
+  <wpt lat="47.1573391" lon="5.9018445"><name>km 233.37 (jalon 93) – Rue des Richets</name><desc>residential, Δkm=+0.874, 727 m du jalon</desc></wpt>
+  <wpt lat="47.1577609" lon="5.9018218"><name>km 233.42 (jalon 93) – Rue du Centre</name><desc>tertiary, Δkm=+0.921, 773 m du jalon</desc></wpt>
+  <wpt lat="47.1577697" lon="5.9018403"><name>km 233.42 (jalon 93) – Rue de l'Église</name><desc>residential, Δkm=+0.923, 775 m du jalon</desc></wpt>
+  <wpt lat="47.1582011" lon="5.9027800"><name>km 233.51 (jalon 93) – Rue de l'Église</name><desc>residential, Δkm=+1.009, 831 m du jalon</desc></wpt>
+  <wpt lat="47.1585798" lon="5.9039994"><name>km 233.61 (jalon 93) – Rue de la Pature</name><desc>residential, Δkm=+1.110, 891 m du jalon</desc></wpt>
+  <wpt lat="47.1587084" lon="5.9041851"><name>km 233.63 (jalon 93) – Chemin de la Planche Ronde</name><desc>residential, Δkm=+1.130, 909 m du jalon</desc></wpt>
+  <wpt lat="47.1589271" lon="5.9045002"><name>km 233.66 (jalon 93) – Rue du Chêne Blanc</name><desc>residential, Δkm=+1.164, 939 m du jalon</desc></wpt>
+  <wpt lat="47.1609669" lon="5.9066393"><name>km 233.95 (jalon 94) – Chemin de la Planche Ronde</name><desc>residential, Δkm=-1.049, 977 m du jalon</desc></wpt>
+  <wpt lat="47.1645835" lon="5.9065136"><name>km 234.39 (jalon 94)</name><desc>service, Δkm=-0.610, 579 m du jalon</desc></wpt>
+  <wpt lat="47.1651306" lon="5.9064234"><name>km 234.45 (jalon 94)</name><desc>unclassified, Δkm=-0.549, 521 m du jalon</desc></wpt>
+  <wpt lat="47.1703586" lon="5.9080327"><name>km 235.08 (jalon 94) – Route de Boussières</name><desc>tertiary, Δkm=+0.080, 73 m du jalon</desc></wpt>
+  <wpt lat="47.1705788" lon="5.9078916"><name>km 235.11 (jalon 94) – Route de Boussières</name><desc>tertiary, Δkm=+0.107, 97 m du jalon</desc></wpt>
+  <wpt lat="47.1716852" lon="5.9062944"><name>km 235.28 (jalon 94) – Route de Boussières</name><desc>tertiary, Δkm=+0.280, 251 m du jalon</desc></wpt>
+  <wpt lat="47.1725984" lon="5.9056357"><name>km 235.47 (jalon 94) – Chemin de Busy</name><desc>unclassified, Δkm=+0.469, 364 m du jalon</desc></wpt>
+  <wpt lat="47.1709963" lon="5.9088369"><name>km 235.77 (jalon 94) – Chemin de Halage</name><desc>service, Δkm=+0.774, 160 m du jalon</desc></wpt>
+  <wpt lat="47.1709264" lon="5.9258042"><name>km 237.13 (jalon 95) – Chemin de Halage</name><desc>unclassified, Δkm=-0.370, 369 m du jalon</desc></wpt>
+  <wpt lat="47.1716345" lon="5.9306758"><name>km 237.51 (jalon 95) – Chemin de Halage</name><desc>unclassified, Δkm=+0.008, 8 m du jalon</desc></wpt>
+  <wpt lat="47.1755259" lon="5.9421203"><name>km 238.48 (jalon 95) – Chemin du Moulinot</name><desc>unclassified, Δkm=+0.983, 975 m du jalon</desc></wpt>
+  <wpt lat="47.1798104" lon="5.9461780"><name>km 239.05 (jalon 96) – Chemin de Halage</name><desc>unclassified, Δkm=-0.946, 935 m du jalon</desc></wpt>
+  <wpt lat="47.1806493" lon="5.9480551"><name>km 239.23 (jalon 96) – Chemin de Halage</name><desc>unclassified, Δkm=-0.773, 767 m du jalon</desc></wpt>
+  <wpt lat="47.1941906" lon="5.9621570"><name>km 241.55 (jalon 97) – Rue des Gigoulettes</name><desc>residential, Δkm=-0.947, 649 m du jalon</desc></wpt>
+  <wpt lat="47.1950511" lon="5.9632118"><name>km 241.68 (jalon 97) – Rue des Gigoulettes</name><desc>residential, Δkm=-0.822, 572 m du jalon</desc></wpt>
+  <wpt lat="47.1956189" lon="5.9630406"><name>km 241.74 (jalon 97) – Rue René Paillard</name><desc>residential, Δkm=-0.756, 595 m du jalon</desc></wpt>
+  <wpt lat="47.1956504" lon="5.9633223"><name>km 241.77 (jalon 97)</name><desc>service, Δkm=-0.735, 575 m du jalon</desc></wpt>
+  <wpt lat="47.1957724" lon="5.9641198"><name>km 241.83 (jalon 97) – Rue des Jonchets</name><desc>residential, Δkm=-0.672, 520 m du jalon</desc></wpt>
+  <wpt lat="47.1960378" lon="5.9648793"><name>km 241.89 (jalon 97)</name><desc>service, Δkm=-0.608, 475 m du jalon</desc></wpt>
+  <wpt lat="47.1958089" lon="5.9662296"><name>km 242.01 (jalon 97) – Rue René Paillard</name><desc>residential, Δkm=-0.495, 371 m du jalon</desc></wpt>
+  <wpt lat="47.1960029" lon="5.9679469"><name>km 242.15 (jalon 97) – Rue René Paillard</name><desc>unclassified, Δkm=-0.349, 271 m du jalon</desc></wpt>
+  <wpt lat="47.1962898" lon="5.9684289"><name>km 242.20 (jalon 97) – Rue de Lyon</name><desc>primary, Δkm=-0.298, 267 m du jalon</desc></wpt>
+  <wpt lat="47.1995803" lon="5.9936178"><name>km 244.58 (jalon 98) – Chemin de la Maltournée</name><desc>tertiary, Δkm=-0.421, 411 m du jalon</desc></wpt>
+  <wpt lat="47.2009282" lon="5.9979773"><name>km 244.95 (jalon 98) – Chemin de la Maltournée</name><desc>tertiary, Δkm=-0.055, 55 m du jalon</desc></wpt>
+  <wpt lat="47.2019628" lon="5.9990757"><name>km 245.09 (jalon 98) – Route de Levier</name><desc>tertiary, Δkm=+0.088, 87 m du jalon</desc></wpt>
+  <wpt lat="47.2021319" lon="5.9991466"><name>km 245.11 (jalon 98) – Chemin du Sinaï</name><desc>residential, Δkm=+0.107, 106 m du jalon</desc></wpt>
+  <wpt lat="47.2026462" lon="5.9996578"><name>km 245.18 (jalon 98) – Chemin du Sinaï</name><desc>residential, Δkm=+0.177, 175 m du jalon</desc></wpt>
+  <wpt lat="47.2052390" lon="6.0022590"><name>km 245.53 (jalon 98) – Chemin du Sinaï</name><desc>residential, Δkm=+0.525, 523 m du jalon</desc></wpt>
+  <wpt lat="47.2061948" lon="6.0046978"><name>km 245.75 (jalon 98) – Rue de Besançon</name><desc>tertiary, Δkm=+0.746, 720 m du jalon</desc></wpt>
+  <wpt lat="47.2064396" lon="6.0054612"><name>km 245.82 (jalon 98) – Rue de l'Étang</name><desc>residential, Δkm=+0.820, 779 m du jalon</desc></wpt>
+  <wpt lat="47.2063801" lon="6.0056568"><name>km 245.84 (jalon 98)</name><desc>service, Δkm=+0.836, 784 m du jalon</desc></wpt>
+  <wpt lat="47.2054912" lon="6.0081474"><name>km 246.06 (jalon 98) – Rue de la Pisseure</name><desc>residential, Δkm=+1.058, 869 m du jalon</desc></wpt>
+  <wpt lat="47.2054907" lon="6.0081485"><name>km 246.06 (jalon 98) – Rue de la Pisseure</name><desc>residential, Δkm=+1.058, 869 m du jalon</desc></wpt>
+  <wpt lat="47.2058209" lon="6.0084091"><name>km 246.10 (jalon 98) – Rue de la Cascade</name><desc>residential, Δkm=+1.101, 905 m du jalon</desc></wpt>
+  <wpt lat="47.2056555" lon="6.0120582"><name>km 246.45 (jalon 99) – Chemin de Maillot</name><desc>residential, Δkm=-1.049, 982 m du jalon</desc></wpt>
+  <wpt lat="47.2055564" lon="6.0124196"><name>km 246.48 (jalon 99)</name><desc>service, Δkm=-1.018, 963 m du jalon</desc></wpt>
+  <wpt lat="47.2054677" lon="6.0126077"><name>km 246.50 (jalon 99)</name><desc>service, Δkm=-1.000, 956 m du jalon</desc></wpt>
+  <wpt lat="47.2054392" lon="6.0126682"><name>km 246.51 (jalon 99) – Chemin de Maillot</name><desc>residential, Δkm=-0.995, 954 m du jalon</desc></wpt>
+  <wpt lat="47.2059199" lon="6.0142262"><name>km 246.64 (jalon 99) – Chemin de Maillot</name><desc>residential, Δkm=-0.860, 825 m du jalon</desc></wpt>
+  <wpt lat="47.2064403" lon="6.0159107"><name>km 246.78 (jalon 99) – Chemin des Mercureaux</name><desc>residential, Δkm=-0.721, 687 m du jalon</desc></wpt>
+  <wpt lat="47.2064796" lon="6.0160387"><name>km 246.79 (jalon 99)</name><desc>service, Δkm=-0.710, 677 m du jalon</desc></wpt>
+  <wpt lat="47.2165008" lon="6.0443097"><name>km 249.44 (jalon 100) – Chemin des Mercureaux</name><desc>unclassified, Δkm=-0.563, 526 m du jalon</desc></wpt>
+  <wpt lat="47.2181262" lon="6.0462649"><name>km 249.68 (jalon 100) – Chemin de la Chapelle des Buis</name><desc>unclassified, Δkm=-0.320, 303 m du jalon</desc></wpt>
+  <wpt lat="47.2181230" lon="6.0466208"><name>km 249.71 (jalon 100) – Chemin de la Chapelle des Buis</name><desc>unclassified, Δkm=-0.293, 280 m du jalon</desc></wpt>
+  <wpt lat="47.2190816" lon="6.0486355"><name>km 249.90 (jalon 100) – Chemin du Fort</name><desc>unclassified, Δkm=-0.095, 95 m du jalon</desc></wpt>
+  <wpt lat="47.2190847" lon="6.0486461"><name>km 249.91 (jalon 100)</name><desc>service, Δkm=-0.095, 95 m du jalon</desc></wpt>
+  <wpt lat="47.2164004" lon="6.0534820"><name>km 250.62 (jalon 100) – Route des Buis</name><desc>tertiary, Δkm=+0.622, 436 m du jalon</desc></wpt>
+  <wpt lat="47.2152553" lon="6.0565687"><name>km 250.89 (jalon 100) – Route des Buis</name><desc>tertiary, Δkm=+0.894, 690 m du jalon</desc></wpt>
+  <wpt lat="47.2152500" lon="6.0568986"><name>km 250.92 (jalon 100) – D 143</name><desc>tertiary, Δkm=+0.919, 709 m du jalon</desc></wpt>
+  <wpt lat="47.2242189" lon="6.0733172"><name>km 252.62 (jalon 101) – Chemin des Glacières</name><desc>unclassified, Δkm=+0.119, 118 m du jalon</desc></wpt>
+  <wpt lat="47.2242609" lon="6.0733635"><name>km 252.63 (jalon 101) – Chemin des Glacières</name><desc>unclassified, Δkm=+0.125, 124 m du jalon</desc></wpt>
+  <wpt lat="47.2249609" lon="6.0740002"><name>km 252.72 (jalon 101) – D 571</name><desc>secondary, Δkm=+0.218, 214 m du jalon</desc></wpt>
+  <wpt lat="47.2250372" lon="6.0740578"><name>km 252.73 (jalon 101) – Rue de Montfaucon</name><desc>residential, Δkm=+0.229, 223 m du jalon</desc></wpt>
+  <wpt lat="47.2255136" lon="6.0751441"><name>km 252.83 (jalon 101) – Rue de Montfaucon</name><desc>residential, Δkm=+0.327, 318 m du jalon</desc></wpt>
+  <wpt lat="47.2262702" lon="6.0764434"><name>km 252.96 (jalon 101)</name><desc>service, Δkm=+0.456, 446 m du jalon</desc></wpt>
+  <wpt lat="47.2277229" lon="6.0791600"><name>km 253.22 (jalon 101) – Rue de Montfaucon</name><desc>residential, Δkm=+0.718, 707 m du jalon</desc></wpt>
+  <wpt lat="47.2277897" lon="6.0796183"><name>km 253.25 (jalon 101) – Allée de la Combe de Courbot</name><desc>residential, Δkm=+0.753, 738 m du jalon</desc></wpt>
+  <wpt lat="47.2277415" lon="6.0797462"><name>km 253.26 (jalon 101) – Route de la Vierge</name><desc>tertiary, Δkm=+0.764, 741 m du jalon</desc></wpt>
+  <wpt lat="47.2278268" lon="6.0798045"><name>km 253.28 (jalon 101) – Rue du Comté de Montbéliard</name><desc>tertiary, Δkm=+0.775, 751 m du jalon</desc></wpt>
+  <wpt lat="47.2283792" lon="6.0801512"><name>km 253.34 (jalon 101)</name><desc>service, Δkm=+0.842, 811 m du jalon</desc></wpt>
+  <wpt lat="47.2286777" lon="6.0803386"><name>km 253.38 (jalon 101) – Rue de Rochefort</name><desc>residential, Δkm=+0.878, 844 m du jalon</desc></wpt>
+  <wpt lat="47.2295065" lon="6.0812765"><name>km 253.50 (jalon 101) – Chemin de Belvoir</name><desc>residential, Δkm=+0.996, 959 m du jalon</desc></wpt>
+  <wpt lat="47.2319751" lon="6.0841969"><name>km 253.85 (jalon 102) – Rue de Rochefort</name><desc>residential, Δkm=-1.149, 968 m du jalon</desc></wpt>
+  <wpt lat="47.2332381" lon="6.0863921"><name>km 254.07 (jalon 102) – Rue de Lazerolle</name><desc>residential, Δkm=-0.930, 757 m du jalon</desc></wpt>
+  <wpt lat="47.2334997" lon="6.0873830"><name>km 254.21 (jalon 102) – Rue de la Pérouse</name><desc>tertiary, Δkm=-0.792, 691 m du jalon</desc></wpt>
+  <wpt lat="47.2346782" lon="6.0869527"><name>km 254.34 (jalon 102) – Rue de la Pérouse</name><desc>tertiary, Δkm=-0.656, 604 m du jalon</desc></wpt>
+  <wpt lat="47.2348308" lon="6.0868616"><name>km 254.36 (jalon 102) – Rue de la Pérouse</name><desc>tertiary, Δkm=-0.637, 596 m du jalon</desc></wpt>
+  <wpt lat="47.2453844" lon="6.1165092"><name>km 257.08 (jalon 103) – Rue des Vignes</name><desc>residential, Δkm=-0.421, 380 m du jalon</desc></wpt>
+  <wpt lat="47.2482409" lon="6.1235389"><name>km 257.77 (jalon 103) – Rue de Nancray</name><desc>service, Δkm=+0.266, 254 m du jalon</desc></wpt>
+  <wpt lat="47.2465387" lon="6.1229110"><name>km 257.98 (jalon 103) – Rue de la Côte de Joux</name><desc>residential, Δkm=+0.483, 233 m du jalon</desc></wpt>
+  <wpt lat="47.2463196" lon="6.1230845"><name>km 258.01 (jalon 103) – Rue de la Maltière</name><desc>tertiary, Δkm=+0.511, 257 m du jalon</desc></wpt>
+  <wpt lat="47.2463016" lon="6.1231116"><name>km 258.01 (jalon 103) – Rue de l'École</name><desc>unclassified, Δkm=+0.514, 260 m du jalon</desc></wpt>
+  <wpt lat="47.2470969" lon="6.1258807"><name>km 258.25 (jalon 103) – Rue de l'école</name><desc>unclassified, Δkm=+0.746, 427 m du jalon</desc></wpt>
+  <wpt lat="47.2481359" lon="6.1305385"><name>km 258.63 (jalon 103) – Rue des Landes</name><desc>unclassified, Δkm=+1.126, 776 m du jalon</desc></wpt>
+  <wpt lat="47.2577896" lon="6.1409670"><name>km 260.00 (jalon 104)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.2627695" lon="6.1684427"><name>km 262.50 (jalon 105)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.2708868" lon="6.1941193"><name>km 265.00 (jalon 106)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.2858071" lon="6.2074477"><name>km 267.50 (jalon 107)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.2935898" lon="6.2383165"><name>km 270.35 (jalon 108) – D 30</name><desc>secondary, Δkm=+0.352, 341 m du jalon</desc></wpt>
+  <wpt lat="47.2955137" lon="6.2425824"><name>km 270.77 (jalon 108)</name><desc>service, Δkm=+0.767, 727 m du jalon</desc></wpt>
+  <wpt lat="47.2985661" lon="6.2488739"><name>km 271.37 (jalon 109)</name><desc>service, Δkm=-1.125, 986 m du jalon</desc></wpt>
+  <wpt lat="47.3159256" lon="6.2849097"><name>km 275.00 (jalon 110)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.3234415" lon="6.3146023"><name>km 277.50 (jalon 111)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.3334683" lon="6.3388164"><name>km 280.00 (jalon 112)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.3318282" lon="6.3541128"><name>km 281.45 (jalon 113) – Route de Bretigney</name><desc>tertiary, Δkm=-1.054, 861 m du jalon</desc></wpt>
+  <wpt lat="47.3416822" lon="6.3806525"><name>km 284.12 (jalon 114) – D 50</name><desc>primary, Δkm=-0.876, 336 m du jalon</desc></wpt>
+  <wpt lat="47.3419233" lon="6.3809189"><name>km 284.16 (jalon 114) – D 19e</name><desc>tertiary, Δkm=-0.842, 346 m du jalon</desc></wpt>
+  <wpt lat="47.3419234" lon="6.3809189"><name>km 284.16 (jalon 114)</name><desc>service, Δkm=-0.842, 346 m du jalon</desc></wpt>
+  <wpt lat="47.3419274" lon="6.3809175"><name>km 284.16 (jalon 114) – D 19e</name><desc>tertiary, Δkm=-0.842, 346 m du jalon</desc></wpt>
+  <wpt lat="47.3407378" lon="6.3828146"><name>km 284.58 (jalon 114) – D 19e</name><desc>tertiary, Δkm=-0.425, 165 m du jalon</desc></wpt>
+  <wpt lat="47.3519630" lon="6.3933532"><name>km 287.50 (jalon 115)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.3590954" lon="6.4230562"><name>km 290.00 (jalon 116)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.3655307" lon="6.4369249"><name>km 291.48 (jalon 117) – Chemin Bellevue</name><desc>residential, Δkm=-1.018, 923 m du jalon</desc></wpt>
+  <wpt lat="47.3657012" lon="6.4369598"><name>km 291.50 (jalon 117) – Chemin Bellevue</name><desc>residential, Δkm=-0.998, 910 m du jalon</desc></wpt>
+  <wpt lat="47.3659208" lon="6.4369190"><name>km 291.53 (jalon 117) – Rue Principale</name><desc>tertiary, Δkm=-0.974, 888 m du jalon</desc></wpt>
+  <wpt lat="47.3662341" lon="6.4358256"><name>km 291.62 (jalon 117) – Rue Principale</name><desc>tertiary, Δkm=-0.883, 812 m du jalon</desc></wpt>
+  <wpt lat="47.3664541" lon="6.4356611"><name>km 291.65 (jalon 117)</name><desc>service, Δkm=-0.854, 785 m du jalon</desc></wpt>
+  <wpt lat="47.3673971" lon="6.4357934"><name>km 291.75 (jalon 117) – D 319</name><desc>tertiary, Δkm=-0.749, 707 m du jalon</desc></wpt>
+  <wpt lat="47.3675864" lon="6.4358313"><name>km 291.77 (jalon 117) – D 319</name><desc>tertiary, Δkm=-0.727, 693 m du jalon</desc></wpt>
+  <wpt lat="47.3676780" lon="6.4358496"><name>km 291.78 (jalon 117) – Route Nationale</name><desc>primary, Δkm=-0.717, 687 m du jalon</desc></wpt>
+  <wpt lat="47.3677316" lon="6.4356094"><name>km 291.80 (jalon 117) – Route Nationale</name><desc>primary, Δkm=-0.698, 670 m du jalon</desc></wpt>
+  <wpt lat="47.3677728" lon="6.4354249"><name>km 291.82 (jalon 117) – Route Nationale</name><desc>primary, Δkm=-0.683, 657 m du jalon</desc></wpt>
+  <wpt lat="47.3680615" lon="6.4348949"><name>km 291.87 (jalon 117)</name><desc>unclassified, Δkm=-0.632, 607 m du jalon</desc></wpt>
+  <wpt lat="47.3692281" lon="6.4329829"><name>km 292.06 (jalon 117)</name><desc>service, Δkm=-0.438, 416 m du jalon</desc></wpt>
+  <wpt lat="47.3702116" lon="6.4311841"><name>km 292.24 (jalon 117) – Rue Principale</name><desc>residential, Δkm=-0.261, 252 m du jalon</desc></wpt>
+  <wpt lat="47.3707590" lon="6.4309025"><name>km 292.30 (jalon 117) – Place du Coinot</name><desc>residential, Δkm=-0.197, 188 m du jalon</desc></wpt>
+  <wpt lat="47.3718527" lon="6.4298194"><name>km 292.45 (jalon 117) – Rue Principale</name><desc>residential, Δkm=-0.045, 45 m du jalon</desc></wpt>
+  <wpt lat="47.3734601" lon="6.4308176"><name>km 292.69 (jalon 117) – Rue du Moulin</name><desc>residential, Δkm=+0.191, 157 m du jalon</desc></wpt>
+  <wpt lat="47.3771205" lon="6.4378773"><name>km 293.39 (jalon 117)</name><desc>unclassified, Δkm=+0.885, 817 m du jalon</desc></wpt>
+  <wpt lat="47.3779126" lon="6.4399217"><name>km 293.56 (jalon 117)</name><desc>unclassified, Δkm=+1.062, 992 m du jalon</desc></wpt>
+  <wpt lat="47.3797144" lon="6.4440844"><name>km 293.94 (jalon 118)</name><desc>unclassified, Δkm=-1.061, 985 m du jalon</desc></wpt>
+  <wpt lat="47.3880439" lon="6.4484781"><name>km 295.00 (jalon 118)</name><desc>unclassified, Δkm=-0.002, 2 m du jalon</desc></wpt>
+  <wpt lat="47.3941705" lon="6.4439199"><name>km 295.90 (jalon 118) – D 271</name><desc>tertiary, Δkm=+0.905, 761 m du jalon</desc></wpt>
+  <wpt lat="47.4010136" lon="6.4521862"><name>km 296.97 (jalon 119) – D 271</name><desc>tertiary, Δkm=-0.534, 456 m du jalon</desc></wpt>
+  <wpt lat="47.4043509" lon="6.4490896"><name>km 297.48 (jalon 119) – D 26</name><desc>secondary, Δkm=-0.018, 18 m du jalon</desc></wpt>
+  <wpt lat="47.4072905" lon="6.4493356"><name>km 297.85 (jalon 119) – D 26</name><desc>secondary, Δkm=+0.345, 310 m du jalon</desc></wpt>
+  <wpt lat="47.4073024" lon="6.4493252"><name>km 297.85 (jalon 119)</name><desc>unclassified, Δkm=+0.347, 311 m du jalon</desc></wpt>
+  <wpt lat="47.4073045" lon="6.4493211"><name>km 297.85 (jalon 119) – D 26</name><desc>secondary, Δkm=+0.347, 311 m du jalon</desc></wpt>
+  <wpt lat="47.4205620" lon="6.4516087"><name>km 300.00 (jalon 120)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.4329139" lon="6.4528612"><name>km 301.52 (jalon 121) – Grande Rue</name><desc>tertiary, Δkm=-0.981, 925 m du jalon</desc></wpt>
+  <wpt lat="47.4339503" lon="6.4537416"><name>km 301.67 (jalon 121) – Rue des Moulins</name><desc>residential, Δkm=-0.834, 814 m du jalon</desc></wpt>
+  <wpt lat="47.4623589" lon="6.4629674"><name>km 305.35 (jalon 122) – D 29</name><desc>tertiary, Δkm=+0.345, 290 m du jalon</desc></wpt>
+  <wpt lat="47.4626206" lon="6.4676140"><name>km 305.71 (jalon 122) – D 29</name><desc>tertiary, Δkm=+0.708, 634 m du jalon</desc></wpt>
+  <wpt lat="47.4628000" lon="6.4689117"><name>km 305.81 (jalon 122)</name><desc>unclassified, Δkm=+0.807, 734 m du jalon</desc></wpt>
+  <wpt lat="47.4628282" lon="6.4691154"><name>km 305.82 (jalon 122)</name><desc>unclassified, Δkm=+0.823, 749 m du jalon</desc></wpt>
+  <wpt lat="47.4766778" lon="6.4765067"><name>km 307.50 (jalon 123)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.4948527" lon="6.4953908"><name>km 310.03 (jalon 124)</name><desc>service, Δkm=+0.029, 29 m du jalon</desc></wpt>
+  <wpt lat="47.4950851" lon="6.4960060"><name>km 310.08 (jalon 124) – Rue des Vitres</name><desc>residential, Δkm=+0.082, 82 m du jalon</desc></wpt>
+  <wpt lat="47.4960194" lon="6.4972185"><name>km 310.22 (jalon 124) – Grande Rue</name><desc>tertiary, Δkm=+0.221, 217 m du jalon</desc></wpt>
+  <wpt lat="47.4968302" lon="6.4978797"><name>km 310.32 (jalon 124) – Rue des Louvières</name><desc>residential, Δkm=+0.325, 316 m du jalon</desc></wpt>
+  <wpt lat="47.4968311" lon="6.4978786"><name>km 310.32 (jalon 124) – Grande Rue</name><desc>tertiary, Δkm=+0.325, 316 m du jalon</desc></wpt>
+  <wpt lat="47.4984990" lon="6.4974838"><name>km 310.52 (jalon 124) – Grande Rue</name><desc>tertiary, Δkm=+0.522, 457 m du jalon</desc></wpt>
+  <wpt lat="47.4988124" lon="6.4973716"><name>km 310.56 (jalon 124) – Rue de la Vignotte</name><desc>residential, Δkm=+0.558, 486 m du jalon</desc></wpt>
+  <wpt lat="47.4995200" lon="6.4979567"><name>km 310.65 (jalon 124) – Rue de l'Échelet</name><desc>residential, Δkm=+0.648, 576 m du jalon</desc></wpt>
+  <wpt lat="47.5114945" lon="6.5131733"><name>km 312.50 (jalon 125) – Rue de la Motte</name><desc>residential, Δkm=-0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.5122659" lon="6.5157894"><name>km 312.72 (jalon 125) – Rue de la Motte</name><desc>residential, Δkm=+0.217, 214 m du jalon</desc></wpt>
+  <wpt lat="47.5129822" lon="6.5165048"><name>km 312.83 (jalon 125) – Rue de la Libération</name><desc>residential, Δkm=+0.327, 300 m du jalon</desc></wpt>
+  <wpt lat="47.5142365" lon="6.5162498"><name>km 312.97 (jalon 125) – Rue de la Libération</name><desc>tertiary, Δkm=+0.471, 382 m du jalon</desc></wpt>
+  <wpt lat="47.5142400" lon="6.5163567"><name>km 312.98 (jalon 125) – Rue du Pré Sous la Ville</name><desc>residential, Δkm=+0.479, 388 m du jalon</desc></wpt>
+  <wpt lat="47.5144525" lon="6.5166851"><name>km 313.01 (jalon 125) – Rue du Château</name><desc>tertiary, Δkm=+0.514, 421 m du jalon</desc></wpt>
+  <wpt lat="47.5143947" lon="6.5170965"><name>km 313.05 (jalon 125) – D 126</name><desc>tertiary, Δkm=+0.548, 437 m du jalon</desc></wpt>
+  <wpt lat="47.5144178" lon="6.5179607"><name>km 313.11 (jalon 125) – D 126</name><desc>tertiary, Δkm=+0.614, 484 m du jalon</desc></wpt>
+  <wpt lat="47.5174366" lon="6.5331804"><name>km 314.40 (jalon 126) – D 126</name><desc>tertiary, Δkm=-0.605, 497 m du jalon</desc></wpt>
+  <wpt lat="47.5163286" lon="6.5340440"><name>km 314.53 (jalon 126) – Rue du Val</name><desc>tertiary, Δkm=-0.465, 416 m du jalon</desc></wpt>
+  <wpt lat="47.5158298" lon="6.5380767"><name>km 314.87 (jalon 126) – Rue du Pont Brisot</name><desc>residential, Δkm=-0.125, 124 m du jalon</desc></wpt>
+  <wpt lat="47.5161828" lon="6.5391239"><name>km 314.96 (jalon 126) – Rue du Val</name><desc>tertiary, Δkm=-0.037, 37 m du jalon</desc></wpt>
+  <wpt lat="47.5169028" lon="6.5406056"><name>km 315.10 (jalon 126) – Rue de la Madeleine</name><desc>tertiary, Δkm=+0.105, 102 m du jalon</desc></wpt>
+  <wpt lat="47.5174171" lon="6.5415044"><name>km 315.19 (jalon 126) – Rue du Breuil</name><desc>residential, Δkm=+0.194, 191 m du jalon</desc></wpt>
+  <wpt lat="47.5182309" lon="6.5416072"><name>km 315.32 (jalon 126) – Rue du Breuil</name><desc>residential, Δkm=+0.320, 263 m du jalon</desc></wpt>
+  <wpt lat="47.5189197" lon="6.5410159"><name>km 315.44 (jalon 126) – Rue du Mont</name><desc>tertiary, Δkm=+0.445, 311 m du jalon</desc></wpt>
+  <wpt lat="47.5195013" lon="6.5408635"><name>km 315.52 (jalon 126) – Chemin de la Vieille Vie</name><desc>residential, Δkm=+0.524, 369 m du jalon</desc></wpt>
+  <wpt lat="47.5221437" lon="6.5407585"><name>km 315.84 (jalon 126) – D 309</name><desc>tertiary, Δkm=+0.839, 656 m du jalon</desc></wpt>
+  <wpt lat="47.5231949" lon="6.5415304"><name>km 315.97 (jalon 126) – D 309</name><desc>tertiary, Δkm=+0.969, 781 m du jalon</desc></wpt>
+  <wpt lat="47.5293074" lon="6.5588398"><name>km 317.48 (jalon 127) – D 309</name><desc>tertiary, Δkm=-0.022, 22 m du jalon</desc></wpt>
+  <wpt lat="47.5333194" lon="6.5645569"><name>km 318.30 (jalon 127) – Rue de Vellechevreux</name><desc>tertiary, Δkm=+0.800, 599 m du jalon</desc></wpt>
+  <wpt lat="47.5324426" lon="6.5661180"><name>km 318.47 (jalon 127) – D 309</name><desc>tertiary, Δkm=+0.966, 626 m du jalon</desc></wpt>
+  <wpt lat="47.5314040" lon="6.5681768"><name>km 318.66 (jalon 127) – D 445</name><desc>tertiary, Δkm=+1.160, 717 m du jalon</desc></wpt>
+  <wpt lat="47.5338149" lon="6.5838582"><name>km 319.97 (jalon 128) – D 445</name><desc>tertiary, Δkm=-0.033, 33 m du jalon</desc></wpt>
+  <wpt lat="47.5334697" lon="6.5852283"><name>km 320.08 (jalon 128) – Rue de Courbenans</name><desc>tertiary, Δkm=+0.077, 77 m du jalon</desc></wpt>
+  <wpt lat="47.5340610" lon="6.5887211"><name>km 320.41 (jalon 128) – D 256</name><desc>tertiary, Δkm=+0.411, 337 m du jalon</desc></wpt>
+  <wpt lat="47.5439669" lon="6.6005009"><name>km 321.94 (jalon 129) – Rue des Blanchards</name><desc>residential, Δkm=-0.562, 516 m du jalon</desc></wpt>
+  <wpt lat="47.5443533" lon="6.6008869"><name>km 321.99 (jalon 129) – Rue des Champs Gresons</name><desc>residential, Δkm=-0.509, 465 m du jalon</desc></wpt>
+  <wpt lat="47.5481266" lon="6.6081992"><name>km 322.74 (jalon 129) – Grande Rue de Corcelles</name><desc>tertiary, Δkm=+0.238, 237 m du jalon</desc></wpt>
+  <wpt lat="47.5473514" lon="6.6150080"><name>km 323.28 (jalon 129) – Rue de la Côte</name><desc>residential, Δkm=+0.777, 730 m du jalon</desc></wpt>
+  <wpt lat="47.5474379" lon="6.6157360"><name>km 323.33 (jalon 129) – Rue du Nod</name><desc>residential, Δkm=+0.833, 784 m du jalon</desc></wpt>
+  <wpt lat="47.5470725" lon="6.6225767"><name>km 323.87 (jalon 130) – Grande Rue de Corcelles</name><desc>tertiary, Δkm=-1.128, 796 m du jalon</desc></wpt>
+  <wpt lat="47.5452801" lon="6.6309611"><name>km 324.53 (jalon 130) – Grande Rue de Corcelles</name><desc>tertiary, Δkm=-0.466, 229 m du jalon</desc></wpt>
+  <wpt lat="47.5528498" lon="6.6465712"><name>km 326.60 (jalon 131) – D 96</name><desc>secondary, Δkm=-0.897, 776 m du jalon</desc></wpt>
+  <wpt lat="47.5531563" lon="6.6513917"><name>km 326.99 (jalon 131) – D 129</name><desc>tertiary, Δkm=-0.510, 464 m du jalon</desc></wpt>
+  <wpt lat="47.5537830" lon="6.6515574"><name>km 327.06 (jalon 131) – D 129</name><desc>tertiary, Δkm=-0.439, 407 m du jalon</desc></wpt>
+  <wpt lat="47.5549104" lon="6.6528312"><name>km 327.24 (jalon 131)</name><desc>service, Δkm=-0.264, 255 m du jalon</desc></wpt>
+  <wpt lat="47.5559405" lon="6.6553345"><name>km 327.46 (jalon 131) – Grande Rue</name><desc>tertiary, Δkm=-0.036, 36 m du jalon</desc></wpt>
+  <wpt lat="47.5577711" lon="6.6585202"><name>km 327.78 (jalon 131) – Impasse du Pré Au Clair</name><desc>residential, Δkm=+0.283, 278 m du jalon</desc></wpt>
+  <wpt lat="47.5579464" lon="6.6585619"><name>km 327.80 (jalon 131) – Rue de la Mairie</name><desc>residential, Δkm=+0.303, 293 m du jalon</desc></wpt>
+  <wpt lat="47.5587294" lon="6.6586305"><name>km 327.90 (jalon 131) – Rue de la Mairie</name><desc>residential, Δkm=+0.402, 360 m du jalon</desc></wpt>
+  <wpt lat="47.5589221" lon="6.6588887"><name>km 327.93 (jalon 131) – Chemin du Château d'Eau</name><desc>residential, Δkm=+0.431, 389 m du jalon</desc></wpt>
+  <wpt lat="47.5595261" lon="6.6605712"><name>km 328.07 (jalon 131)</name><desc>unclassified, Δkm=+0.574, 524 m du jalon</desc></wpt>
+  <wpt lat="47.5624443" lon="6.6740071"><name>km 329.27 (jalon 132)</name><desc>tertiary, Δkm=-0.732, 682 m du jalon</desc></wpt>
+  <wpt lat="47.5623428" lon="6.6743233"><name>km 329.30 (jalon 132) – D 37</name><desc>tertiary, Δkm=-0.705, 676 m du jalon</desc></wpt>
+  <wpt lat="47.5640513" lon="6.6757159"><name>km 329.52 (jalon 132)</name><desc>unclassified, Δkm=-0.480, 463 m du jalon</desc></wpt>
+  <wpt lat="47.5794954" lon="6.6908291"><name>km 331.92 (jalon 133) – C 1</name><desc>unclassified, Δkm=-0.582, 546 m du jalon</desc></wpt>
+  <wpt lat="47.5830923" lon="6.6884661"><name>km 332.39 (jalon 133)</name><desc>unclassified, Δkm=-0.110, 110 m du jalon</desc></wpt>
+  <wpt lat="47.5866283" lon="6.6864935"><name>km 332.82 (jalon 133) – C 1</name><desc>unclassified, Δkm=+0.324, 311 m du jalon</desc></wpt>
+  <wpt lat="47.5872502" lon="6.6883604"><name>km 333.00 (jalon 133) – Rue des Vieilles Vies</name><desc>primary, Δkm=+0.498, 355 m du jalon</desc></wpt>
+  <wpt lat="47.5905977" lon="6.7011255"><name>km 334.06 (jalon 134) – D 9</name><desc>primary, Δkm=-0.939, 902 m du jalon</desc></wpt>
+  <wpt lat="47.5927590" lon="6.7081041"><name>km 334.64 (jalon 134) – D 9</name><desc>primary, Δkm=-0.363, 336 m du jalon</desc></wpt>
+  <wpt lat="47.5949264" lon="6.7193502"><name>km 335.76 (jalon 134) – D 9</name><desc>primary, Δkm=+0.758, 596 m du jalon</desc></wpt>
+  <wpt lat="47.5943323" lon="6.7204702"><name>km 335.86 (jalon 134) – Rue de l'Étang</name><desc>residential, Δkm=+0.865, 682 m du jalon</desc></wpt>
+  <wpt lat="47.5930713" lon="6.7228474"><name>km 336.09 (jalon 134) – Rue de Californie</name><desc>residential, Δkm=+1.092, 880 m du jalon</desc></wpt>
+  <wpt lat="47.5922435" lon="6.7251174"><name>km 336.29 (jalon 135) – Rue de l'Étang</name><desc>residential, Δkm=-1.213, 981 m du jalon</desc></wpt>
+  <wpt lat="47.5922400" lon="6.7251299"><name>km 336.29 (jalon 135) – Grande Rue</name><desc>tertiary, Δkm=-1.212, 981 m du jalon</desc></wpt>
+  <wpt lat="47.5917123" lon="6.7260569"><name>km 336.43 (jalon 135) – Rue des Capucines</name><desc>residential, Δkm=-1.069, 942 m du jalon</desc></wpt>
+  <wpt lat="47.5958122" lon="6.7350590"><name>km 337.31 (jalon 135) – Rue de la Grande Goutte</name><desc>unclassified, Δkm=-0.190, 163 m du jalon</desc></wpt>
+  <wpt lat="47.5954705" lon="6.7361384"><name>km 337.40 (jalon 135)</name><desc>service, Δkm=-0.100, 82 m du jalon</desc></wpt>
+  <wpt lat="47.5978478" lon="6.7385582"><name>km 337.78 (jalon 135) – Rue de la Luzine</name><desc>residential, Δkm=+0.282, 268 m du jalon</desc></wpt>
+  <wpt lat="47.5976090" lon="6.7394935"><name>km 337.86 (jalon 135) – Rue du Breuil</name><desc>residential, Δkm=+0.364, 280 m du jalon</desc></wpt>
+  <wpt lat="47.5977626" lon="6.7398631"><name>km 337.90 (jalon 135) – D 16</name><desc>secondary, Δkm=+0.397, 311 m du jalon</desc></wpt>
+  <wpt lat="47.5982077" lon="6.7403872"><name>km 337.96 (jalon 135) – Rue de la Morette</name><desc>secondary, Δkm=+0.460, 374 m du jalon</desc></wpt>
+  <wpt lat="47.5982567" lon="6.7409645"><name>km 338.00 (jalon 135) – Rue de la Fontaine</name><desc>residential, Δkm=+0.504, 407 m du jalon</desc></wpt>
+  <wpt lat="47.5983100" lon="6.7416196"><name>km 338.05 (jalon 135) – Rue de Cotelotte</name><desc>residential, Δkm=+0.553, 446 m du jalon</desc></wpt>
+  <wpt lat="47.5978203" lon="6.7430028"><name>km 338.17 (jalon 135) – Rue des Étambois</name><desc>residential, Δkm=+0.671, 499 m du jalon</desc></wpt>
+  <wpt lat="47.5976741" lon="6.7442956"><name>km 338.27 (jalon 135) – Rue des 4 Vents</name><desc>residential, Δkm=+0.771, 578 m du jalon</desc></wpt>
+  <wpt lat="47.5969829" lon="6.7467855"><name>km 338.47 (jalon 135) – Rue des 4 Vents</name><desc>unclassified, Δkm=+0.973, 734 m du jalon</desc></wpt>
+  <wpt lat="47.6006595" lon="6.7727603"><name>km 340.77 (jalon 136) – D 130</name><desc>tertiary, Δkm=+0.771, 607 m du jalon</desc></wpt>
+  <wpt lat="47.6009836" lon="6.7718132"><name>km 340.85 (jalon 136) – Grand' Rue</name><desc>tertiary, Δkm=+0.852, 558 m du jalon</desc></wpt>
+  <wpt lat="47.6017732" lon="6.7715626"><name>km 340.94 (jalon 136) – Rue de la Fontaine</name><desc>residential, Δkm=+0.945, 589 m du jalon</desc></wpt>
+  <wpt lat="47.6024815" lon="6.7717420"><name>km 341.03 (jalon 136) – Rue de la Mine</name><desc>residential, Δkm=+1.025, 649 m du jalon</desc></wpt>
+  <wpt lat="47.6026102" lon="6.7719117"><name>km 341.04 (jalon 137) – Grand' Rue</name><desc>tertiary, Δkm=-1.456, 931 m du jalon</desc></wpt>
+  <wpt lat="47.6032123" lon="6.7727001"><name>km 341.13 (jalon 136) – Grand' Rue</name><desc>tertiary, Δkm=+1.134, 757 m du jalon</desc></wpt>
+  <wpt lat="47.6034061" lon="6.7728587"><name>km 341.16 (jalon 137) – Grand' Rue</name><desc>tertiary, Δkm=-1.342, 838 m du jalon</desc></wpt>
+  <wpt lat="47.6025214" lon="6.7746240"><name>km 341.33 (jalon 136) – Rue du Levant</name><desc>residential, Δkm=+1.329, 826 m du jalon</desc></wpt>
+  <wpt lat="47.6019513" lon="6.7765316"><name>km 341.49 (jalon 137) – Rue du Levant</name><desc>residential, Δkm=-1.013, 650 m du jalon</desc></wpt>
+  <wpt lat="47.6020355" lon="6.7784055"><name>km 341.63 (jalon 137) – Impasse du Champ Martin</name><desc>residential, Δkm=-0.872, 534 m du jalon</desc></wpt>
+  <wpt lat="47.6127589" lon="6.7865197"><name>km 343.46 (jalon 137) – Rue de la Côte</name><desc>residential, Δkm=+0.963, 862 m du jalon</desc></wpt>
+  <wpt lat="47.6134389" lon="6.7868284"><name>km 343.55 (jalon 137)</name><desc>residential, Δkm=+1.051, 941 m du jalon</desc></wpt>
+  <wpt lat="47.6135903" lon="6.7865911"><name>km 343.58 (jalon 137) – Rue de la Vierge</name><desc>residential, Δkm=+1.076, 953 m du jalon</desc></wpt>
+  <wpt lat="47.6177861" lon="6.7907508"><name>km 344.26 (jalon 138) – Rue de la 5e D.B.</name><desc>residential, Δkm=-0.738, 684 m du jalon</desc></wpt>
+  <wpt lat="47.6302560" lon="6.8164443"><name>km 347.38 (jalon 139) – Rue du Sergent-Chef Leiris</name><desc>residential, Δkm=-0.121, 100 m du jalon</desc></wpt>
+  <wpt lat="47.6302871" lon="6.8166236"><name>km 347.39 (jalon 139) – Rue du Sergent-Chef Leiris</name><desc>residential, Δkm=-0.107, 88 m du jalon</desc></wpt>
+  <wpt lat="47.6304084" lon="6.8173230"><name>km 347.45 (jalon 139) – Rue du Sergent-Chef Leiris</name><desc>residential, Δkm=-0.053, 50 m du jalon</desc></wpt>
+  <wpt lat="47.6304227" lon="6.8173905"><name>km 347.45 (jalon 139) – Rue du Sergent-Chef Leiris</name><desc>residential, Δkm=-0.048, 47 m du jalon</desc></wpt>
+  <wpt lat="47.6308238" lon="6.8174677"><name>km 347.50 (jalon 139) – Rue du Sergent-Chef Leiris</name><desc>residential, Δkm=-0.003, 3 m du jalon</desc></wpt>
+  <wpt lat="47.6314277" lon="6.8170007"><name>km 347.57 (jalon 139) – Rue de Lattre de Tassigny</name><desc>tertiary, Δkm=+0.074, 73 m du jalon</desc></wpt>
+  <wpt lat="47.6316781" lon="6.8167648"><name>km 347.61 (jalon 139) – Impasse du Noyer</name><desc>residential, Δkm=+0.107, 106 m du jalon</desc></wpt>
+  <wpt lat="47.6317527" lon="6.8166946"><name>km 347.62 (jalon 139) – Rue de Lattre de Tassigny</name><desc>tertiary, Δkm=+0.116, 116 m du jalon</desc></wpt>
+  <wpt lat="47.6327937" lon="6.8163216"><name>km 347.74 (jalon 139) – Rue Albert Raspiller</name><desc>residential, Δkm=+0.236, 233 m du jalon</desc></wpt>
+  <wpt lat="47.6328052" lon="6.8163266"><name>km 347.74 (jalon 139) – Rue de Lattre de Tassigny</name><desc>tertiary, Δkm=+0.238, 234 m du jalon</desc></wpt>
+  <wpt lat="47.6330722" lon="6.8164432"><name>km 347.77 (jalon 139) – Rue Jean Gag</name><desc>residential, Δkm=+0.269, 259 m du jalon</desc></wpt>
+  <wpt lat="47.6334979" lon="6.8167198"><name>km 347.82 (jalon 139) – Rue des Commandos de France</name><desc>residential, Δkm=+0.325, 300 m du jalon</desc></wpt>
+  <wpt lat="47.6334730" lon="6.8177909"><name>km 347.91 (jalon 139) – Rue des Commandos de France</name><desc>residential, Δkm=+0.405, 293 m du jalon</desc></wpt>
+  <wpt lat="47.6334702" lon="6.8179229"><name>km 347.92 (jalon 139)</name><desc>residential, Δkm=+0.415, 294 m du jalon</desc></wpt>
+  <wpt lat="47.6335203" lon="6.8186399"><name>km 347.97 (jalon 139) – Rue des Commandos de France</name><desc>residential, Δkm=+0.469, 310 m du jalon</desc></wpt>
+  <wpt lat="47.6333308" lon="6.8237114"><name>km 348.36 (jalon 139) – Rue des Commandos</name><desc>residential, Δkm=+0.859, 544 m du jalon</desc></wpt>
+  <wpt lat="47.6333254" lon="6.8237390"><name>km 348.36 (jalon 139) – Rue des Commandos</name><desc>residential, Δkm=+0.861, 546 m du jalon</desc></wpt>
+  <wpt lat="47.6319020" lon="6.8282569"><name>km 348.75 (jalon 139) – Rue du Port</name><desc>residential, Δkm=+1.250, 818 m du jalon</desc></wpt>
+  <wpt lat="47.6332256" lon="6.8361426"><name>km 349.57 (jalon 140) – Rue de Vienne</name><desc>residential, Δkm=-0.432, 406 m du jalon</desc></wpt>
+  <wpt lat="47.6334280" lon="6.8364360"><name>km 349.61 (jalon 140) – Rue de Copenhague</name><desc>residential, Δkm=-0.394, 381 m du jalon</desc></wpt>
+  <wpt lat="47.6335091" lon="6.8368788"><name>km 349.64 (jalon 140)</name><desc>service, Δkm=-0.355, 347 m du jalon</desc></wpt>
+  <wpt lat="47.6335201" lon="6.8370436"><name>km 349.66 (jalon 140)</name><desc>service, Δkm=-0.343, 334 m du jalon</desc></wpt>
+  <wpt lat="47.6335479" lon="6.8374633"><name>km 349.69 (jalon 140) – Rue de Bucarest</name><desc>residential, Δkm=-0.311, 303 m du jalon</desc></wpt>
+  <wpt lat="47.6335860" lon="6.8380369"><name>km 349.73 (jalon 140) – Rue de Moscou</name><desc>residential, Δkm=-0.268, 260 m du jalon</desc></wpt>
+  <wpt lat="47.6336889" lon="6.8388473"><name>km 349.79 (jalon 140) – Boulevard John Fitzgerald Kennedy</name><desc>primary, Δkm=-0.205, 198 m du jalon</desc></wpt>
+  <wpt lat="47.6337501" lon="6.8390010"><name>km 349.81 (jalon 140) – Boulevard John Fitzgerald Kennedy</name><desc>primary, Δkm=-0.192, 186 m du jalon</desc></wpt>
+  <wpt lat="47.6337494" lon="6.8401017"><name>km 349.90 (jalon 140) – Rue d'Amsterdam</name><desc>residential, Δkm=-0.104, 104 m du jalon</desc></wpt>
+  <wpt lat="47.6337940" lon="6.8407702"><name>km 349.95 (jalon 140) – Rue de Valmy</name><desc>residential, Δkm=-0.054, 54 m du jalon</desc></wpt>
+  <wpt lat="47.6338361" lon="6.8414017"><name>km 349.99 (jalon 140) – Rue de Jérusalem</name><desc>residential, Δkm=-0.006, 6 m du jalon</desc></wpt>
+  <wpt lat="47.6338844" lon="6.8421266"><name>km 350.05 (jalon 140) – Rue de Barcelone</name><desc>residential, Δkm=+0.049, 49 m du jalon</desc></wpt>
+  <wpt lat="47.6339350" lon="6.8428853"><name>km 350.11 (jalon 140) – Rue de Florence</name><desc>residential, Δkm=+0.106, 106 m du jalon</desc></wpt>
+  <wpt lat="47.6339903" lon="6.8437141"><name>km 350.17 (jalon 140) – Rue de Berlin</name><desc>residential, Δkm=+0.168, 168 m du jalon</desc></wpt>
+  <wpt lat="47.6343727" lon="6.8443211"><name>km 350.25 (jalon 140) – Place de l'Europe</name><desc>residential, Δkm=+0.251, 221 m du jalon</desc></wpt>
+  <wpt lat="47.6346687" lon="6.8445204"><name>km 350.30 (jalon 140)</name><desc>service, Δkm=+0.296, 246 m du jalon</desc></wpt>
+  <wpt lat="47.6346945" lon="6.8447815"><name>km 350.32 (jalon 140)</name><desc>service, Δkm=+0.316, 265 m du jalon</desc></wpt>
+  <wpt lat="47.6347203" lon="6.8450434"><name>km 350.34 (jalon 140)</name><desc>service, Δkm=+0.336, 284 m du jalon</desc></wpt>
+  <wpt lat="47.6347424" lon="6.8452680"><name>km 350.35 (jalon 140) – Rue de Madrid</name><desc>residential, Δkm=+0.353, 301 m du jalon</desc></wpt>
+  <wpt lat="47.6348582" lon="6.8457282"><name>km 350.39 (jalon 140) – Rue de Madrid</name><desc>residential, Δkm=+0.392, 338 m du jalon</desc></wpt>
+  <wpt lat="47.6352975" lon="6.8458366"><name>km 350.45 (jalon 140) – Rue de Madrid</name><desc>residential, Δkm=+0.447, 364 m du jalon</desc></wpt>
+  <wpt lat="47.6350609" lon="6.8464331"><name>km 350.50 (jalon 140) – Rue de Verdun</name><desc>residential, Δkm=+0.499, 395 m du jalon</desc></wpt>
+  <wpt lat="47.6349202" lon="6.8465649"><name>km 350.52 (jalon 140) – Rue Léon Blum</name><desc>residential, Δkm=+0.518, 399 m du jalon</desc></wpt>
+  <wpt lat="47.6349275" lon="6.8467200"><name>km 350.53 (jalon 140) – Rue de Verdun</name><desc>residential, Δkm=+0.530, 411 m du jalon</desc></wpt>
+  <wpt lat="47.6350007" lon="6.8482840"><name>km 350.65 (jalon 140) – Rue de Verdun</name><desc>residential, Δkm=+0.647, 526 m du jalon</desc></wpt>
+  <wpt lat="47.6352386" lon="6.8492987"><name>km 350.73 (jalon 140) – Avenue du Général Leclerc</name><desc>tertiary, Δkm=+0.734, 606 m du jalon</desc></wpt>
+  <wpt lat="47.6352394" lon="6.8493022"><name>km 350.73 (jalon 140) – Boulevard du Général Auguste Dubail</name><desc>tertiary, Δkm=+0.734, 606 m du jalon</desc></wpt>
+  <wpt lat="47.6352163" lon="6.8493848"><name>km 350.74 (jalon 140) – Avenue du Général Leclerc</name><desc>tertiary, Δkm=+0.741, 612 m du jalon</desc></wpt>
+  <wpt lat="47.6349174" lon="6.8504514"><name>km 350.83 (jalon 140)</name><desc>service, Δkm=+0.827, 683 m du jalon</desc></wpt>
+  <wpt lat="47.6347325" lon="6.8511117"><name>km 350.88 (jalon 140) – Faubourg de Lyon</name><desc>tertiary, Δkm=+0.881, 728 m du jalon</desc></wpt>
+  <wpt lat="47.6344908" lon="6.8519746"><name>km 350.95 (jalon 140) – Rue Marcellin Berthelot</name><desc>residential, Δkm=+0.951, 790 m du jalon</desc></wpt>
+  <wpt lat="47.6343872" lon="6.8523443"><name>km 350.98 (jalon 140) – Rue Louis Parisot</name><desc>residential, Δkm=+0.981, 816 m du jalon</desc></wpt>
+  <wpt lat="47.6341487" lon="6.8536656"><name>km 351.12 (jalon 140) – Rue du Pont Neuf</name><desc>tertiary, Δkm=+1.115, 914 m du jalon</desc></wpt>
+  <wpt lat="47.6340206" lon="6.8538293"><name>km 351.13 (jalon 140) – Rue du Pont Neuf</name><desc>tertiary, Δkm=+1.134, 925 m du jalon</desc></wpt>
+  <wpt lat="47.6340201" lon="6.8538328"><name>km 351.13 (jalon 140) – Rue du Pont Neuf</name><desc>residential, Δkm=+1.135, 926 m du jalon</desc></wpt>
+  <wpt lat="47.6341100" lon="6.8559113"><name>km 351.29 (jalon 141)</name><desc>service, Δkm=-1.209, 903 m du jalon</desc></wpt>
+  <wpt lat="47.6341030" lon="6.8573221"><name>km 351.40 (jalon 141) – Faubourg de Montbéliard</name><desc>secondary, Δkm=-1.104, 846 m du jalon</desc></wpt>
+  <wpt lat="47.6340922" lon="6.8594926"><name>km 351.56 (jalon 141)</name><desc>service, Δkm=-0.941, 777 m du jalon</desc></wpt>
+  <wpt lat="47.6340920" lon="6.8599628"><name>km 351.59 (jalon 141) – Rue Pierre-Philippe Denfert-Rochereau</name><desc>residential, Δkm=-0.906, 766 m du jalon</desc></wpt>
+  <wpt lat="47.6341296" lon="6.8604004"><name>km 351.63 (jalon 141) – Quai Charles Schneider</name><desc>residential, Δkm=-0.873, 753 m du jalon</desc></wpt>
+  <wpt lat="47.6341628" lon="6.8607866"><name>km 351.66 (jalon 141) – Rue Pierre-Philippe Denfert-Rochereau</name><desc>residential, Δkm=-0.843, 742 m du jalon</desc></wpt>
+  <wpt lat="47.6341811" lon="6.8609033"><name>km 351.67 (jalon 141) – Rue Pierre-Philippe Denfert-Rochereau</name><desc>residential, Δkm=-0.834, 738 m du jalon</desc></wpt>
+  <wpt lat="47.6341896" lon="6.8609289"><name>km 351.67 (jalon 141) – Rue Degombert</name><desc>residential, Δkm=-0.832, 737 m du jalon</desc></wpt>
+  <wpt lat="47.6349784" lon="6.8608324"><name>km 351.76 (jalon 141) – Rue Degombert</name><desc>residential, Δkm=-0.740, 653 m du jalon</desc></wpt>
+  <wpt lat="47.6355456" lon="6.8615537"><name>km 351.84 (jalon 141) – Avenue du Maréchal Foch</name><desc>secondary, Δkm=-0.657, 579 m du jalon</desc></wpt>
+  <wpt lat="47.6356757" lon="6.8617191"><name>km 351.86 (jalon 141) – Avenue du Général Sarrail</name><desc>residential, Δkm=-0.638, 563 m du jalon</desc></wpt>
+  <wpt lat="47.6363893" lon="6.8618672"><name>km 351.94 (jalon 141)</name><desc>service, Δkm=-0.557, 483 m du jalon</desc></wpt>
+  <wpt lat="47.6369265" lon="6.8620818"><name>km 352.01 (jalon 141)</name><desc>service, Δkm=-0.494, 421 m du jalon</desc></wpt>
+  <wpt lat="47.6370951" lon="6.8622022"><name>km 352.03 (jalon 141) – Avenue du Général Sarrail</name><desc>residential, Δkm=-0.473, 401 m du jalon</desc></wpt>
+  <wpt lat="47.6372250" lon="6.8622950"><name>km 352.04 (jalon 141)</name><desc>service, Δkm=-0.457, 386 m du jalon</desc></wpt>
+  <wpt lat="47.6375385" lon="6.8625189"><name>km 352.08 (jalon 141) – Rue de l'Ancien Théâtre</name><desc>residential, Δkm=-0.419, 349 m du jalon</desc></wpt>
+  <wpt lat="47.6384223" lon="6.8627444"><name>km 352.18 (jalon 141) – Rue des Nouvelles</name><desc>residential, Δkm=-0.319, 250 m du jalon</desc></wpt>
+  <wpt lat="47.6386799" lon="6.8628113"><name>km 352.21 (jalon 141) – Place d'Armes</name><desc>residential, Δkm=-0.290, 221 m du jalon</desc></wpt>
+  <wpt lat="47.6389001" lon="6.8634267"><name>km 352.27 (jalon 141) – Rue du Quai</name><desc>residential, Δkm=-0.229, 198 m du jalon</desc></wpt>
+  <wpt lat="47.6392613" lon="6.8634350"><name>km 352.31 (jalon 141) – Grand Rue</name><desc>residential, Δkm=-0.189, 158 m du jalon</desc></wpt>
+  <wpt lat="47.6397865" lon="6.8634425"><name>km 352.37 (jalon 141) – Rue Georges Pompidou</name><desc>residential, Δkm=-0.130, 102 m du jalon</desc></wpt>
+  <wpt lat="47.6403107" lon="6.8634452"><name>km 352.43 (jalon 141) – Rue du Quai</name><desc>residential, Δkm=-0.072, 49 m du jalon</desc></wpt>
+  <wpt lat="47.6403383" lon="6.8632563"><name>km 352.44 (jalon 141) – Rue sous le Rempart</name><desc>residential, Δkm=-0.057, 39 m du jalon</desc></wpt>
+  <wpt lat="47.6411208" lon="6.8629031"><name>km 352.55 (jalon 141) – Rue Chantereine</name><desc>residential, Δkm=+0.052, 52 m du jalon</desc></wpt>
+  <wpt lat="47.6424166" lon="6.8624315"><name>km 352.70 (jalon 141) – Avenue de l'Espérance</name><desc>residential, Δkm=+0.204, 201 m du jalon</desc></wpt>
+  <wpt lat="47.6424908" lon="6.8623600"><name>km 352.72 (jalon 141) – Carrefour de l'Espérance</name><desc>primary, Δkm=+0.217, 210 m du jalon</desc></wpt>
+  <wpt lat="47.6428120" lon="6.8620505"><name>km 352.76 (jalon 141) – Carrefour de l'Espérance</name><desc>primary, Δkm=+0.263, 251 m du jalon</desc></wpt>
+  <wpt lat="47.6429088" lon="6.8620071"><name>km 352.77 (jalon 141) – Avenue Jean Moulin</name><desc>secondary, Δkm=+0.274, 262 m du jalon</desc></wpt>
+  <wpt lat="47.6439495" lon="6.8627615"><name>km 352.91 (jalon 141) – Avenue Jean Moulin</name><desc>secondary, Δkm=+0.414, 366 m du jalon</desc></wpt>
+  <wpt lat="47.6439485" lon="6.8627647"><name>km 352.91 (jalon 141) – Rue de la 5e Division Blindée</name><desc>residential, Δkm=+0.415, 366 m du jalon</desc></wpt>
+  <wpt lat="47.6548583" lon="6.8941086"><name>km 355.81 (jalon 142) – Rue du Stratégique</name><desc>unclassified, Δkm=+0.811, 777 m du jalon</desc></wpt>
+  <wpt lat="47.6614673" lon="6.9065295"><name>km 357.14 (jalon 143) – D 1083</name><desc>primary, Δkm=-0.362, 340 m du jalon</desc></wpt>
+  <wpt lat="47.6613749" lon="6.9066821"><name>km 357.15 (jalon 143) – D 83</name><desc>primary, Δkm=-0.347, 325 m du jalon</desc></wpt>
+  <wpt lat="47.6613307" lon="6.9067551"><name>km 357.16 (jalon 143) – D 83</name><desc>primary, Δkm=-0.339, 317 m du jalon</desc></wpt>
+  <wpt lat="47.6612394" lon="6.9069059"><name>km 357.18 (jalon 143) – D 1083</name><desc>primary, Δkm=-0.324, 303 m du jalon</desc></wpt>
+  <wpt lat="47.6598175" lon="6.9103786"><name>km 357.50 (jalon 143) – Grand'Rue</name><desc>tertiary, Δkm=+0.002, 2 m du jalon</desc></wpt>
+  <wpt lat="47.6595202" lon="6.9121360"><name>km 357.64 (jalon 143) – Rue de la Chaussée</name><desc>residential, Δkm=+0.140, 138 m du jalon</desc></wpt>
+  <wpt lat="47.6590736" lon="6.9134173"><name>km 357.75 (jalon 143) – Grand'Rue</name><desc>tertiary, Δkm=+0.248, 244 m du jalon</desc></wpt>
+  <wpt lat="47.6589897" lon="6.9136578"><name>km 357.77 (jalon 143) – Rue des Terrières</name><desc>residential, Δkm=+0.268, 264 m du jalon</desc></wpt>
+  <wpt lat="47.6591193" lon="6.9170257"><name>km 358.03 (jalon 143) – Rue du Vieux Lavoir</name><desc>residential, Δkm=+0.529, 506 m du jalon</desc></wpt>
+  <wpt lat="47.6591242" lon="6.9171408"><name>km 358.04 (jalon 143) – Grand'Rue</name><desc>tertiary, Δkm=+0.537, 514 m du jalon</desc></wpt>
+  <wpt lat="47.6591461" lon="6.9177257"><name>km 358.08 (jalon 143) – Grand'Rue</name><desc>tertiary, Δkm=+0.581, 557 m du jalon</desc></wpt>
+  <wpt lat="47.6591500" lon="6.9178297"><name>km 358.09 (jalon 143) – Place Ivan Damidaux</name><desc>residential, Δkm=+0.589, 565 m du jalon</desc></wpt>
+  <wpt lat="47.6591703" lon="6.9180148"><name>km 358.10 (jalon 143)</name><desc>service, Δkm=+0.603, 579 m du jalon</desc></wpt>
+  <wpt lat="47.6592076" lon="6.9183551"><name>km 358.13 (jalon 143) – Rue de la Baroche</name><desc>tertiary, Δkm=+0.629, 603 m du jalon</desc></wpt>
+  <wpt lat="47.6592211" lon="6.9184776"><name>km 358.14 (jalon 143)</name><desc>service, Δkm=+0.638, 612 m du jalon</desc></wpt>
+  <wpt lat="47.6592778" lon="6.9189944"><name>km 358.18 (jalon 143) – Rue de la Baroche</name><desc>tertiary, Δkm=+0.677, 650 m du jalon</desc></wpt>
+  <wpt lat="47.6590410" lon="6.9208039"><name>km 358.32 (jalon 143)</name><desc>service, Δkm=+0.819, 788 m du jalon</desc></wpt>
+  <wpt lat="47.6591458" lon="6.9216647"><name>km 358.39 (jalon 143) – D 46</name><desc>tertiary, Δkm=+0.887, 851 m du jalon</desc></wpt>
+  <wpt lat="47.6592429" lon="6.9219751"><name>km 358.41 (jalon 143)</name><desc>service, Δkm=+0.913, 873 m du jalon</desc></wpt>
+  <wpt lat="47.6594102" lon="6.9225133"><name>km 358.46 (jalon 143)</name><desc>service, Δkm=+0.957, 912 m du jalon</desc></wpt>
+  <wpt lat="47.6606445" lon="6.9278811"><name>km 358.90 (jalon 144) – D 46</name><desc>tertiary, Δkm=-1.097, 858 m du jalon</desc></wpt>
+  <wpt lat="47.6609711" lon="6.9288267"><name>km 358.98 (jalon 144) – Rue de Haguenau</name><desc>residential, Δkm=-1.018, 783 m du jalon</desc></wpt>
+  <wpt lat="47.6610890" lon="6.9291680"><name>km 359.01 (jalon 144) – Grande Rue</name><desc>tertiary, Δkm=-0.989, 756 m du jalon</desc></wpt>
+  <wpt lat="47.6610270" lon="6.9303094"><name>km 359.10 (jalon 144) – Rue de Cambrai</name><desc>residential, Δkm=-0.902, 672 m du jalon</desc></wpt>
+  <wpt lat="47.6609701" lon="6.9325376"><name>km 359.26 (jalon 144)</name><desc>service, Δkm=-0.735, 508 m du jalon</desc></wpt>
+  <wpt lat="47.6609744" lon="6.9325580"><name>km 359.27 (jalon 144) – Grande Rue</name><desc>tertiary, Δkm=-0.734, 507 m du jalon</desc></wpt>
+  <wpt lat="47.6611288" lon="6.9331950"><name>km 359.32 (jalon 144)</name><desc>service, Δkm=-0.683, 457 m du jalon</desc></wpt>
+  <wpt lat="47.6611294" lon="6.9332005"><name>km 359.32 (jalon 144) – Grande Rue</name><desc>tertiary, Δkm=-0.682, 456 m du jalon</desc></wpt>
+  <wpt lat="47.6605505" lon="6.9340018"><name>km 359.41 (jalon 144)</name><desc>service, Δkm=-0.586, 415 m du jalon</desc></wpt>
+  <wpt lat="47.6602551" lon="6.9342897"><name>km 359.45 (jalon 144) – Grande Rue</name><desc>tertiary, Δkm=-0.547, 408 m du jalon</desc></wpt>
+  <wpt lat="47.6601712" lon="6.9359679"><name>km 359.58 (jalon 144) – Grande Rue</name><desc>tertiary, Δkm=-0.417, 306 m du jalon</desc></wpt>
+  <wpt lat="47.6602399" lon="6.9367311"><name>km 359.64 (jalon 144) – Rue de Bessoncourt</name><desc>tertiary, Δkm=-0.359, 258 m du jalon</desc></wpt>
+  <wpt lat="47.6605586" lon="6.9391282"><name>km 359.83 (jalon 144) – Rue de Lacollonge</name><desc>unclassified, Δkm=-0.166, 145 m du jalon</desc></wpt>
+  <wpt lat="47.6606413" lon="6.9393387"><name>km 359.85 (jalon 144) – Rue de Lacollonge</name><desc>unclassified, Δkm=-0.147, 136 m du jalon</desc></wpt>
+  <wpt lat="47.6670914" lon="6.9417700"><name>km 360.63 (jalon 144)</name><desc>service, Δkm=+0.630, 613 m du jalon</desc></wpt>
+  <wpt lat="47.6672865" lon="6.9418171"><name>km 360.65 (jalon 144)</name><desc>service, Δkm=+0.651, 635 m du jalon</desc></wpt>
+  <wpt lat="47.6683389" lon="6.9418124"><name>km 360.77 (jalon 144) – D 25</name><desc>tertiary, Δkm=+0.772, 747 m du jalon</desc></wpt>
+  <wpt lat="47.6683667" lon="6.9418333"><name>km 360.78 (jalon 144) – Rue du Loup Pendu</name><desc>tertiary, Δkm=+0.776, 750 m du jalon</desc></wpt>
+  <wpt lat="47.6689668" lon="6.9423584"><name>km 360.85 (jalon 144)</name><desc>service, Δkm=+0.853, 825 m du jalon</desc></wpt>
+  <wpt lat="47.6693977" lon="6.9427103"><name>km 360.91 (jalon 144)</name><desc>service, Δkm=+0.908, 879 m du jalon</desc></wpt>
+  <wpt lat="47.6696897" lon="6.9428906"><name>km 360.94 (jalon 144)</name><desc>service, Δkm=+0.943, 914 m du jalon</desc></wpt>
+  <wpt lat="47.6701070" lon="6.9431481"><name>km 360.99 (jalon 144) – Rue des Champs More</name><desc>tertiary, Δkm=+0.994, 964 m du jalon</desc></wpt>
+  <wpt lat="47.6700819" lon="6.9433032"><name>km 361.01 (jalon 144)</name><desc>service, Δkm=+1.006, 965 m du jalon</desc></wpt>
+  <wpt lat="47.6700076" lon="6.9437088"><name>km 361.04 (jalon 144) – Rue du Vieux Lavoir</name><desc>tertiary, Δkm=+1.037, 967 m du jalon</desc></wpt>
+  <wpt lat="47.6719806" lon="6.9497809"><name>km 361.57 (jalon 145)</name><desc>service, Δkm=-0.929, 927 m du jalon</desc></wpt>
+  <wpt lat="47.6723195" lon="6.9503491"><name>km 361.63 (jalon 145) – Rue des Bochets</name><desc>tertiary, Δkm=-0.873, 870 m du jalon</desc></wpt>
+  <wpt lat="47.6750256" lon="6.9557889"><name>km 362.14 (jalon 145) – D 25</name><desc>tertiary, Δkm=-0.365, 364 m du jalon</desc></wpt>
+  <wpt lat="47.6765048" lon="6.9581650"><name>km 362.38 (jalon 145) – D 25</name><desc>tertiary, Δkm=-0.123, 122 m du jalon</desc></wpt>
+  <wpt lat="47.6788323" lon="6.9630509"><name>km 362.83 (jalon 145) – Chemin du Canal du Moulin</name><desc>residential, Δkm=+0.327, 326 m du jalon</desc></wpt>
+  <wpt lat="47.6789294" lon="6.9631737"><name>km 362.84 (jalon 145) – Rue de la Madeleine</name><desc>tertiary, Δkm=+0.342, 340 m du jalon</desc></wpt>
+  <wpt lat="47.6788915" lon="6.9634203"><name>km 362.86 (jalon 145) – Rue du Saucy</name><desc>residential, Δkm=+0.361, 352 m du jalon</desc></wpt>
+  <wpt lat="47.6825682" lon="6.9666210"><name>km 363.41 (jalon 145) – Rue des Champs de la Vigne</name><desc>unclassified, Δkm=+0.908, 806 m du jalon</desc></wpt>
+  <wpt lat="47.6833697" lon="6.9731279"><name>km 363.91 (jalon 146) – Rue des Champs de la Vigne</name><desc>unclassified, Δkm=-1.091, 731 m du jalon</desc></wpt>
+  <wpt lat="47.6809327" lon="6.9755308"><name>km 364.24 (jalon 146) – Rue des Grands Champs</name><desc>tertiary, Δkm=-0.764, 570 m du jalon</desc></wpt>
+  <wpt lat="47.6810199" lon="6.9779776"><name>km 364.42 (jalon 146)</name><desc>service, Δkm=-0.579, 395 m du jalon</desc></wpt>
+  <wpt lat="47.6807697" lon="6.9822034"><name>km 364.74 (jalon 146) – Rue de l'Escarcette</name><desc>tertiary, Δkm=-0.259, 193 m du jalon</desc></wpt>
+  <wpt lat="47.6807259" lon="6.9827658"><name>km 364.78 (jalon 146) – Impasse des Prés</name><desc>residential, Δkm=-0.217, 193 m du jalon</desc></wpt>
+  <wpt lat="47.6807102" lon="6.9829701"><name>km 364.80 (jalon 146) – Chemin du Pâturage</name><desc>residential, Δkm=-0.201, 195 m du jalon</desc></wpt>
+  <wpt lat="47.6814234" lon="6.9831669"><name>km 364.88 (jalon 146)</name><desc>service, Δkm=-0.120, 118 m du jalon</desc></wpt>
+  <wpt lat="47.6814563" lon="6.9831672"><name>km 364.88 (jalon 146)</name><desc>service, Δkm=-0.116, 115 m du jalon</desc></wpt>
+  <wpt lat="47.6941195" lon="7.0059566"><name>km 367.67 (jalon 147) – Rue du Bois-Zélin</name><desc>residential, Δkm=+0.169, 169 m du jalon</desc></wpt>
+  <wpt lat="47.6941191" lon="7.0096837"><name>km 367.95 (jalon 147) – Rue du Bois-Zélin</name><desc>residential, Δkm=+0.449, 447 m du jalon</desc></wpt>
+  <wpt lat="47.6940709" lon="7.0098860"><name>km 367.97 (jalon 147) – Rue de la Combe</name><desc>residential, Δkm=+0.465, 463 m du jalon</desc></wpt>
+  <wpt lat="47.6940336" lon="7.0099508"><name>km 367.97 (jalon 147) – Rue de la Combe</name><desc>residential, Δkm=+0.471, 468 m du jalon</desc></wpt>
+  <wpt lat="47.6934698" lon="7.0116328"><name>km 368.12 (jalon 147) – Rue Principale</name><desc>tertiary, Δkm=+0.619, 599 m du jalon</desc></wpt>
+  <wpt lat="47.6938990" lon="7.0122835"><name>km 368.19 (jalon 147) – Rue Principale</name><desc>tertiary, Δkm=+0.687, 643 m du jalon</desc></wpt>
+  <wpt lat="47.6952189" lon="7.0136323"><name>km 368.38 (jalon 147) – Rue Principale</name><desc>tertiary, Δkm=+0.877, 751 m du jalon</desc></wpt>
+  <wpt lat="47.7000616" lon="7.0152412"><name>km 368.97 (jalon 148) – Rue Principale</name><desc>tertiary, Δkm=-1.034, 892 m du jalon</desc></wpt>
+  <wpt lat="47.7007455" lon="7.0151783"><name>km 369.05 (jalon 148) – Rue Principale</name><desc>residential, Δkm=-0.954, 868 m du jalon</desc></wpt>
+  <wpt lat="47.7007689" lon="7.0161927"><name>km 369.12 (jalon 148) – Rue de la Noue</name><desc>residential, Δkm=-0.878, 796 m du jalon</desc></wpt>
+  <wpt lat="47.7054495" lon="7.0306200"><name>km 370.52 (jalon 148) – D 32IV</name><desc>tertiary, Δkm=+0.521, 411 m du jalon</desc></wpt>
+  <wpt lat="47.7053998" lon="7.0308905"><name>km 370.54 (jalon 148) – D 32IV</name><desc>tertiary, Δkm=+0.542, 425 m du jalon</desc></wpt>
+  <wpt lat="47.7213221" lon="7.0391935"><name>km 372.83 (jalon 149) – D 483</name><desc>primary, Δkm=+0.331, 328 m du jalon</desc></wpt>
+  <wpt lat="47.7213805" lon="7.0391816"><name>km 372.84 (jalon 149) – D 483</name><desc>primary, Δkm=+0.337, 335 m du jalon</desc></wpt>
+  <wpt lat="47.7220247" lon="7.0390511"><name>km 372.91 (jalon 149) – D 34</name><desc>tertiary, Δkm=+0.409, 407 m du jalon</desc></wpt>
+  <wpt lat="47.7303897" lon="7.0531737"><name>km 375.28 (jalon 150) – Rue des Horizons</name><desc>residential, Δkm=+0.283, 252 m du jalon</desc></wpt>
+  <wpt lat="47.7305793" lon="7.0538973"><name>km 375.34 (jalon 150) – Rue Bellevue</name><desc>residential, Δkm=+0.341, 302 m du jalon</desc></wpt>
+  <wpt lat="47.7336198" lon="7.0575456"><name>km 375.84 (jalon 150) – Grand' Rue</name><desc>tertiary, Δkm=+0.835, 646 m du jalon</desc></wpt>
+  <wpt lat="47.7336004" lon="7.0576037"><name>km 375.84 (jalon 150) – Rue de l'École</name><desc>service, Δkm=+0.840, 649 m du jalon</desc></wpt>
+  <wpt lat="47.7334975" lon="7.0578570"><name>km 375.86 (jalon 150) – Grand' Rue</name><desc>tertiary, Δkm=+0.862, 661 m du jalon</desc></wpt>
+  <wpt lat="47.7334808" lon="7.0578980"><name>km 375.87 (jalon 150)</name><desc>service, Δkm=+0.866, 663 m du jalon</desc></wpt>
+  <wpt lat="47.7333335" lon="7.0581470"><name>km 375.89 (jalon 150)</name><desc>service, Δkm=+0.891, 673 m du jalon</desc></wpt>
+  <wpt lat="47.7331435" lon="7.0584676"><name>km 375.92 (jalon 150)</name><desc>service, Δkm=+0.923, 687 m du jalon</desc></wpt>
+  <wpt lat="47.7322347" lon="7.0600003"><name>km 376.08 (jalon 150) – Grand' Rue</name><desc>tertiary, Δkm=+1.075, 770 m du jalon</desc></wpt>
+  <wpt lat="47.7321335" lon="7.0601810"><name>km 376.09 (jalon 150) – Grand' Rue</name><desc>tertiary, Δkm=+1.093, 781 m du jalon</desc></wpt>
+  <wpt lat="47.7316385" lon="7.0617808"><name>km 376.22 (jalon 151) – Grand' Rue</name><desc>tertiary, Δkm=-1.275, 897 m du jalon</desc></wpt>
+  <wpt lat="47.7314582" lon="7.0623634"><name>km 376.27 (jalon 151) – Grand' Rue</name><desc>tertiary, Δkm=-1.227, 871 m du jalon</desc></wpt>
+  <wpt lat="47.7314502" lon="7.0623909"><name>km 376.27 (jalon 151) – Grand' Rue</name><desc>tertiary, Δkm=-1.225, 870 m du jalon</desc></wpt>
+  <wpt lat="47.7318334" lon="7.0639236"><name>km 376.40 (jalon 151) – Rue de Guewenheim</name><desc>tertiary, Δkm=-1.103, 752 m du jalon</desc></wpt>
+  <wpt lat="47.7355534" lon="7.0676840"><name>km 377.16 (jalon 151) – D 34</name><desc>tertiary, Δkm=-0.341, 326 m du jalon</desc></wpt>
+  <wpt lat="47.7353082" lon="7.0690683"><name>km 377.27 (jalon 151) – D 34</name><desc>tertiary, Δkm=-0.234, 229 m du jalon</desc></wpt>
+  <wpt lat="47.7352306" lon="7.0695126"><name>km 377.30 (jalon 151) – D 34</name><desc>tertiary, Δkm=-0.200, 200 m du jalon</desc></wpt>
+  <wpt lat="47.7505699" lon="7.0849199"><name>km 379.72 (jalon 152) – Rue de l'Oberfeld</name><desc>residential, Δkm=-0.277, 277 m du jalon</desc></wpt>
+  <wpt lat="47.7518820" lon="7.0861214"><name>km 379.89 (jalon 152)</name><desc>service, Δkm=-0.106, 106 m du jalon</desc></wpt>
+  <wpt lat="47.7527844" lon="7.0867488"><name>km 380.00 (jalon 152) – Rue de la Chapelle</name><desc>residential, Δkm=+0.005, 5 m du jalon</desc></wpt>
+  <wpt lat="47.7529299" lon="7.0868499"><name>km 380.02 (jalon 152) – Rue de la Libération</name><desc>residential, Δkm=+0.023, 23 m du jalon</desc></wpt>
+  <wpt lat="47.7531643" lon="7.0883046"><name>km 380.13 (jalon 152) – Rue de la Chapelle</name><desc>residential, Δkm=+0.134, 127 m du jalon</desc></wpt>
+  <wpt lat="47.7532968" lon="7.0885998"><name>km 380.16 (jalon 152) – Rue Principale</name><desc>secondary, Δkm=+0.162, 153 m du jalon</desc></wpt>
+  <wpt lat="47.7532654" lon="7.0889863"><name>km 380.19 (jalon 152)</name><desc>service, Δkm=+0.191, 179 m du jalon</desc></wpt>
+  <wpt lat="47.7531802" lon="7.0900401"><name>km 380.27 (jalon 152) – Rue Principale</name><desc>secondary, Δkm=+0.270, 253 m du jalon</desc></wpt>
+  <wpt lat="47.7542704" lon="7.0906294"><name>km 380.40 (jalon 152) – Rue de Thann</name><desc>tertiary, Δkm=+0.399, 338 m du jalon</desc></wpt>
+  <wpt lat="47.7550596" lon="7.0908709"><name>km 380.49 (jalon 152) – Rue de Thann</name><desc>tertiary, Δkm=+0.489, 403 m du jalon</desc></wpt>
+  <wpt lat="47.7556476" lon="7.0907241"><name>km 380.56 (jalon 152)</name><desc>service, Δkm=+0.556, 440 m du jalon</desc></wpt>
+  <wpt lat="47.7567092" lon="7.0904305"><name>km 380.68 (jalon 152) – D 34</name><desc>tertiary, Δkm=+0.676, 521 m du jalon</desc></wpt>
+  <wpt lat="47.7574423" lon="7.0908404"><name>km 380.77 (jalon 152)</name><desc>service, Δkm=+0.768, 606 m du jalon</desc></wpt>
+  <wpt lat="47.7576765" lon="7.0913763"><name>km 380.82 (jalon 152) – D 34</name><desc>tertiary, Δkm=+0.816, 649 m du jalon</desc></wpt>
+  <wpt lat="47.7571817" lon="7.0930900"><name>km 380.97 (jalon 152) – Rue du Commandant Charpy</name><desc>service, Δkm=+0.974, 685 m du jalon</desc></wpt>
+  <wpt lat="47.7562128" lon="7.0966027"><name>km 381.26 (jalon 152)</name><desc>service, Δkm=+1.261, 833 m du jalon</desc></wpt>
+  <wpt lat="47.7608449" lon="7.1147346"><name>km 383.21 (jalon 153) – Rue Principale</name><desc>tertiary, Δkm=+0.712, 562 m du jalon</desc></wpt>
+  <wpt lat="47.7609070" lon="7.1149966"><name>km 383.23 (jalon 153) – Rue Principale</name><desc>tertiary, Δkm=+0.733, 577 m du jalon</desc></wpt>
+  <wpt lat="47.7610391" lon="7.1151921"><name>km 383.25 (jalon 153)</name><desc>service, Δkm=+0.754, 597 m du jalon</desc></wpt>
+  <wpt lat="47.7621384" lon="7.1171281"><name>km 383.45 (jalon 153)</name><desc>service, Δkm=+0.946, 776 m du jalon</desc></wpt>
+  <wpt lat="47.7621610" lon="7.1171981"><name>km 383.45 (jalon 153) – Rue Principale</name><desc>tertiary, Δkm=+0.952, 781 m du jalon</desc></wpt>
+  <wpt lat="47.7622668" lon="7.1175262"><name>km 383.48 (jalon 153)</name><desc>service, Δkm=+0.979, 804 m du jalon</desc></wpt>
+  <wpt lat="47.7622988" lon="7.1176253"><name>km 383.49 (jalon 153) – Rue Principale</name><desc>tertiary, Δkm=+0.987, 811 m du jalon</desc></wpt>
+  <wpt lat="47.7633436" lon="7.1190465"><name>km 383.65 (jalon 153)</name><desc>service, Δkm=+1.150, 968 m du jalon</desc></wpt>
+  <wpt lat="47.7675455" lon="7.1226348"><name>km 384.19 (jalon 154) – Chemin du Hungerberg</name><desc>unclassified, Δkm=-0.810, 804 m du jalon</desc></wpt>
+  <wpt lat="47.7680380" lon="7.1230031"><name>km 384.25 (jalon 154) – D 34</name><desc>tertiary, Δkm=-0.749, 744 m du jalon</desc></wpt>
+  <wpt lat="47.7729646" lon="7.1296351"><name>km 384.99 (jalon 154) – Rue des Cavaliers</name><desc>residential, Δkm=-0.006, 6 m du jalon</desc></wpt>
+  <wpt lat="47.7729833" lon="7.1296626"><name>km 385.00 (jalon 154) – Rue des Cavaliers</name><desc>residential, Δkm=-0.003, 3 m du jalon</desc></wpt>
+  <wpt lat="47.7732824" lon="7.1300091"><name>km 385.04 (jalon 154) – Rue des Cavaliers</name><desc>residential, Δkm=+0.040, 39 m du jalon</desc></wpt>
+  <wpt lat="47.7736317" lon="7.1306280"><name>km 385.10 (jalon 154) – Rue de l'Église</name><desc>residential, Δkm=+0.100, 99 m du jalon</desc></wpt>
+  <wpt lat="47.7738722" lon="7.1310542"><name>km 385.14 (jalon 154) – Rue du Tremble</name><desc>residential, Δkm=+0.142, 141 m du jalon</desc></wpt>
+  <wpt lat="47.7746843" lon="7.1324930"><name>km 385.28 (jalon 154) – Rue du Tremble</name><desc>residential, Δkm=+0.282, 281 m du jalon</desc></wpt>
+  <wpt lat="47.7748621" lon="7.1328080"><name>km 385.31 (jalon 154)</name><desc>residential, Δkm=+0.313, 312 m du jalon</desc></wpt>
+  <wpt lat="47.7749118" lon="7.1328961"><name>km 385.32 (jalon 154) – Rue du Tremble</name><desc>residential, Δkm=+0.322, 320 m du jalon</desc></wpt>
+  <wpt lat="47.7752824" lon="7.1337321"><name>km 385.40 (jalon 154)</name><desc>residential, Δkm=+0.397, 395 m du jalon</desc></wpt>
+  <wpt lat="47.7759219" lon="7.1342502"><name>km 385.50 (jalon 154) – Route de Thann</name><desc>secondary, Δkm=+0.503, 471 m du jalon</desc></wpt>
+  <wpt lat="47.7760296" lon="7.1341757"><name>km 385.52 (jalon 154)</name><desc>unclassified, Δkm=+0.516, 475 m du jalon</desc></wpt>
+  <wpt lat="47.7764716" lon="7.1338697"><name>km 385.57 (jalon 154) – D 34</name><desc>tertiary, Δkm=+0.570, 496 m du jalon</desc></wpt>
+  <wpt lat="47.7766295" lon="7.1337604"><name>km 385.59 (jalon 154) – D 34</name><desc>tertiary, Δkm=+0.590, 505 m du jalon</desc></wpt>
+  <wpt lat="47.7776922" lon="7.1361924"><name>km 385.81 (jalon 154) – D 34</name><desc>tertiary, Δkm=+0.809, 713 m du jalon</desc></wpt>
+  <wpt lat="47.7778600" lon="7.1376562"><name>km 385.92 (jalon 154) – D 34</name><desc>tertiary, Δkm=+0.923, 804 m du jalon</desc></wpt>
+  <wpt lat="47.7777760" lon="7.1387062"><name>km 386.00 (jalon 154) – D 34</name><desc>tertiary, Δkm=+1.002, 858 m du jalon</desc></wpt>
+  <wpt lat="47.7839952" lon="7.1473057"><name>km 386.97 (jalon 155) – D 34</name><desc>tertiary, Δkm=-0.530, 362 m du jalon</desc></wpt>
+  <wpt lat="47.7912246" lon="7.1553522"><name>km 388.19 (jalon 155)</name><desc>service, Δkm=+0.689, 668 m du jalon</desc></wpt>
+  <wpt lat="47.7993056" lon="7.1660460"><name>km 389.44 (jalon 156) – Rue d'Aspach</name><desc>tertiary, Δkm=-0.558, 557 m du jalon</desc></wpt>
+  <wpt lat="47.8001243" lon="7.1688475"><name>km 389.67 (jalon 156) – Rue de la Ferme</name><desc>residential, Δkm=-0.330, 329 m du jalon</desc></wpt>
+  <wpt lat="47.8002566" lon="7.1693002"><name>km 389.71 (jalon 156)</name><desc>service, Δkm=-0.293, 292 m du jalon</desc></wpt>
+  <wpt lat="47.8009186" lon="7.1715651"><name>km 389.89 (jalon 156) – Rue des Tirailleurs</name><desc>residential, Δkm=-0.109, 109 m du jalon</desc></wpt>
+  <wpt lat="47.8011049" lon="7.1725972"><name>km 389.97 (jalon 156) – Rue du 4 Février</name><desc>residential, Δkm=-0.029, 29 m du jalon</desc></wpt>
+  <wpt lat="47.8011745" lon="7.1729837"><name>km 390.00 (jalon 156) – Rue d'Aspach</name><desc>tertiary, Δkm=+0.001, 1 m du jalon</desc></wpt>
+  <wpt lat="47.8010202" lon="7.1738590"><name>km 390.07 (jalon 156)</name><desc>service, Δkm=+0.070, 68 m du jalon</desc></wpt>
+  <wpt lat="47.8019928" lon="7.1743482"><name>km 390.20 (jalon 156) – Rue de la Gare</name><desc>residential, Δkm=+0.198, 138 m du jalon</desc></wpt>
+  <wpt lat="47.8032749" lon="7.1763453"><name>km 390.41 (jalon 156) – Faubourg de Belfort</name><desc>secondary, Δkm=+0.412, 344 m du jalon</desc></wpt>
+  <wpt lat="47.8032882" lon="7.1763583"><name>km 390.41 (jalon 156) – Faubourg de Belfort</name><desc>secondary, Δkm=+0.413, 346 m du jalon</desc></wpt>
+  <wpt lat="47.8032621" lon="7.1766407"><name>km 390.44 (jalon 156) – Rue de Wittelsheim</name><desc>secondary, Δkm=+0.435, 359 m du jalon</desc></wpt>
+  <wpt lat="47.8033306" lon="7.1766635"><name>km 390.44 (jalon 156) – Rue de la Thur</name><desc>residential, Δkm=+0.443, 366 m du jalon</desc></wpt>
+  <wpt lat="47.8047405" lon="7.1762108"><name>km 390.60 (jalon 156) – Rue des Champs</name><desc>residential, Δkm=+0.604, 465 m du jalon</desc></wpt>
+  <wpt lat="47.8056415" lon="7.1823935"><name>km 391.08 (jalon 156) – Rue Gustave Eiffel</name><desc>residential, Δkm=+1.085, 862 m du jalon</desc></wpt>
+  <wpt lat="47.8054486" lon="7.1888751"><name>km 391.58 (jalon 157)</name><desc>residential, Δkm=-0.920, 891 m du jalon</desc></wpt>
+  <wpt lat="47.8146931" lon="7.2298082"><name>km 395.00 (jalon 158)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.8240536" lon="7.2503415"><name>km 397.03 (jalon 159) – Rue de la République</name><desc>secondary, Δkm=-0.469, 425 m du jalon</desc></wpt>
+  <wpt lat="47.8272173" lon="7.2635667"><name>km 398.25 (jalon 159) – Impasse Clemenceau</name><desc>residential, Δkm=+0.746, 705 m du jalon</desc></wpt>
+  <wpt lat="47.8275375" lon="7.2642099"><name>km 398.33 (jalon 159) – Impasse Clemenceau</name><desc>residential, Δkm=+0.830, 764 m du jalon</desc></wpt>
+  <wpt lat="47.8274700" lon="7.2654092"><name>km 398.42 (jalon 159)</name><desc>service, Δkm=+0.920, 834 m du jalon</desc></wpt>
+  <wpt lat="47.8275099" lon="7.2658493"><name>km 398.45 (jalon 159) – Rue Marie Louise</name><desc>residential, Δkm=+0.953, 864 m du jalon</desc></wpt>
+  <wpt lat="47.8275246" lon="7.2658598"><name>km 398.46 (jalon 159) – Rue Marie Louise</name><desc>residential, Δkm=+0.955, 866 m du jalon</desc></wpt>
+  <wpt lat="47.8277399" lon="7.2674204"><name>km 398.58 (jalon 159) – Rue Marie Louise</name><desc>residential, Δkm=+1.077, 978 m du jalon</desc></wpt>
+  <wpt lat="47.8277395" lon="7.2674225"><name>km 398.58 (jalon 159)</name><desc>residential, Δkm=+1.077, 979 m du jalon</desc></wpt>
+  <wpt lat="47.8278206" lon="7.2676208"><name>km 398.60 (jalon 159)</name><desc>residential, Δkm=+1.102, 996 m du jalon</desc></wpt>
+  <wpt lat="47.8284832" lon="7.2697717"><name>km 398.84 (jalon 160) – Rue Marie Louise</name><desc>residential, Δkm=-1.160, 998 m du jalon</desc></wpt>
+  <wpt lat="47.8514528" lon="7.2959180"><name>km 402.50 (jalon 161)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.8589830" lon="7.3228837"><name>km 405.00 (jalon 162)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.8642335" lon="7.3410642"><name>km 407.01 (jalon 163)</name><desc>service, Δkm=-0.489, 468 m du jalon</desc></wpt>
+  <wpt lat="47.8642494" lon="7.3411372"><name>km 407.02 (jalon 163) – Rue du Tir</name><desc>residential, Δkm=-0.483, 462 m du jalon</desc></wpt>
+  <wpt lat="47.8642982" lon="7.3414287"><name>km 407.05 (jalon 163) – Rue du Tir</name><desc>residential, Δkm=-0.453, 440 m du jalon</desc></wpt>
+  <wpt lat="47.8643376" lon="7.3416672"><name>km 407.07 (jalon 163) – Rue du Tir</name><desc>residential, Δkm=-0.434, 422 m du jalon</desc></wpt>
+  <wpt lat="47.8648967" lon="7.3451998"><name>km 407.34 (jalon 163) – Rue de Colmar</name><desc>secondary, Δkm=-0.163, 152 m du jalon</desc></wpt>
+  <wpt lat="47.8649293" lon="7.3454058"><name>km 407.35 (jalon 163)</name><desc>service, Δkm=-0.148, 136 m du jalon</desc></wpt>
+  <wpt lat="47.8650314" lon="7.3456089"><name>km 407.37 (jalon 163) – Impasse de la Gare</name><desc>residential, Δkm=-0.128, 121 m du jalon</desc></wpt>
+  <wpt lat="47.8652193" lon="7.3465665"><name>km 407.45 (jalon 163) – Rue de la Gare</name><desc>tertiary, Δkm=-0.053, 53 m du jalon</desc></wpt>
+  <wpt lat="47.8651462" lon="7.3468315"><name>km 407.47 (jalon 163)</name><desc>service, Δkm=-0.032, 32 m du jalon</desc></wpt>
+  <wpt lat="47.8648919" lon="7.3477328"><name>km 407.54 (jalon 163) – Rue de la Gare</name><desc>tertiary, Δkm=+0.041, 41 m du jalon</desc></wpt>
+  <wpt lat="47.8646514" lon="7.3485852"><name>km 407.61 (jalon 163) – Place de Verdun</name><desc>tertiary, Δkm=+0.110, 110 m du jalon</desc></wpt>
+  <wpt lat="47.8648214" lon="7.3494041"><name>km 407.67 (jalon 163) – Rue de l'Ill</name><desc>residential, Δkm=+0.174, 164 m du jalon</desc></wpt>
+  <wpt lat="47.8649986" lon="7.3502457"><name>km 407.74 (jalon 163) – Avenue Foch</name><desc>residential, Δkm=+0.240, 225 m du jalon</desc></wpt>
+  <wpt lat="47.8651280" lon="7.3508603"><name>km 407.79 (jalon 163) – Rue de la 1re Armée Française</name><desc>tertiary, Δkm=+0.288, 271 m du jalon</desc></wpt>
+  <wpt lat="47.8651697" lon="7.3510586"><name>km 407.80 (jalon 163) – Rue du Moulin</name><desc>residential, Δkm=+0.303, 286 m du jalon</desc></wpt>
+  <wpt lat="47.8652200" lon="7.3518845"><name>km 407.87 (jalon 163) – Impasse de la Régence</name><desc>residential, Δkm=+0.365, 348 m du jalon</desc></wpt>
+  <wpt lat="47.8652236" lon="7.3530632"><name>km 407.95 (jalon 163) – Rue de l'Église</name><desc>residential, Δkm=+0.453, 436 m du jalon</desc></wpt>
+  <wpt lat="47.8652268" lon="7.3541453"><name>km 408.03 (jalon 163)</name><desc>service, Δkm=+0.534, 517 m du jalon</desc></wpt>
+  <wpt lat="47.8652276" lon="7.3543958"><name>km 408.05 (jalon 163) – Rue de la 1re Armée Française</name><desc>tertiary, Δkm=+0.553, 535 m du jalon</desc></wpt>
+  <wpt lat="47.8652293" lon="7.3549597"><name>km 408.09 (jalon 163) – Rue des Alliés</name><desc>residential, Δkm=+0.595, 577 m du jalon</desc></wpt>
+  <wpt lat="47.8652327" lon="7.3551927"><name>km 408.11 (jalon 163) – Rue de la 1re Armée Française</name><desc>residential, Δkm=+0.612, 595 m du jalon</desc></wpt>
+  <wpt lat="47.8652990" lon="7.3552615"><name>km 408.12 (jalon 163) – Rue de la 1re Armée Française</name><desc>tertiary, Δkm=+0.621, 600 m du jalon</desc></wpt>
+  <wpt lat="47.8654767" lon="7.3554457"><name>km 408.15 (jalon 163) – Rue du Rempart</name><desc>residential, Δkm=+0.645, 615 m du jalon</desc></wpt>
+  <wpt lat="47.8660600" lon="7.3560524"><name>km 408.22 (jalon 163) – Rue de la 1re Armée Française</name><desc>tertiary, Δkm=+0.724, 668 m du jalon</desc></wpt>
+  <wpt lat="47.8660570" lon="7.3563133"><name>km 408.24 (jalon 163) – Faubourg Saint-Martin</name><desc>tertiary, Δkm=+0.744, 687 m du jalon</desc></wpt>
+  <wpt lat="47.8660003" lon="7.3565643"><name>km 408.26 (jalon 163) – Impasse du Tribunal</name><desc>service, Δkm=+0.764, 705 m du jalon</desc></wpt>
+  <wpt lat="47.8657815" lon="7.3575335"><name>km 408.34 (jalon 163) – Faubourg Saint-Martin</name><desc>tertiary, Δkm=+0.840, 773 m du jalon</desc></wpt>
+  <wpt lat="47.8657030" lon="7.3582241"><name>km 408.39 (jalon 163)</name><desc>tertiary, Δkm=+0.893, 824 m du jalon</desc></wpt>
+  <wpt lat="47.8657578" lon="7.3584828"><name>km 408.42 (jalon 163) – Rue de Markdorf</name><desc>tertiary, Δkm=+0.917, 844 m du jalon</desc></wpt>
+  <wpt lat="47.8667786" lon="7.3595098"><name>km 408.55 (jalon 163)</name><desc>service, Δkm=+1.055, 937 m du jalon</desc></wpt>
+  <wpt lat="47.8663949" lon="7.3773123"><name>km 410.00 (jalon 164)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.8750891" lon="7.3930534"><name>km 412.50 (jalon 165)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.8753908" lon="7.4207302"><name>km 415.00 (jalon 166) – D 47</name><desc>tertiary, Δkm=-0.002, 2 m du jalon</desc></wpt>
+  <wpt lat="47.8776699" lon="7.4257442"><name>km 415.64 (jalon 166)</name><desc>service, Δkm=+0.637, 450 m du jalon</desc></wpt>
+  <wpt lat="47.8786700" lon="7.4507871"><name>km 417.67 (jalon 167) – D 8</name><desc>tertiary, Δkm=+0.172, 172 m du jalon</desc></wpt>
+  <wpt lat="47.8781280" lon="7.4504267"><name>km 417.74 (jalon 167) – D 8</name><desc>tertiary, Δkm=+0.239, 159 m du jalon</desc></wpt>
+  <wpt lat="47.8760159" lon="7.4498421"><name>km 418.00 (jalon 167) – D 47</name><desc>tertiary, Δkm=+0.497, 315 m du jalon</desc></wpt>
+  <wpt lat="47.8758917" lon="7.4502697"><name>km 418.03 (jalon 167) – D 8</name><desc>tertiary, Δkm=+0.532, 340 m du jalon</desc></wpt>
+  <wpt lat="47.8752976" lon="7.4519202"><name>km 418.17 (jalon 167) – D 8</name><desc>tertiary, Δkm=+0.674, 457 m du jalon</desc></wpt>
+  <wpt lat="47.8750746" lon="7.4520449"><name>km 418.20 (jalon 167) – Rue de Hirtzfelden</name><desc>tertiary, Δkm=+0.701, 483 m du jalon</desc></wpt>
+  <wpt lat="47.8872589" lon="7.4638245"><name>km 420.17 (jalon 168)</name><desc>unclassified, Δkm=+0.166, 166 m du jalon</desc></wpt>
+  <wpt lat="47.8875125" lon="7.4673797"><name>km 420.43 (jalon 168) – Rue des Jardins</name><desc>residential, Δkm=+0.433, 432 m du jalon</desc></wpt>
+  <wpt lat="47.8877698" lon="7.4673583"><name>km 420.46 (jalon 168) – Rue du Tilleul</name><desc>residential, Δkm=+0.461, 435 m du jalon</desc></wpt>
+  <wpt lat="47.8888744" lon="7.4680749"><name>km 420.63 (jalon 168) – Rue d'Ensisheim</name><desc>tertiary, Δkm=+0.631, 520 m du jalon</desc></wpt>
+  <wpt lat="47.8890994" lon="7.4706988"><name>km 420.83 (jalon 168) – Rue Principale</name><desc>tertiary, Δkm=+0.830, 713 m du jalon</desc></wpt>
+  <wpt lat="47.8891068" lon="7.4707010"><name>km 420.83 (jalon 168) – Rue de Blodelsheim</name><desc>tertiary, Δkm=+0.831, 713 m du jalon</desc></wpt>
+  <wpt lat="47.8906511" lon="7.4712013"><name>km 421.01 (jalon 168) – Rue Principale</name><desc>residential, Δkm=+1.007, 816 m du jalon</desc></wpt>
+  <wpt lat="47.8910606" lon="7.4713916"><name>km 421.05 (jalon 168) – Rue de Réguisheim</name><desc>residential, Δkm=+1.055, 852 m du jalon</desc></wpt>
+  <wpt lat="47.8914195" lon="7.4717297"><name>km 421.10 (jalon 168) – Rue des Landes</name><desc>residential, Δkm=+1.105, 894 m du jalon</desc></wpt>
+  <wpt lat="47.8914117" lon="7.4720640"><name>km 421.13 (jalon 168) – Rue des Landes</name><desc>residential, Δkm=+1.130, 915 m du jalon</desc></wpt>
+  <wpt lat="47.8914403" lon="7.4721298"><name>km 421.14 (jalon 168) – Rue de Fessenheim</name><desc>residential, Δkm=+1.135, 921 m du jalon</desc></wpt>
+  <wpt lat="47.9009018" lon="7.4795627"><name>km 422.50 (jalon 169)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.9126666" lon="7.4999409"><name>km 425.00 (jalon 170)</name><desc>, Δkm=+0.000, 0 m du jalon</desc></wpt>
+  <wpt lat="47.9132467" lon="7.5279203"><name>km 427.25 (jalon 171) – Rue des Seigneurs</name><desc>residential, Δkm=-0.251, 251 m du jalon</desc></wpt>
+  <wpt lat="47.9133534" lon="7.5289399"><name>km 427.33 (jalon 171) – Rue des Massifs Vosgiens</name><desc>residential, Δkm=-0.174, 174 m du jalon</desc></wpt>
+  <wpt lat="47.9134915" lon="7.5302595"><name>km 427.43 (jalon 171) – Rue du Jura</name><desc>residential, Δkm=-0.074, 74 m du jalon</desc></wpt>
+  <wpt lat="47.9135436" lon="7.5307564"><name>km 427.46 (jalon 171)</name><desc>service, Δkm=-0.037, 37 m du jalon</desc></wpt>
+  <wpt lat="47.9135524" lon="7.5308413"><name>km 427.47 (jalon 171) – Rue des Seigneurs</name><desc>residential, Δkm=-0.030, 30 m du jalon</desc></wpt>
+  <wpt lat="47.9135996" lon="7.5312916"><name>km 427.50 (jalon 171) – Rue des Vosges</name><desc>residential, Δkm=+0.004, 4 m du jalon</desc></wpt>
+  <wpt lat="47.9139703" lon="7.5348328"><name>km 427.77 (jalon 171) – Rue des Casernes</name><desc>residential, Δkm=+0.271, 271 m du jalon</desc></wpt>
+  <wpt lat="47.9141636" lon="7.5363740"><name>km 427.89 (jalon 171) – Rue des Écoles</name><desc>residential, Δkm=+0.388, 388 m du jalon</desc></wpt>
+  <wpt lat="47.9141815" lon="7.5365168"><name>km 427.90 (jalon 171)</name><desc>service, Δkm=+0.398, 398 m du jalon</desc></wpt>
+  <wpt lat="47.9142101" lon="7.5367452"><name>km 427.92 (jalon 171)</name><desc>service, Δkm=+0.416, 416 m du jalon</desc></wpt>
+  <wpt lat="47.9142611" lon="7.5371519"><name>km 427.95 (jalon 171) – Rue des Serruriers</name><desc>residential, Δkm=+0.447, 447 m du jalon</desc></wpt>
+  <wpt lat="47.9143799" lon="7.5380993"><name>km 428.02 (jalon 171) – Rue de la Libération</name><desc>secondary, Δkm=+0.518, 518 m du jalon</desc></wpt>
+  <wpt lat="47.9144629" lon="7.5385423"><name>km 428.05 (jalon 171) – Rue du Rhin</name><desc>residential, Δkm=+0.553, 552 m du jalon</desc></wpt>
+  <wpt lat="47.9148725" lon="7.5399617"><name>km 428.17 (jalon 171) – Rue des Prés</name><desc>residential, Δkm=+0.670, 665 m du jalon</desc></wpt>
+  <wpt lat="47.9149953" lon="7.5409809"><name>km 428.25 (jalon 171) – Rue des Joncs</name><desc>residential, Δkm=+0.747, 742 m du jalon</desc></wpt>
+  <wpt lat="47.9147603" lon="7.5431612"><name>km 428.41 (jalon 171) – Rue du Bourg</name><desc>residential, Δkm=+0.913, 898 m du jalon</desc></wpt>
+  <wpt lat="47.9147733" lon="7.5432131"><name>km 428.42 (jalon 171) – Rue du Rhin</name><desc>unclassified, Δkm=+0.917, 902 m du jalon</desc></wpt>
+  <wpt lat="47.9127958" lon="7.5555231"><name>km 429.36 (jalon 172) – Rue du Rhin</name><desc>unclassified, Δkm=-0.637, 539 m du jalon</desc></wpt>
+  <wpt lat="47.9085812" lon="7.5584898"><name>km 429.97 (jalon 172)</name><desc>service, Δkm=-0.027, 27 m du jalon</desc></wpt>
+  <wpt lat="47.9066095" lon="7.5576821"><name>km 430.20 (jalon 173)</name><desc>service, Δkm=-0.046, 43 m du jalon</desc></wpt>
+  <wpt lat="47.9066002" lon="7.5577204"><name>km 430.20 (jalon 173)</name><desc>service, Δkm=-0.043, 40 m du jalon</desc></wpt>
+  <wpt lat="47.9065918" lon="7.5577555"><name>km 430.21 (jalon 173)</name><desc>service, Δkm=-0.041, 38 m du jalon</desc></wpt>
+  <wpt lat="47.9065405" lon="7.5579677"><name>km 430.22 (jalon 173) – D 52</name><desc>secondary, Δkm=-0.024, 24 m du jalon</desc></wpt>
+</gpx>

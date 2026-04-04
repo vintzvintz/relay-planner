@@ -89,6 +89,33 @@ class Profile:
 
         return d_plus, d_moins
 
+    def cumul_denivele(
+        self, nb_active_segs: int, segment_km: float
+    ) -> list[tuple[float, float]]:
+        """Pré-calcule les dénivelés cumulatifs aux bornes de chaque segment actif.
+
+        Retourne une liste de longueur nb_active_segs + 1, où l'élément i contient
+        (cumul_d_plus, cumul_d_moins) depuis le km 0 jusqu'au début du segment i.
+
+        Le D+/D- du segment actif s est alors :
+            dp = cumul[s+1][0] - cumul[s][0]
+            dm = cumul[s+1][1] - cumul[s][1]
+
+        Et le D+/D- d'un relais [start, end) (indices actifs) est :
+            dp = cumul[end][0] - cumul[start][0]
+            dm = cumul[end][1] - cumul[start][1]
+        """
+        cumul: list[tuple[float, float]] = [(0.0, 0.0)]
+        dp_acc, dm_acc = 0.0, 0.0
+        for s in range(nb_active_segs):
+            km_deb = s * segment_km
+            km_fin = (s + 1) * segment_km
+            dp, dm = self.denivele(km_deb, km_fin)
+            dp_acc += dp
+            dm_acc += dm
+            cumul.append((dp_acc, dm_acc))
+        return cumul
+
     def to_svg(
         self,
         width: int = 900,

@@ -64,6 +64,8 @@ class _PartialModel(Model):
         only_rest_for: set[str] | None = None,
         only_avail_for: set[str] | None = None,
         only_night_for: set[str] | None = None,
+        # Override solo_max par coureur (None = utiliser la valeur déclarée)
+        solo_max_override: dict[str, int] | None = None,
     ) -> "cp_model.CpModel":
         assert not self.model, "déjà initialisé"
         self.model = cp_model.CpModel()
@@ -104,10 +106,11 @@ class _PartialModel(Model):
             self._add_inter_runner_no_overlap(constraints)
 
         if not skip_solo:
-            self._add_solo_constraints(constraints)
+            self._add_solo_partial(constraints, solo_max_override=solo_max_override or {})
 
         if not skip_forced_pairings:
             self._add_forced_pairings(constraints)
+
 
         if not skip_once_max:
             self._add_once_max(constraints)
@@ -181,8 +184,8 @@ class _PartialModel(Model):
             if n_relays < 2:
                 continue
             rd = c.runners_data[r]
-            repos_jour = rd.repos_jour
-            repos_nuit = rd.repos_nuit
+            repos_jour = rd.options.repos_jour
+            repos_nuit = rd.options.repos_nuit
             for k in range(n_relays):
                 for kp in range(k + 1, n_relays):
                     k_before_kp = model.new_bool_var(f"bef_{r}_{k}_{kp}")
@@ -227,6 +230,22 @@ class _PartialModel(Model):
                         model.add(self.end[r][k] <= we).only_enforce_if(b)
                         bools.append(b)
                     model.add_bool_or(bools)
+
+    def _add_solo_partial(self, constraints, solo_max_override: dict[str, int]):
+        """Contraintes solo avec override optionnel de solo_max par coureur.
+
+        Patch temporairement options.solo_max pour les coureurs dans solo_max_override,
+        puis délègue à _add_solo_constraints, et restore les valeurs originales.
+        """
+        patched = {}
+        for r, val in solo_max_override.items():
+            patched[r] = constraints.runners_data[r].options.solo_max
+            constraints.runners_data[r].options.solo_max = val
+        try:
+            self._add_solo_constraints(constraints)
+        finally:
+            for r, orig in patched.items():
+                constraints.runners_data[r].options.solo_max = orig
 
 
 # ---------------------------------------------------------------------------
@@ -327,6 +346,8 @@ class FeasibilityAnalyser:
             self._drill_once_max()
         elif key == "skip_max_same_partenaire":
             self._drill_max_same_partenaire()
+        elif key == "skip_solo":
+            self._drill_solo()
         else:
             print("    (pas de diagnostic fin disponible pour cette famille)")
 
@@ -480,6 +501,32 @@ class FeasibilityAnalyser:
                 model.add(sum(pair_vars) <= max_same)
             ok = _solve_feasibility(model, self.timeout)
             print(f"    [{_label(ok)}]  max_same_partenaire({r1}, {r2}) <= {max_same}")
+
+    def _drill_solo(self) -> None:
+        """Pour chaque coureur avec solo_max=0, teste si passer solo_max=1 débloque le problème."""
+        c = self.c
+        candidates = [
+            r for r in c.runners
+            if c.runners_data[r].options.solo_max == 0
+        ]
+        if not candidates:
+            print("    Aucun coureur avec solo_max=0 — pas de drilldown solo disponible.")
+            return
+
+        for r in candidates:
+            m = _PartialModel()
+            model = m.build_partial(c, solo_max_override={r: 1})
+            ok = _solve_feasibility(model, self.timeout)
+            print(f"    [{_label(ok)}]  {r} avec solo_max=1 (déclaré=0)")
+
+        if len(candidates) > 1:
+            # Teste aussi le relâchement global de tous les solo_max=0 simultanément
+            override = {r: 1 for r in candidates}
+            m = _PartialModel()
+            model = m.build_partial(c, solo_max_override=override)
+            ok = _solve_feasibility(model, self.timeout)
+            noms = ", ".join(candidates)
+            print(f"    [{_label(ok)}]  tous ({noms}) avec solo_max=1")
 
     def _analyse_combinations(self) -> None:
         """Teste des paires de familles désactivées simultanément."""

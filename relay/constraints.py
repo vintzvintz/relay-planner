@@ -53,11 +53,14 @@ class RelaySpec:
     paired_with : (runner_name, relay_index) du relais partenaire, positionné via SharedLeg.
     window      : le relais doit être entièrement inclus dans [start, end] (segments, inclus).
     pinned      : segment de départ fixé. Incompatible avec flex (len(size) > 1).
+    dplus_max   : limite (en mètres) sur la somme D+ + D- du relais. None = pas de limite.
+                  Requiert un profil altimétrique (profil_csv=) dans Constraints.
     """
     size: set[int]
     paired_with: tuple[str, int] | None = None  # (runner_name, relay_index)
     window: list[tuple[int, int]] | None = None  # liste d'intervalles [start, end] inclus
     pinned: int | None = None
+    dplus_max: int | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -65,6 +68,7 @@ class RelaySpec:
             "paired_with": list(self.paired_with) if self.paired_with else None,
             "window": self.window,
             "pinned": self.pinned,
+            "dplus_max": self.dplus_max,
         }
 
     @classmethod
@@ -74,6 +78,7 @@ class RelaySpec:
             paired_with=tuple(d["paired_with"]) if d["paired_with"] else None,
             window=[tuple(iv) for iv in d["window"]] if d["window"] else None,
             pinned=d["pinned"],
+            dplus_max=d.get("dplus_max"),
         )
 
 
@@ -104,12 +109,14 @@ class RunnerOptions:
     Chaque champ vaut None si non défini (hérité du défaut global pour un Coureur,
     ou absent pour les defaults de Constraints).
     Les valeurs de repos sont en segments (pas en heures).
+    lvl : niveau du coureur (1..lvl_max), utilisé comme poids dans l'objectif D+/D-.
     """
     solo_max: int | None = None
     nuit_max: int | None = None
     repos_jour: int | None = None
     repos_nuit: int | None = None
     max_same_partenaire: int | None = None
+    lvl: int | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -118,6 +125,7 @@ class RunnerOptions:
             "repos_jour": self.repos_jour,
             "repos_nuit": self.repos_nuit,
             "max_same_partenaire": self.max_same_partenaire,
+            "lvl": self.lvl,
         }
 
     @classmethod
@@ -128,6 +136,7 @@ class RunnerOptions:
             repos_jour=d["repos_jour"],
             repos_nuit=d["repos_nuit"],
             max_same_partenaire=d["max_same_partenaire"],
+            lvl=d.get("lvl"),
         )
 
 
@@ -200,11 +209,14 @@ class RunnerBuilder:
         nb: int = 1,
         window: "Intervals | tuple[int, int] | None" = None,
         pinned: int | None = None,
+        dplus_max: int | None = None,
     ) -> "RunnerBuilder":
         """Ajoute nb relais identiques au coureur et retourne self pour le chaînage.
 
-        size : nom de type (str) ou SharedLeg (créé via constraints.new_relay()).
-               Pour un SharedLeg, nb est ignoré.
+        size      : nom de type (str) ou SharedLeg (créé via constraints.new_relay()).
+                    Pour un SharedLeg, nb est ignoré.
+        dplus_max : limite en mètres sur la somme D+ + D- du relais. None = pas de limite.
+                    Requiert un profil altimétrique (profil_csv=) dans Constraints.
         """
         if not isinstance(size, (str, SharedLeg)):
             raise TypeError(f"size doit être un nom de type (str) ou un SharedLeg, pas {type(size).__name__}.")
@@ -236,14 +248,14 @@ class RunnerBuilder:
             if nb != 1:
                 raise ValueError("nb>1 n'est pas compatible avec un SharedLeg.")
             idx = len(self._coureur.relais)
-            spec = RelaySpec(size=size.size, window=window_list, pinned=time_pinned)
+            spec = RelaySpec(size=size.size, window=window_list, pinned=time_pinned, dplus_max=dplus_max)
             self._coureur.relais.append(spec)
             #TODO: verifier si le paramètre spec est nécessaire dans _register()
             size._register(self.name, idx, spec)
             return self
 
         for _ in range(nb):
-            self._coureur.relais.append(RelaySpec(size=size, window=window_list, pinned=time_pinned))
+            self._coureur.relais.append(RelaySpec(size=size, window=window_list, pinned=time_pinned, dplus_max=dplus_max))
         return self
 
 
@@ -258,6 +270,7 @@ class Constraints:
         speed_kmh: float,
         start_hour: float,
         compat_matrix: dict[tuple[str, str], int],
+        #duo_score: dict,
         solo_max_km: float,
         solo_max_default: int,
         nuit_max_default: int,
@@ -271,6 +284,8 @@ class Constraints:
         enable_flex: bool = True,
         allow_flex_flex: bool = True,
         profil_csv: str | None = None,
+        acces_csv: str | None = None,
+        lvl_max: int = 5,
     ):
         self.total_km = total_km
         # nb_segments (paramètre) = nombre de segments ACTIFS (course).
@@ -305,12 +320,17 @@ class Constraints:
         self.active_segments: list[int] = list(range(nb_segments))
         self._pause_active_segs: list[int] = []
 
+        self.inaccessible_segments: set[int] = set()  # indices espace-temps
         self.runners_data: dict[str, Coureur] = {}
         self.once_max: list[tuple[str, str, int]] = []
         self.relay_types: dict[str, set[int]] = make_relay_types(nb_segments, total_km, enable_flex)
         self.allow_flex_flex: bool = allow_flex_flex
         self.profil_csv = profil_csv
         self._profil = None  # lazy-init
+        self.acces_csv = acces_csv
+        self._acces = None  # lazy-init
+        self.lvl_max: int = lvl_max
+        #self.duo_score = duo_score
 
         # Index des coureurs connus (pour validation dans new_runner)
         self._known_runners: set[str] = {name for pair in self.compat_matrix for name in pair}
@@ -354,11 +374,29 @@ class Constraints:
         # Reconstruire active_segments dans l'ordre
         self.active_segments = [s for s in range(self.nb_segments) if s not in self.inactive_segments]
 
-    def new_runner(self, name: str) -> RunnerBuilder:
-        """Crée un nouveau coureur et retourne son RunnerBuilder."""
+    def add_inaccessible(self, *kms: float) -> None:
+        """Déclare des points kilométriques inaccessibles comme points de passage de relais.
+
+        kms : une ou plusieurs distances en km depuis le départ.
+              Interdit start[r][k] == s et end[r][k] == s pour tout relais,
+              où s est l'index espace-temps correspondant au km donné.
+        """
+        for km in kms:
+            active_idx = self.km_to_seg(km)
+            time_idx = self.active_to_time_seg(active_idx)
+            self.inaccessible_segments.add(time_idx)
+
+    def new_runner(self, name: str, lvl: int) -> RunnerBuilder:
+        """Crée un nouveau coureur et retourne son RunnerBuilder.
+
+        lvl : niveau du coureur (1..lvl_max), utilisé pour calculer le score de compatibilité.
+        """
         if name not in self._known_runners:
             raise ValueError(f"Coureur '{name}' absent de la matrice de compatibilité")
+        if not (1 <= lvl <= self.lvl_max):
+            raise ValueError(f"lvl={lvl} hors bornes [1, {self.lvl_max}]")
         coureur = Coureur(relais=[], options=copy(self.defaults))
+        coureur.options.lvl = lvl
         self.runners_data[name] = coureur
         return RunnerBuilder(name, coureur, self)
 
@@ -432,6 +470,13 @@ class Constraints:
             from .profil import load_profile
             self._profil = load_profile(self.profil_csv)
         return self._profil
+
+    @property
+    def acces(self):
+        if self._acces is None and self.acces_csv is not None:
+            from .geography import load_access_points
+            self._acces = load_access_points(self.acces_csv)
+        return self._acces
 
     @property
     def relay_sizes(self):
@@ -551,6 +596,15 @@ class Constraints:
         """Retourne le score de compatibilité (0, 1 ou 2)."""
         return self.compat_matrix.get((coureur_1, coureur_2), 0)
 
+    # def compat_score(self, coureur_1: str, coureur_2: str) -> int:
+        # lvl1 = self.runners_data[coureur_1].options.lvl if coureur_1 in self.runners_data else None
+        # lvl2 = self.runners_data[coureur_2].options.lvl if coureur_2 in self.runners_data else None
+        # if lvl1 is None:
+        #     raise ValueError(f"Coureur '{coureur_1}' n'a pas de lvl défini")
+        # if lvl2 is None:
+        #     raise ValueError(f"Coureur '{coureur_2}' n'a pas de lvl défini")
+        # return self.duo_score.get(abs(lvl1 - lvl2), 0)
+
 
     @property
     def lp_bounds(self):
@@ -580,16 +634,19 @@ class Constraints:
             #inutile de serialiser les relay_types - redondant avec la taille en nb de segments
             #"relay_types": {k: sorted(v) for k, v in self.relay_types.items()},
             "profil_csv": self.profil_csv,
+            "acces_csv": self.acces_csv,
             # compat_matrix: clés tuple → "r1|r2" (triangle inférieur reconstruit à l'init)
             "compat_matrix": {
                 f"{a}|{b}": v
                 for (a, b), v in self.compat_matrix.items()
                 if a <= b  # ne sérialise que le triangle inférieur
             },
+            #"duo_score": {str(k): v for k, v in self.duo_score.items()},
             "pauses": [
                 {"seg": seg, "inactive_range": list(rng)}
                 for seg, rng in zip(self._pause_active_segs, self.inactive_ranges)
             ],
+            "inaccessible_segments": sorted(self.inaccessible_segments),
             "once_max": [[r1, r2, nb] for r1, r2, nb in self.once_max],
             "runners": {
                 name: {
@@ -613,6 +670,7 @@ class Constraints:
             for key, v in data["compat_matrix"].items()
             for a, b in [key.split("|", 1)]
         }
+        # duo_score = {int(k): v for k, v in data["duo_score"].items()}
 
         d = data["defaults"]
         # Reconstruit via __init__ avec des valeurs déjà converties en segments.
@@ -622,6 +680,7 @@ class Constraints:
             nb_segments=data["nb_active_segments"],
             speed_kmh=data["speed_kmh"],
             start_hour=data["start_hour"],
+            #duo_score=duo_score,
             compat_matrix=compat_matrix,
             solo_max_km=0,  # remplacé ci-dessous
             solo_max_default=d["solo_max"],
@@ -638,6 +697,7 @@ class Constraints:
             #enable_flex=len(data["relay_types"][R13_F]) > 1,
             allow_flex_flex=data["allow_flex_flex"],
             profil_csv=data["profil_csv"],
+            acces_csv=data["acces_csv"],
         )
         # Corrige les valeurs déjà converties en segments (évite une double conversion)
         c.solo_max_size = data["solo_max_size"]
@@ -662,6 +722,7 @@ class Constraints:
             )
             c.runners_data[name] = coureur
 
+        c.inaccessible_segments = set(data.get("inaccessible_segments", []))
         c.once_max = [tuple(entry) for entry in data["once_max"]]
         return c
 

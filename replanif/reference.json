@@ -1,16 +1,17 @@
 {
   "constraints": {
-    "total_km": 440,
-    "nb_active_segments": 176,
+    "total_km": 430,
+    "nb_active_segments": 172,
     "speed_kmh": 9.0,
-    "start_hour": 15.0,
+    "start_hour": 14.0,
     "solo_max_size": 6,
     "defaults": {
       "solo_max": 1,
       "nuit_max": 1,
       "repos_jour": 26,
       "repos_nuit": 33,
-      "max_same_partenaire": 2
+      "max_same_partenaire": 2,
+      "lvl": null
     },
     "nuit_debut": 23.5,
     "nuit_fin": 6.0,
@@ -18,6 +19,7 @@
     "solo_autorise_fin": 23.0,
     "allow_flex_flex": true,
     "profil_csv": "gpx/altitude.csv",
+    "acces_csv": "gpx/access_points.csv",
     "compat_matrix": {
       "Pierre|Vincent": 2,
       "Pierre|Yacine": 2,
@@ -165,6 +167,7 @@
         ]
       }
     ],
+    "inaccessible_segments": [],
     "once_max": [
       [
         "Gaelle",
@@ -186,7 +189,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -194,7 +198,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -202,7 +207,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -210,7 +216,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -218,7 +225,8 @@
           "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 4
         }
       },
       "Alexis": {
@@ -233,11 +241,12 @@
             ],
             "window": [
               [
-                28,
-                43
+                30,
+                48
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -249,11 +258,12 @@
             ],
             "window": [
               [
-                115,
-                129
+                117,
+                135
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -261,7 +271,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": 0
+            "pinned": 0,
+            "dplus_max": null
           },
           {
             "size": [
@@ -269,7 +280,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -277,7 +289,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -285,7 +298,8 @@
           "nuit_max": 5,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 3
+          "max_same_partenaire": 3,
+          "lvl": 5
         }
       },
       "Olivier": {
@@ -300,11 +314,12 @@
             ],
             "window": [
               [
-                28,
-                43
+                30,
+                48
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -316,11 +331,12 @@
             ],
             "window": [
               [
-                115,
-                129
+                117,
+                135
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -328,7 +344,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -336,7 +353,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -344,7 +362,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -352,7 +371,8 @@
           "nuit_max": 5,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 3
+          "max_same_partenaire": 3,
+          "lvl": 5
         }
       },
       "Vincent": {
@@ -363,7 +383,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -371,7 +392,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -379,7 +401,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -387,7 +410,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -395,7 +419,8 @@
           "nuit_max": 1,
           "repos_jour": 22,
           "repos_nuit": 29,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 3
         }
       },
       "Matthieu": {
@@ -406,7 +431,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -414,7 +440,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -422,7 +449,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -430,7 +458,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -438,7 +467,8 @@
           "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 4
         }
       },
       "Guillaume": {
@@ -451,10 +481,11 @@
             "window": [
               [
                 0,
-                86
+                90
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -464,10 +495,11 @@
             "window": [
               [
                 0,
-                86
+                90
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -475,7 +507,8 @@
           "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 5
         }
       },
       "Eric": {
@@ -488,10 +521,11 @@
             "window": [
               [
                 0,
-                93
+                97
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -501,10 +535,11 @@
             "window": [
               [
                 0,
-                93
+                97
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -512,7 +547,8 @@
           "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 3
         }
       },
       "Yacine": {
@@ -525,10 +561,11 @@
             "window": [
               [
                 0,
-                93
+                97
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -538,10 +575,11 @@
             "window": [
               [
                 0,
-                93
+                97
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -551,10 +589,11 @@
             "window": [
               [
                 0,
-                93
+                97
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -562,7 +601,8 @@
           "nuit_max": 1,
           "repos_jour": 18,
           "repos_nuit": 29,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 2
         }
       },
       "Alexandre": {
@@ -573,7 +613,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -581,7 +622,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -589,7 +631,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -597,7 +640,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -605,7 +649,8 @@
           "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 3
         }
       },
       "Antoine": {
@@ -616,7 +661,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -624,7 +670,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -632,7 +679,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -640,7 +688,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -648,7 +697,8 @@
           "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 3
         }
       },
       "Ludovic": {
@@ -659,7 +709,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -667,7 +718,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -675,7 +727,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -683,7 +736,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -691,7 +745,8 @@
           "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 4
         }
       },
       "Nelly": {
@@ -705,7 +760,8 @@
               0
             ],
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": 600
           },
           {
             "size": [
@@ -716,7 +772,8 @@
               0
             ],
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": 600
           },
           {
             "size": [
@@ -724,7 +781,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": 600
           },
           {
             "size": [
@@ -732,15 +790,17 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": 600
           }
         ],
         "options": {
           "solo_max": 1,
-          "nuit_max": 0,
+          "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 1
         }
       },
       "Gaelle": {
@@ -754,7 +814,8 @@
               1
             ],
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -762,7 +823,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -770,7 +832,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -778,15 +841,17 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
           "solo_max": 1,
-          "nuit_max": 0,
+          "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 1
         }
       },
       "Clemence": {
@@ -802,10 +867,11 @@
             "window": [
               [
                 0,
-                28
+                32
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           },
           {
             "size": [
@@ -814,11 +880,12 @@
             "paired_with": null,
             "window": [
               [
-                151,
-                183
+                154,
+                179
               ]
             ],
-            "pinned": null
+            "pinned": null,
+            "dplus_max": null
           }
         ],
         "options": {
@@ -826,7 +893,8 @@
           "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 1
         }
       },
       "Leo": {
@@ -837,7 +905,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": 600
           },
           {
             "size": [
@@ -845,7 +914,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": 600
           },
           {
             "size": [
@@ -853,7 +923,8 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": 600
           },
           {
             "size": [
@@ -861,15 +932,17 @@
             ],
             "paired_with": null,
             "window": null,
-            "pinned": null
+            "pinned": null,
+            "dplus_max": 600
           }
         ],
         "options": {
-          "solo_max": 0,
+          "solo_max": 1,
           "nuit_max": 1,
           "repos_jour": 26,
           "repos_nuit": 33,
-          "max_same_partenaire": 2
+          "max_same_partenaire": 2,
+          "lvl": 1
         }
       }
     }
@@ -882,349 +955,83 @@
       "end": 4,
       "size": 4,
       "size_decl": 4,
-      "km": 10.0,
+      "km": 10.1984,
       "flex": false,
       "solo": false,
       "night": false,
-      "partner": "Olivier",
+      "partner": "Gaelle",
       "pinned": 0,
-      "rest_h": 7.222222222222222,
+      "rest_h": 8.61111111111111,
       "rest_min_segs": 26,
-      "d_plus": 38.0,
-      "d_moins": 35.0
+      "d_plus": 44.1,
+      "d_moins": 42.01,
+      "start_acces": {
+        "jalon": 0,
+        "km_cross": 0.03567508352276248,
+        "lat": 45.76506991667849,
+        "lon": 4.8617592501063935,
+        "delta_km": 0.03567508352276248,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "Avenue Thiers"
+      },
+      "end_acces": {
+        "jalon": 4,
+        "km_cross": 10.234096134353779,
+        "lat": 45.81434737995941,
+        "lon": 4.934538110316001,
+        "delta_km": 0.23409613435377885,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      }
     },
     {
-      "runner": "Olivier",
+      "runner": "Gaelle",
       "k": 2,
       "start": 0,
       "end": 4,
       "size": 4,
       "size_decl": 4,
-      "km": 10.0,
+      "km": 10.1984,
       "flex": false,
       "solo": false,
       "night": false,
       "partner": "Alexis",
       "pinned": null,
-      "rest_h": 7.222222222222222,
+      "rest_h": 17.5,
       "rest_min_segs": 26,
-      "d_plus": 38.0,
-      "d_moins": 35.0
-    },
-    {
-      "runner": "Eric",
-      "k": 0,
-      "start": 4,
-      "end": 10,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Yacine",
-      "pinned": null,
-      "rest_h": 8.88888888888889,
-      "rest_min_segs": 26,
-      "d_plus": 225.0,
-      "d_moins": 170.0
-    },
-    {
-      "runner": "Yacine",
-      "k": 1,
-      "start": 4,
-      "end": 10,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Eric",
-      "pinned": null,
-      "rest_h": 8.88888888888889,
-      "rest_min_segs": 18,
-      "d_plus": 225.0,
-      "d_moins": 170.0
-    },
-    {
-      "runner": "Vincent",
-      "k": 2,
-      "start": 10,
-      "end": 14,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": true,
-      "night": false,
-      "partner": null,
-      "pinned": null,
-      "rest_h": 13.333333333333334,
-      "rest_min_segs": 22,
-      "d_plus": 96.0,
-      "d_moins": 39.0
-    },
-    {
-      "runner": "Guillaume",
-      "k": 0,
-      "start": 14,
-      "end": 22,
-      "size": 8,
-      "size_decl": 8,
-      "km": 20.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Pierre",
-      "pinned": null,
-      "rest_h": 7.222222222222222,
-      "rest_min_segs": 26,
-      "d_plus": 182.0,
-      "d_moins": 240.0
-    },
-    {
-      "runner": "Pierre",
-      "k": 0,
-      "start": 14,
-      "end": 22,
-      "size": 8,
-      "size_decl": 8,
-      "km": 20.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Guillaume",
-      "pinned": null,
-      "rest_h": 9.444444444444445,
-      "rest_min_segs": 26,
-      "d_plus": 182.0,
-      "d_moins": 240.0
-    },
-    {
-      "runner": "Clemence",
-      "k": 0,
-      "start": 22,
-      "end": 26,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Nelly",
-      "pinned": null,
-      "rest_h": 35.55555555555556,
-      "rest_min_segs": 26,
-      "d_plus": 91.0,
-      "d_moins": 50.0
-    },
-    {
-      "runner": "Nelly",
-      "k": 0,
-      "start": 22,
-      "end": 26,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Clemence",
-      "pinned": null,
-      "rest_h": 12.777777777777779,
-      "rest_min_segs": 26,
-      "d_plus": 91.0,
-      "d_moins": 50.0
-    },
-    {
-      "runner": "Gaelle",
-      "k": 2,
-      "start": 26,
-      "end": 30,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Leo",
-      "pinned": null,
-      "rest_h": 13.88888888888889,
-      "rest_min_segs": 26,
-      "d_plus": 154.0,
-      "d_moins": 128.0
-    },
-    {
-      "runner": "Leo",
-      "k": 0,
-      "start": 26,
-      "end": 30,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Gaelle",
-      "pinned": null,
-      "rest_h": 11.666666666666668,
-      "rest_min_segs": 26,
-      "d_plus": 154.0,
-      "d_moins": 128.0
-    },
-    {
-      "runner": "Alexis",
-      "k": 0,
-      "start": 30,
-      "end": 42,
-      "size": 12,
-      "size_decl": 12,
-      "km": 30.0,
-      "flex": false,
-      "solo": false,
-      "night": true,
-      "partner": "Olivier",
-      "pinned": null,
-      "rest_h": 10.555555555555555,
-      "rest_min_segs": 33,
-      "d_plus": 297.0,
-      "d_moins": 286.0
+      "d_plus": 44.1,
+      "d_moins": 42.01,
+      "start_acces": {
+        "jalon": 0,
+        "km_cross": 0.03567508352276248,
+        "lat": 45.76506991667849,
+        "lon": 4.8617592501063935,
+        "delta_km": 0.03567508352276248,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "Avenue Thiers"
+      },
+      "end_acces": {
+        "jalon": 4,
+        "km_cross": 10.234096134353779,
+        "lat": 45.81434737995941,
+        "lon": 4.934538110316001,
+        "delta_km": 0.23409613435377885,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      }
     },
     {
       "runner": "Olivier",
-      "k": 0,
-      "start": 30,
-      "end": 42,
-      "size": 12,
-      "size_decl": 12,
-      "km": 30.0,
-      "flex": false,
-      "solo": false,
-      "night": true,
-      "partner": "Alexis",
-      "pinned": null,
-      "rest_h": 9.444444444444445,
-      "rest_min_segs": 33,
-      "d_plus": 297.0,
-      "d_moins": 286.0
-    },
-    {
-      "runner": "Eric",
-      "k": 1,
-      "start": 42,
-      "end": 48,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": true,
-      "partner": "Yacine",
-      "pinned": null,
-      "rest_h": null,
-      "rest_min_segs": 33,
-      "d_plus": 213.0,
-      "d_moins": 100.0
-    },
-    {
-      "runner": "Yacine",
       "k": 2,
-      "start": 42,
-      "end": 48,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": true,
-      "partner": "Eric",
-      "pinned": null,
-      "rest_h": 10.0,
-      "rest_min_segs": 29,
-      "d_plus": 213.0,
-      "d_moins": 100.0
-    },
-    {
-      "runner": "Guillaume",
-      "k": 1,
-      "start": 48,
-      "end": 56,
-      "size": 8,
-      "size_decl": 8,
-      "km": 20.0,
-      "flex": false,
-      "solo": false,
-      "night": true,
-      "partner": "Ludovic",
-      "pinned": null,
-      "rest_h": null,
-      "rest_min_segs": 33,
-      "d_plus": 420.0,
-      "d_moins": 328.0
-    },
-    {
-      "runner": "Ludovic",
-      "k": 0,
-      "start": 48,
-      "end": 56,
-      "size": 8,
-      "size_decl": 8,
-      "km": 20.0,
-      "flex": false,
-      "solo": false,
-      "night": true,
-      "partner": "Guillaume",
-      "pinned": null,
-      "rest_h": 10.555555555555555,
-      "rest_min_segs": 33,
-      "d_plus": 420.0,
-      "d_moins": 328.0
-    },
-    {
-      "runner": "Matthieu",
-      "k": 0,
-      "start": 56,
-      "end": 62,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Pierre",
-      "pinned": null,
-      "rest_h": 7.222222222222222,
-      "rest_min_segs": 26,
-      "d_plus": 219.0,
-      "d_moins": 270.0
-    },
-    {
-      "runner": "Pierre",
-      "k": 1,
-      "start": 56,
-      "end": 62,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Matthieu",
-      "pinned": null,
-      "rest_h": 7.222222222222222,
-      "rest_min_segs": 26,
-      "d_plus": 219.0,
-      "d_moins": 270.0
-    },
-    {
-      "runner": "Antoine",
-      "k": 3,
-      "start": 62,
-      "end": 67,
-      "size": 5,
-      "size_decl": 5,
-      "km": 12.5,
+      "start": 4,
+      "end": 8,
+      "size": 4,
+      "size_decl": 4,
+      "km": 9.9723,
       "flex": false,
       "solo": false,
       "night": false,
@@ -1232,50 +1039,718 @@
       "pinned": null,
       "rest_h": 7.5,
       "rest_min_segs": 26,
-      "d_plus": 123.0,
-      "d_moins": 73.0
+      "d_plus": 214.89,
+      "d_moins": 160.36,
+      "start_acces": {
+        "jalon": 4,
+        "km_cross": 10.234096134353779,
+        "lat": 45.81434737995941,
+        "lon": 4.934538110316001,
+        "delta_km": 0.23409613435377885,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 8,
+        "km_cross": 20.206413123258844,
+        "lat": 45.84773942462463,
+        "lon": 5.032477405105116,
+        "delta_km": 0.20641312325884442,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Chemin Henri IV"
+      }
     },
     {
       "runner": "Vincent",
-      "k": 0,
-      "start": 62,
-      "end": 67,
-      "size": 5,
-      "size_decl": 5,
-      "km": 12.5,
+      "k": 2,
+      "start": 4,
+      "end": 8,
+      "size": 4,
+      "size_decl": 4,
+      "km": 9.9723,
       "flex": false,
       "solo": false,
       "night": false,
-      "partner": "Antoine",
+      "partner": "Olivier",
       "pinned": null,
-      "rest_h": 11.11111111111111,
+      "rest_h": 18.88888888888889,
       "rest_min_segs": 22,
-      "d_plus": 123.0,
-      "d_moins": 73.0
+      "d_plus": 214.89,
+      "d_moins": 160.36,
+      "start_acces": {
+        "jalon": 4,
+        "km_cross": 10.234096134353779,
+        "lat": 45.81434737995941,
+        "lon": 4.934538110316001,
+        "delta_km": 0.23409613435377885,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 8,
+        "km_cross": 20.206413123258844,
+        "lat": 45.84773942462463,
+        "lon": 5.032477405105116,
+        "delta_km": 0.20641312325884442,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Chemin Henri IV"
+      }
     },
     {
-      "runner": "Alexandre",
+      "runner": "Leo",
       "k": 0,
-      "start": 67,
-      "end": 72,
-      "size": 5,
-      "size_decl": 5,
-      "km": 12.5,
+      "start": 8,
+      "end": 12,
+      "size": 4,
+      "size_decl": 4,
+      "km": 9.7936,
       "flex": false,
       "solo": true,
       "night": false,
       "partner": null,
       "pinned": null,
-      "rest_h": 9.722222222222223,
+      "rest_h": 17.77777777777778,
       "rest_min_segs": 26,
-      "d_plus": 72.0,
-      "d_moins": 41.0
+      "d_plus": 174.51,
+      "d_moins": 138.2,
+      "start_acces": {
+        "jalon": 8,
+        "km_cross": 20.206413123258844,
+        "lat": 45.84773942462463,
+        "lon": 5.032477405105116,
+        "delta_km": 0.20641312325884442,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Chemin Henri IV"
+      },
+      "end_acces": {
+        "jalon": 12,
+        "km_cross": 30.0,
+        "lat": 45.891093296730475,
+        "lon": 5.1102740150901065,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
-      "runner": "Leo",
+      "runner": "Guillaume",
+      "k": 0,
+      "start": 12,
+      "end": 20,
+      "size": 8,
+      "size_decl": 8,
+      "km": 20.0365,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Ludovic",
+      "pinned": null,
+      "rest_h": 9.166666666666668,
+      "rest_min_segs": 26,
+      "d_plus": 195.77,
+      "d_moins": 223.9,
+      "start_acces": {
+        "jalon": 12,
+        "km_cross": 30.0,
+        "lat": 45.891093296730475,
+        "lon": 5.1102740150901065,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 20,
+        "km_cross": 50.03650796011444,
+        "lat": 45.985418732127094,
+        "lon": 5.266167762224184,
+        "delta_km": 0.03650796011444157,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "Grande Rue"
+      }
+    },
+    {
+      "runner": "Ludovic",
+      "k": 0,
+      "start": 12,
+      "end": 20,
+      "size": 8,
+      "size_decl": 8,
+      "km": 20.0365,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Guillaume",
+      "pinned": null,
+      "rest_h": 18.88888888888889,
+      "rest_min_segs": 26,
+      "d_plus": 195.77,
+      "d_moins": 223.9,
+      "start_acces": {
+        "jalon": 12,
+        "km_cross": 30.0,
+        "lat": 45.891093296730475,
+        "lon": 5.1102740150901065,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 20,
+        "km_cross": 50.03650796011444,
+        "lat": 45.985418732127094,
+        "lon": 5.266167762224184,
+        "delta_km": 0.03650796011444157,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "Grande Rue"
+      }
+    },
+    {
+      "runner": "Pierre",
       "k": 1,
-      "start": 72,
-      "end": 76,
+      "start": 20,
+      "end": 26,
+      "size": 6,
+      "size_decl": 6,
+      "km": 14.9841,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Yacine",
+      "pinned": null,
+      "rest_h": 7.5,
+      "rest_min_segs": 26,
+      "d_plus": 116.53,
+      "d_moins": 73.58,
+      "start_acces": {
+        "jalon": 20,
+        "km_cross": 50.03650796011444,
+        "lat": 45.985418732127094,
+        "lon": 5.266167762224184,
+        "delta_km": 0.03650796011444157,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "Grande Rue"
+      },
+      "end_acces": {
+        "jalon": 26,
+        "km_cross": 65.02060708884838,
+        "lat": 46.07157384481536,
+        "lon": 5.341567142235704,
+        "delta_km": 0.020607088848379362,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Route de Saint-André"
+      }
+    },
+    {
+      "runner": "Yacine",
+      "k": 1,
+      "start": 20,
+      "end": 26,
+      "size": 6,
+      "size_decl": 6,
+      "km": 14.9841,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Pierre",
+      "pinned": null,
+      "rest_h": 5.833333333333334,
+      "rest_min_segs": 18,
+      "d_plus": 116.53,
+      "d_moins": 73.58,
+      "start_acces": {
+        "jalon": 20,
+        "km_cross": 50.03650796011444,
+        "lat": 45.985418732127094,
+        "lon": 5.266167762224184,
+        "delta_km": 0.03650796011444157,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "Grande Rue"
+      },
+      "end_acces": {
+        "jalon": 26,
+        "km_cross": 65.02060708884838,
+        "lat": 46.07157384481536,
+        "lon": 5.341567142235704,
+        "delta_km": 0.020607088848379362,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Route de Saint-André"
+      }
+    },
+    {
+      "runner": "Clemence",
+      "k": 0,
+      "start": 26,
+      "end": 30,
+      "size": 4,
+      "size_decl": 4,
+      "km": 9.9952,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Nelly",
+      "pinned": null,
+      "rest_h": 35.0,
+      "rest_min_segs": 26,
+      "d_plus": 155.17,
+      "d_moins": 148.42,
+      "start_acces": {
+        "jalon": 26,
+        "km_cross": 65.02060708884838,
+        "lat": 46.07157384481536,
+        "lon": 5.341567142235704,
+        "delta_km": 0.020607088848379362,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Route de Saint-André"
+      },
+      "end_acces": {
+        "jalon": 30,
+        "km_cross": 75.01576302034314,
+        "lat": 46.11582058494633,
+        "lon": 5.419094762365554,
+        "delta_km": 0.015763020343143808,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Nelly",
+      "k": 0,
+      "start": 26,
+      "end": 30,
+      "size": 4,
+      "size_decl": 4,
+      "km": 9.9952,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Clemence",
+      "pinned": null,
+      "rest_h": 10.277777777777779,
+      "rest_min_segs": 26,
+      "d_plus": 155.17,
+      "d_moins": 148.42,
+      "start_acces": {
+        "jalon": 26,
+        "km_cross": 65.02060708884838,
+        "lat": 46.07157384481536,
+        "lon": 5.341567142235704,
+        "delta_km": 0.020607088848379362,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Route de Saint-André"
+      },
+      "end_acces": {
+        "jalon": 30,
+        "km_cross": 75.01576302034314,
+        "lat": 46.11582058494633,
+        "lon": 5.419094762365554,
+        "delta_km": 0.015763020343143808,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Alexandre",
+      "k": 0,
+      "start": 30,
+      "end": 35,
+      "size": 5,
+      "size_decl": 5,
+      "km": 12.3806,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Antoine",
+      "pinned": null,
+      "rest_h": 10.0,
+      "rest_min_segs": 26,
+      "d_plus": 368.07,
+      "d_moins": 125.4,
+      "start_acces": {
+        "jalon": 30,
+        "km_cross": 75.01576302034314,
+        "lat": 46.11582058494633,
+        "lon": 5.419094762365554,
+        "delta_km": 0.015763020343143808,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 35,
+        "km_cross": 87.39639422076745,
+        "lat": 46.20757662452698,
+        "lon": 5.435588301403338,
+        "delta_km": -0.10360577923255221,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Impasse des Chaplannes"
+      }
+    },
+    {
+      "runner": "Antoine",
+      "k": 3,
+      "start": 30,
+      "end": 35,
+      "size": 5,
+      "size_decl": 5,
+      "km": 12.3806,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Alexandre",
+      "pinned": null,
+      "rest_h": 7.222222222222222,
+      "rest_min_segs": 26,
+      "d_plus": 368.07,
+      "d_moins": 125.4,
+      "start_acces": {
+        "jalon": 30,
+        "km_cross": 75.01576302034314,
+        "lat": 46.11582058494633,
+        "lon": 5.419094762365554,
+        "delta_km": 0.015763020343143808,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 35,
+        "km_cross": 87.39639422076745,
+        "lat": 46.20757662452698,
+        "lon": 5.435588301403338,
+        "delta_km": -0.10360577923255221,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Impasse des Chaplannes"
+      }
+    },
+    {
+      "runner": "Alexis",
+      "k": 0,
+      "start": 35,
+      "end": 47,
+      "size": 12,
+      "size_decl": 12,
+      "km": 30.1389,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Olivier",
+      "pinned": null,
+      "rest_h": 9.166666666666668,
+      "rest_min_segs": 33,
+      "d_plus": 339.56,
+      "d_moins": 512.61,
+      "start_acces": {
+        "jalon": 35,
+        "km_cross": 87.39639422076745,
+        "lat": 46.20757662452698,
+        "lon": 5.435588301403338,
+        "delta_km": -0.10360577923255221,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Impasse des Chaplannes"
+      },
+      "end_acces": {
+        "jalon": 47,
+        "km_cross": 117.53524544660911,
+        "lat": 46.37764992227109,
+        "lon": 5.642895461864172,
+        "delta_km": 0.03524544660911033,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "D 60"
+      }
+    },
+    {
+      "runner": "Olivier",
+      "k": 0,
+      "start": 35,
+      "end": 47,
+      "size": 12,
+      "size_decl": 12,
+      "km": 30.1389,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Alexis",
+      "pinned": null,
+      "rest_h": 10.277777777777779,
+      "rest_min_segs": 33,
+      "d_plus": 339.56,
+      "d_moins": 512.61,
+      "start_acces": {
+        "jalon": 35,
+        "km_cross": 87.39639422076745,
+        "lat": 46.20757662452698,
+        "lon": 5.435588301403338,
+        "delta_km": -0.10360577923255221,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Impasse des Chaplannes"
+      },
+      "end_acces": {
+        "jalon": 47,
+        "km_cross": 117.53524544660911,
+        "lat": 46.37764992227109,
+        "lon": 5.642895461864172,
+        "delta_km": 0.03524544660911033,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "D 60"
+      }
+    },
+    {
+      "runner": "Eric",
+      "k": 0,
+      "start": 47,
+      "end": 53,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.1025,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Yacine",
+      "pinned": null,
+      "rest_h": 9.722222222222223,
+      "rest_min_segs": 33,
+      "d_plus": 542.6,
+      "d_moins": 318.17,
+      "start_acces": {
+        "jalon": 47,
+        "km_cross": 117.53524544660911,
+        "lat": 46.37764992227109,
+        "lon": 5.642895461864172,
+        "delta_km": 0.03524544660911033,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "D 60"
+      },
+      "end_acces": {
+        "jalon": 53,
+        "km_cross": 132.63775795735947,
+        "lat": 46.46275955102388,
+        "lon": 5.662405161911245,
+        "delta_km": 0.13775795735946872,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Yacine",
+      "k": 2,
+      "start": 47,
+      "end": 53,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.1025,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Eric",
+      "pinned": null,
+      "rest_h": 8.61111111111111,
+      "rest_min_segs": 29,
+      "d_plus": 542.6,
+      "d_moins": 318.17,
+      "start_acces": {
+        "jalon": 47,
+        "km_cross": 117.53524544660911,
+        "lat": 46.37764992227109,
+        "lon": 5.642895461864172,
+        "delta_km": 0.03524544660911033,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "D 60"
+      },
+      "end_acces": {
+        "jalon": 53,
+        "km_cross": 132.63775795735947,
+        "lat": 46.46275955102388,
+        "lon": 5.662405161911245,
+        "delta_km": 0.13775795735946872,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Guillaume",
+      "k": 1,
+      "start": 53,
+      "end": 61,
+      "size": 8,
+      "size_decl": 8,
+      "km": 20.0558,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Pierre",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 33,
+      "d_plus": 362.18,
+      "d_moins": 477.52,
+      "start_acces": {
+        "jalon": 53,
+        "km_cross": 132.63775795735947,
+        "lat": 46.46275955102388,
+        "lon": 5.662405161911245,
+        "delta_km": 0.13775795735946872,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 61,
+        "km_cross": 152.6935322381662,
+        "lat": 46.5930096785788,
+        "lon": 5.67529594475224,
+        "delta_km": 0.19353223816619902,
+        "acces": "cross",
+        "road_type": "primary",
+        "road_name": "D 678"
+      }
+    },
+    {
+      "runner": "Pierre",
+      "k": 0,
+      "start": 53,
+      "end": 61,
+      "size": 8,
+      "size_decl": 8,
+      "km": 20.0558,
+      "flex": false,
+      "solo": false,
+      "night": true,
+      "partner": "Guillaume",
+      "pinned": null,
+      "rest_h": 12.777777777777779,
+      "rest_min_segs": 33,
+      "d_plus": 362.18,
+      "d_moins": 477.52,
+      "start_acces": {
+        "jalon": 53,
+        "km_cross": 132.63775795735947,
+        "lat": 46.46275955102388,
+        "lon": 5.662405161911245,
+        "delta_km": 0.13775795735946872,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 61,
+        "km_cross": 152.6935322381662,
+        "lat": 46.5930096785788,
+        "lon": 5.67529594475224,
+        "delta_km": 0.19353223816619902,
+        "acces": "cross",
+        "road_type": "primary",
+        "road_name": "D 678"
+      }
+    },
+    {
+      "runner": "Antoine",
+      "k": 0,
+      "start": 61,
+      "end": 67,
+      "size": 6,
+      "size_decl": 6,
+      "km": 14.8065,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Matthieu",
+      "pinned": null,
+      "rest_h": 7.5,
+      "rest_min_segs": 26,
+      "d_plus": 145.72,
+      "d_moins": 83.4,
+      "start_acces": {
+        "jalon": 61,
+        "km_cross": 152.6935322381662,
+        "lat": 46.5930096785788,
+        "lon": 5.67529594475224,
+        "delta_km": 0.19353223816619902,
+        "acces": "cross",
+        "road_type": "primary",
+        "road_name": "D 678"
+      },
+      "end_acces": {
+        "jalon": 67,
+        "km_cross": 167.5,
+        "lat": 46.71327228437225,
+        "lon": 5.691945201445495,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Matthieu",
+      "k": 0,
+      "start": 61,
+      "end": 67,
+      "size": 6,
+      "size_decl": 6,
+      "km": 14.8065,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Antoine",
+      "pinned": null,
+      "rest_h": 7.5,
+      "rest_min_segs": 26,
+      "d_plus": 145.72,
+      "d_moins": 83.4,
+      "start_acces": {
+        "jalon": 61,
+        "km_cross": 152.6935322381662,
+        "lat": 46.5930096785788,
+        "lon": 5.67529594475224,
+        "delta_km": 0.19353223816619902,
+        "acces": "cross",
+        "road_type": "primary",
+        "road_name": "D 678"
+      },
+      "end_acces": {
+        "jalon": 67,
+        "km_cross": 167.5,
+        "lat": 46.71327228437225,
+        "lon": 5.691945201445495,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Gaelle",
+      "k": 0,
+      "start": 67,
+      "end": 71,
       "size": 4,
       "size_decl": 4,
       "km": 10.0,
@@ -1284,52 +1759,36 @@
       "night": false,
       "partner": "Nelly",
       "pinned": null,
-      "rest_h": 16.11111111111111,
+      "rest_h": 11.666666666666668,
       "rest_min_segs": 26,
-      "d_plus": 97.0,
-      "d_moins": 39.0
+      "d_plus": 69.3,
+      "d_moins": 46.0,
+      "start_acces": {
+        "jalon": 67,
+        "km_cross": 167.5,
+        "lat": 46.71327228437225,
+        "lon": 5.691945201445495,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 71,
+        "km_cross": 177.5,
+        "lat": 46.779849294769974,
+        "lon": 5.73676365961712,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
       "runner": "Nelly",
-      "k": 2,
-      "start": 72,
-      "end": 76,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Leo",
-      "pinned": null,
-      "rest_h": 10.0,
-      "rest_min_segs": 26,
-      "d_plus": 97.0,
-      "d_moins": 39.0
-    },
-    {
-      "runner": "Olivier",
-      "k": 3,
-      "start": 76,
-      "end": 80,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": true,
-      "night": false,
-      "partner": null,
-      "pinned": null,
-      "rest_h": 10.0,
-      "rest_min_segs": 26,
-      "d_plus": 55.0,
-      "d_moins": 358.0
-    },
-    {
-      "runner": "Alexis",
-      "k": 3,
-      "start": 80,
-      "end": 84,
+      "k": 1,
+      "start": 67,
+      "end": 71,
       "size": 4,
       "size_decl": 4,
       "km": 10.0,
@@ -1338,28 +1797,220 @@
       "night": false,
       "partner": "Gaelle",
       "pinned": null,
-      "rest_h": 8.88888888888889,
+      "rest_h": 18.055555555555557,
       "rest_min_segs": 26,
-      "d_plus": 130.0,
-      "d_moins": 154.0
+      "d_plus": 69.3,
+      "d_moins": 46.0,
+      "start_acces": {
+        "jalon": 67,
+        "km_cross": 167.5,
+        "lat": 46.71327228437225,
+        "lon": 5.691945201445495,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 71,
+        "km_cross": 177.5,
+        "lat": 46.779849294769974,
+        "lon": 5.73676365961712,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
-      "runner": "Gaelle",
+      "runner": "Alexandre",
+      "k": 1,
+      "start": 71,
+      "end": 76,
+      "size": 5,
+      "size_decl": 5,
+      "km": 12.5,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": 8.61111111111111,
+      "rest_min_segs": 26,
+      "d_plus": 128.5,
+      "d_moins": 85.3,
+      "start_acces": {
+        "jalon": 71,
+        "km_cross": 177.5,
+        "lat": 46.779849294769974,
+        "lon": 5.73676365961712,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 76,
+        "km_cross": 190.0,
+        "lat": 46.8600254,
+        "lon": 5.7488803,
+        "delta_km": 0.0,
+        "acces": "near",
+        "road_type": "unclassified",
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Leo",
+      "k": 1,
+      "start": 76,
+      "end": 80,
+      "size": 4,
+      "size_decl": 4,
+      "km": 9.2141,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Vincent",
+      "pinned": null,
+      "rest_h": 15.555555555555557,
+      "rest_min_segs": 26,
+      "d_plus": 114.63,
+      "d_moins": 352.1,
+      "start_acces": {
+        "jalon": 76,
+        "km_cross": 190.0,
+        "lat": 46.8600254,
+        "lon": 5.7488803,
+        "delta_km": 0.0,
+        "acces": "near",
+        "road_type": "unclassified",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 80,
+        "km_cross": 199.21412607500125,
+        "lat": 46.927658165766815,
+        "lon": 5.7872499330845315,
+        "delta_km": -0.7858739249987536,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Rue de l'École"
+      }
+    },
+    {
+      "runner": "Vincent",
+      "k": 3,
+      "start": 76,
+      "end": 80,
+      "size": 4,
+      "size_decl": 4,
+      "km": 9.2141,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Leo",
+      "pinned": null,
+      "rest_h": 9.166666666666668,
+      "rest_min_segs": 22,
+      "d_plus": 114.63,
+      "d_moins": 352.1,
+      "start_acces": {
+        "jalon": 76,
+        "km_cross": 190.0,
+        "lat": 46.8600254,
+        "lon": 5.7488803,
+        "delta_km": 0.0,
+        "acces": "near",
+        "road_type": "unclassified",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 80,
+        "km_cross": 199.21412607500125,
+        "lat": 46.927658165766815,
+        "lon": 5.7872499330845315,
+        "delta_km": -0.7858739249987536,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Rue de l'École"
+      }
+    },
+    {
+      "runner": "Alexis",
       "k": 3,
       "start": 80,
       "end": 84,
       "size": 4,
       "size_decl": 4,
-      "km": 10.0,
+      "km": 10.0715,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": 9.444444444444445,
+      "rest_min_segs": 26,
+      "d_plus": 87.37,
+      "d_moins": 202.87,
+      "start_acces": {
+        "jalon": 80,
+        "km_cross": 199.21412607500125,
+        "lat": 46.927658165766815,
+        "lon": 5.7872499330845315,
+        "delta_km": -0.7858739249987536,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Rue de l'École"
+      },
+      "end_acces": {
+        "jalon": 84,
+        "km_cross": 209.28561612646686,
+        "lat": 46.99906459076615,
+        "lon": 5.761484287463585,
+        "delta_km": -0.7143838735331371,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "Rue de la Saline"
+      }
+    },
+    {
+      "runner": "Olivier",
+      "k": 3,
+      "start": 84,
+      "end": 88,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.7144,
       "flex": false,
       "solo": false,
       "night": false,
-      "partner": "Alexis",
+      "partner": "Yacine",
       "pinned": null,
-      "rest_h": 7.777777777777779,
+      "rest_h": 8.333333333333334,
       "rest_min_segs": 26,
-      "d_plus": 130.0,
-      "d_moins": 154.0
+      "d_plus": 112.0,
+      "d_moins": 81.93,
+      "start_acces": {
+        "jalon": 84,
+        "km_cross": 209.28561612646686,
+        "lat": 46.99906459076615,
+        "lon": 5.761484287463585,
+        "delta_km": -0.7143838735331371,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "Rue de la Saline"
+      },
+      "end_acces": {
+        "jalon": 88,
+        "km_cross": 220.0,
+        "lat": 47.06203096236815,
+        "lon": 5.830517837275846,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
       "runner": "Yacine",
@@ -1368,94 +2019,270 @@
       "end": 88,
       "size": 4,
       "size_decl": 4,
-      "km": 10.0,
+      "km": 10.7144,
       "flex": false,
-      "solo": true,
+      "solo": false,
       "night": false,
-      "partner": null,
+      "partner": "Olivier",
       "pinned": null,
       "rest_h": null,
       "rest_min_segs": 18,
-      "d_plus": 46.0,
-      "d_moins": 70.0
+      "d_plus": 112.0,
+      "d_moins": 81.93,
+      "start_acces": {
+        "jalon": 84,
+        "km_cross": 209.28561612646686,
+        "lat": 46.99906459076615,
+        "lon": 5.761484287463585,
+        "delta_km": -0.7143838735331371,
+        "acces": "cross",
+        "road_type": "secondary",
+        "road_name": "Rue de la Saline"
+      },
+      "end_acces": {
+        "jalon": 88,
+        "km_cross": 220.0,
+        "lat": 47.06203096236815,
+        "lon": 5.830517837275846,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
-      "runner": "Matthieu",
+      "runner": "Eric",
       "k": 1,
       "start": 88,
       "end": 94,
       "size": 6,
       "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Pierre",
-      "pinned": null,
-      "rest_h": 9.444444444444445,
-      "rest_min_segs": 26,
-      "d_plus": 292.0,
-      "d_moins": 319.0
-    },
-    {
-      "runner": "Pierre",
-      "k": 2,
-      "start": 88,
-      "end": 94,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Matthieu",
-      "pinned": null,
-      "rest_h": 12.222222222222223,
-      "rest_min_segs": 26,
-      "d_plus": 292.0,
-      "d_moins": 319.0
-    },
-    {
-      "runner": "Antoine",
-      "k": 0,
-      "start": 94,
-      "end": 100,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
+      "km": 15.0799,
       "flex": false,
       "solo": false,
       "night": false,
       "partner": "Ludovic",
       "pinned": null,
-      "rest_h": 7.777777777777779,
+      "rest_h": null,
       "rest_min_segs": 26,
-      "d_plus": 354.0,
-      "d_moins": 221.0
+      "d_plus": 397.1,
+      "d_moins": 404.04,
+      "start_acces": {
+        "jalon": 88,
+        "km_cross": 220.0,
+        "lat": 47.06203096236815,
+        "lon": 5.830517837275846,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 94,
+        "km_cross": 235.0798953992413,
+        "lat": 47.17035856042403,
+        "lon": 5.908032673498234,
+        "delta_km": 0.07989539924130895,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Route de Boussières"
+      }
     },
     {
       "runner": "Ludovic",
+      "k": 1,
+      "start": 88,
+      "end": 94,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0799,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Eric",
+      "pinned": null,
+      "rest_h": 10.0,
+      "rest_min_segs": 26,
+      "d_plus": 397.1,
+      "d_moins": 404.04,
+      "start_acces": {
+        "jalon": 88,
+        "km_cross": 220.0,
+        "lat": 47.06203096236815,
+        "lon": 5.830517837275846,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 94,
+        "km_cross": 235.0798953992413,
+        "lat": 47.17035856042403,
+        "lon": 5.908032673498234,
+        "delta_km": 0.07989539924130895,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Route de Boussières"
+      }
+    },
+    {
+      "runner": "Antoine",
       "k": 1,
       "start": 94,
       "end": 100,
       "size": 6,
       "size_decl": 6,
-      "km": 15.0,
+      "km": 14.8256,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Matthieu",
+      "pinned": null,
+      "rest_h": 11.11111111111111,
+      "rest_min_segs": 26,
+      "d_plus": 425.78,
+      "d_moins": 231.66,
+      "start_acces": {
+        "jalon": 94,
+        "km_cross": 235.0798953992413,
+        "lat": 47.17035856042403,
+        "lon": 5.908032673498234,
+        "delta_km": 0.07989539924130895,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Route de Boussières"
+      },
+      "end_acces": {
+        "jalon": 100,
+        "km_cross": 249.90544637980298,
+        "lat": 47.219084685966195,
+        "lon": 6.048646140550242,
+        "delta_km": -0.09455362019701852,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Matthieu",
+      "k": 1,
+      "start": 94,
+      "end": 100,
+      "size": 6,
+      "size_decl": 6,
+      "km": 14.8256,
       "flex": false,
       "solo": false,
       "night": false,
       "partner": "Antoine",
       "pinned": null,
-      "rest_h": 12.222222222222223,
+      "rest_h": 8.333333333333334,
       "rest_min_segs": 26,
-      "d_plus": 354.0,
-      "d_moins": 221.0
+      "d_plus": 425.78,
+      "d_moins": 231.66,
+      "start_acces": {
+        "jalon": 94,
+        "km_cross": 235.0798953992413,
+        "lat": 47.17035856042403,
+        "lon": 5.908032673498234,
+        "delta_km": 0.07989539924130895,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Route de Boussières"
+      },
+      "end_acces": {
+        "jalon": 100,
+        "km_cross": 249.90544637980298,
+        "lat": 47.219084685966195,
+        "lon": 6.048646140550242,
+        "delta_km": -0.09455362019701852,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      }
     },
     {
       "runner": "Alexandre",
-      "k": 1,
+      "k": 2,
       "start": 107,
-      "end": 112,
+      "end": 113,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0946,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Pierre",
+      "pinned": null,
+      "rest_h": 7.5,
+      "rest_min_segs": 26,
+      "d_plus": 351.52,
+      "d_moins": 380.8,
+      "start_acces": {
+        "jalon": 100,
+        "km_cross": 249.90544637980298,
+        "lat": 47.219084685966195,
+        "lon": 6.048646140550242,
+        "delta_km": -0.09455362019701852,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 106,
+        "km_cross": 265.0,
+        "lat": 47.27088677017992,
+        "lon": 6.194119275338363,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Pierre",
+      "k": 2,
+      "start": 107,
+      "end": 113,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.0946,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Alexandre",
+      "pinned": null,
+      "rest_h": 9.166666666666668,
+      "rest_min_segs": 26,
+      "d_plus": 351.52,
+      "d_moins": 380.8,
+      "start_acces": {
+        "jalon": 100,
+        "km_cross": 249.90544637980298,
+        "lat": 47.219084685966195,
+        "lon": 6.048646140550242,
+        "delta_km": -0.09455362019701852,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 106,
+        "km_cross": 265.0,
+        "lat": 47.27088677017992,
+        "lon": 6.194119275338363,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Gaelle",
+      "k": 1,
+      "start": 113,
+      "end": 118,
       "size": 5,
       "size_decl": 5,
       "km": 12.5,
@@ -1464,70 +2291,74 @@
       "night": false,
       "partner": "Vincent",
       "pinned": null,
-      "rest_h": 7.222222222222222,
+      "rest_h": 9.444444444444445,
       "rest_min_segs": 26,
-      "d_plus": 327.0,
-      "d_moins": 208.0
+      "d_plus": 352.6,
+      "d_moins": 280.0,
+      "start_acces": {
+        "jalon": 106,
+        "km_cross": 265.0,
+        "lat": 47.27088677017992,
+        "lon": 6.194119275338363,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 111,
+        "km_cross": 277.5,
+        "lat": 47.323441546840655,
+        "lon": 6.314602347493088,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
       "runner": "Vincent",
-      "k": 1,
-      "start": 107,
-      "end": 112,
+      "k": 0,
+      "start": 113,
+      "end": 118,
       "size": 5,
       "size_decl": 5,
       "km": 12.5,
       "flex": false,
       "solo": false,
       "night": false,
-      "partner": "Alexandre",
-      "pinned": null,
-      "rest_h": 6.111111111111112,
-      "rest_min_segs": 22,
-      "d_plus": 327.0,
-      "d_moins": 208.0
-    },
-    {
-      "runner": "Gaelle",
-      "k": 0,
-      "start": 112,
-      "end": 116,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Nelly",
-      "pinned": null,
-      "rest_h": 11.666666666666668,
-      "rest_min_segs": 26,
-      "d_plus": 230.0,
-      "d_moins": 203.0
-    },
-    {
-      "runner": "Nelly",
-      "k": 1,
-      "start": 112,
-      "end": 116,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
       "partner": "Gaelle",
       "pinned": null,
-      "rest_h": 9.444444444444445,
-      "rest_min_segs": 26,
-      "d_plus": 230.0,
-      "d_moins": 203.0
+      "rest_h": 11.666666666666668,
+      "rest_min_segs": 22,
+      "d_plus": 352.6,
+      "d_moins": 280.0,
+      "start_acces": {
+        "jalon": 106,
+        "km_cross": 265.0,
+        "lat": 47.27088677017992,
+        "lon": 6.194119275338363,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 111,
+        "km_cross": 277.5,
+        "lat": 47.323441546840655,
+        "lon": 6.314602347493088,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
       "runner": "Alexis",
       "k": 1,
-      "start": 116,
-      "end": 128,
+      "start": 118,
+      "end": 130,
       "size": 12,
       "size_decl": 12,
       "km": 30.0,
@@ -1538,14 +2369,34 @@
       "pinned": null,
       "rest_h": 9.722222222222223,
       "rest_min_segs": 33,
-      "d_plus": 584.0,
-      "d_moins": 709.0
+      "d_plus": 858.6,
+      "d_moins": 1013.8,
+      "start_acces": {
+        "jalon": 111,
+        "km_cross": 277.5,
+        "lat": 47.323441546840655,
+        "lon": 6.314602347493088,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 123,
+        "km_cross": 307.5,
+        "lat": 47.47667777105008,
+        "lon": 6.476506650969562,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
       "runner": "Olivier",
       "k": 1,
-      "start": 116,
-      "end": 128,
+      "start": 118,
+      "end": 130,
       "size": 12,
       "size_decl": 12,
       "km": 30.0,
@@ -1554,19 +2405,39 @@
       "night": true,
       "partner": "Alexis",
       "pinned": null,
-      "rest_h": 12.5,
+      "rest_h": 9.722222222222223,
       "rest_min_segs": 33,
-      "d_plus": 584.0,
-      "d_moins": 709.0
+      "d_plus": 858.6,
+      "d_moins": 1013.8,
+      "start_acces": {
+        "jalon": 111,
+        "km_cross": 277.5,
+        "lat": 47.323441546840655,
+        "lon": 6.314602347493088,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 123,
+        "km_cross": 307.5,
+        "lat": 47.47667777105008,
+        "lon": 6.476506650969562,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
-      "runner": "Antoine",
-      "k": 1,
-      "start": 128,
-      "end": 134,
+      "runner": "Ludovic",
+      "k": 2,
+      "start": 130,
+      "end": 136,
       "size": 6,
       "size_decl": 6,
-      "km": 15.0,
+      "km": 15.2376,
       "flex": false,
       "solo": false,
       "night": true,
@@ -1574,89 +2445,189 @@
       "pinned": null,
       "rest_h": 9.166666666666668,
       "rest_min_segs": 33,
-      "d_plus": 259.0,
-      "d_moins": 254.0
+      "d_plus": 297.2,
+      "d_moins": 278.76,
+      "start_acces": {
+        "jalon": 123,
+        "km_cross": 307.5,
+        "lat": 47.47667777105008,
+        "lon": 6.476506650969562,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 129,
+        "km_cross": 322.7375914310176,
+        "lat": 47.54812663020702,
+        "lon": 6.608199152497572,
+        "delta_km": 0.23759143101761993,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Grande Rue de Corcelles"
+      }
     },
     {
       "runner": "Matthieu",
       "k": 2,
-      "start": 128,
-      "end": 134,
+      "start": 130,
+      "end": 136,
       "size": 6,
       "size_decl": 6,
-      "km": 15.0,
+      "km": 15.2376,
       "flex": false,
       "solo": false,
       "night": true,
-      "partner": "Antoine",
+      "partner": "Ludovic",
       "pinned": null,
       "rest_h": 9.166666666666668,
       "rest_min_segs": 33,
-      "d_plus": 259.0,
-      "d_moins": 254.0
+      "d_plus": 297.2,
+      "d_moins": 278.76,
+      "start_acces": {
+        "jalon": 123,
+        "km_cross": 307.5,
+        "lat": 47.47667777105008,
+        "lon": 6.476506650969562,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 129,
+        "km_cross": 322.7375914310176,
+        "lat": 47.54812663020702,
+        "lon": 6.608199152497572,
+        "delta_km": 0.23759143101761993,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Grande Rue de Corcelles"
+      }
     },
     {
       "runner": "Leo",
       "k": 2,
-      "start": 134,
-      "end": 138,
+      "start": 136,
+      "end": 140,
       "size": 4,
       "size_decl": 4,
-      "km": 10.0,
+      "km": 10.0865,
       "flex": false,
       "solo": false,
       "night": true,
-      "partner": "Vincent",
+      "partner": "Nelly",
       "pinned": null,
       "rest_h": 9.722222222222223,
       "rest_min_segs": 33,
-      "d_plus": 187.0,
-      "d_moins": 212.0
+      "d_plus": 199.2,
+      "d_moins": 206.51,
+      "start_acces": {
+        "jalon": 129,
+        "km_cross": 322.7375914310176,
+        "lat": 47.54812663020702,
+        "lon": 6.608199152497572,
+        "delta_km": 0.23759143101761993,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Grande Rue de Corcelles"
+      },
+      "end_acces": {
+        "jalon": 133,
+        "km_cross": 332.82411804840626,
+        "lat": 47.58662826910299,
+        "lon": 6.686493461794027,
+        "delta_km": 0.32411804840626246,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": "C 1"
+      }
     },
     {
-      "runner": "Vincent",
-      "k": 3,
-      "start": 134,
-      "end": 138,
+      "runner": "Nelly",
+      "k": 2,
+      "start": 136,
+      "end": 140,
       "size": 4,
       "size_decl": 4,
-      "km": 10.0,
+      "km": 10.0865,
       "flex": false,
       "solo": false,
       "night": true,
       "partner": "Leo",
       "pinned": null,
-      "rest_h": null,
-      "rest_min_segs": 29,
-      "d_plus": 187.0,
-      "d_moins": 212.0
+      "rest_h": 9.722222222222223,
+      "rest_min_segs": 33,
+      "d_plus": 199.2,
+      "d_moins": 206.51,
+      "start_acces": {
+        "jalon": 129,
+        "km_cross": 322.7375914310176,
+        "lat": 47.54812663020702,
+        "lon": 6.608199152497572,
+        "delta_km": 0.23759143101761993,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Grande Rue de Corcelles"
+      },
+      "end_acces": {
+        "jalon": 133,
+        "km_cross": 332.82411804840626,
+        "lat": 47.58662826910299,
+        "lon": 6.686493461794027,
+        "delta_km": 0.32411804840626246,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": "C 1"
+      }
     },
     {
       "runner": "Alexandre",
-      "k": 2,
-      "start": 138,
-      "end": 144,
+      "k": 3,
+      "start": 140,
+      "end": 146,
       "size": 6,
       "size_decl": 6,
-      "km": 15.0,
+      "km": 15.0007,
       "flex": false,
       "solo": false,
       "night": true,
-      "partner": "Pierre",
+      "partner": "Antoine",
       "pinned": null,
-      "rest_h": 9.166666666666668,
+      "rest_h": null,
       "rest_min_segs": 33,
-      "d_plus": 251.0,
-      "d_moins": 251.0
+      "d_plus": 349.8,
+      "d_moins": 333.65,
+      "start_acces": {
+        "jalon": 133,
+        "km_cross": 332.82411804840626,
+        "lat": 47.58662826910299,
+        "lon": 6.686493461794027,
+        "delta_km": 0.32411804840626246,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": "C 1"
+      },
+      "end_acces": {
+        "jalon": 139,
+        "km_cross": 347.8248560566183,
+        "lat": 47.633497912031046,
+        "lon": 6.816719782665016,
+        "delta_km": 0.3248560566182732,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Rue des Commandos de France"
+      }
     },
     {
-      "runner": "Pierre",
-      "k": 3,
-      "start": 138,
-      "end": 144,
+      "runner": "Antoine",
+      "k": 2,
+      "start": 140,
+      "end": 146,
       "size": 6,
       "size_decl": 6,
-      "km": 15.0,
+      "km": 15.0007,
       "flex": false,
       "solo": false,
       "night": true,
@@ -1664,35 +2635,37 @@
       "pinned": null,
       "rest_h": null,
       "rest_min_segs": 33,
-      "d_plus": 251.0,
-      "d_moins": 251.0
+      "d_plus": 349.8,
+      "d_moins": 333.65,
+      "start_acces": {
+        "jalon": 133,
+        "km_cross": 332.82411804840626,
+        "lat": 47.58662826910299,
+        "lon": 6.686493461794027,
+        "delta_km": 0.32411804840626246,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": "C 1"
+      },
+      "end_acces": {
+        "jalon": 139,
+        "km_cross": 347.8248560566183,
+        "lat": 47.633497912031046,
+        "lon": 6.816719782665016,
+        "delta_km": 0.3248560566182732,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Rue des Commandos de France"
+      }
     },
     {
-      "runner": "Ludovic",
-      "k": 2,
-      "start": 144,
-      "end": 150,
+      "runner": "Pierre",
+      "k": 3,
+      "start": 146,
+      "end": 152,
       "size": 6,
       "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": true,
-      "night": false,
-      "partner": null,
-      "pinned": null,
-      "rest_h": 7.5,
-      "rest_min_segs": 26,
-      "d_plus": 238.0,
-      "d_moins": 224.0
-    },
-    {
-      "runner": "Nelly",
-      "k": 3,
-      "start": 150,
-      "end": 154,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
+      "km": 15.0025,
       "flex": false,
       "solo": true,
       "night": false,
@@ -1700,17 +2673,75 @@
       "pinned": null,
       "rest_h": null,
       "rest_min_segs": 26,
-      "d_plus": 94.0,
-      "d_moins": 116.0
+      "d_plus": 165.2,
+      "d_moins": 167.82,
+      "start_acces": {
+        "jalon": 139,
+        "km_cross": 347.8248560566183,
+        "lat": 47.633497912031046,
+        "lon": 6.816719782665016,
+        "delta_km": 0.3248560566182732,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Rue des Commandos de France"
+      },
+      "end_acces": {
+        "jalon": 145,
+        "km_cross": 362.8273835117089,
+        "lat": 47.678832286112296,
+        "lon": 6.963050911199365,
+        "delta_km": 0.3273835117088879,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Chemin du Canal du Moulin"
+      }
+    },
+    {
+      "runner": "Gaelle",
+      "k": 3,
+      "start": 152,
+      "end": 156,
+      "size": 4,
+      "size_decl": 4,
+      "km": 10.0032,
+      "flex": false,
+      "solo": true,
+      "night": false,
+      "partner": null,
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 106.35,
+      "d_moins": 86.35,
+      "start_acces": {
+        "jalon": 145,
+        "km_cross": 362.8273835117089,
+        "lat": 47.678832286112296,
+        "lon": 6.963050911199365,
+        "delta_km": 0.3273835117088879,
+        "acces": "cross",
+        "road_type": "residential",
+        "road_name": "Chemin du Canal du Moulin"
+      },
+      "end_acces": {
+        "jalon": 149,
+        "km_cross": 372.83062815918424,
+        "lat": 47.72132214270569,
+        "lon": 7.039193484586686,
+        "delta_km": 0.3306281591842435,
+        "acces": "cross",
+        "road_type": "primary",
+        "road_name": "D 483"
+      }
     },
     {
       "runner": "Clemence",
       "k": 1,
-      "start": 154,
-      "end": 158,
+      "start": 156,
+      "end": 160,
       "size": 4,
       "size_decl": 4,
-      "km": 10.0,
+      "km": 10.3815,
       "flex": false,
       "solo": true,
       "night": false,
@@ -1718,86 +2749,72 @@
       "pinned": null,
       "rest_h": null,
       "rest_min_segs": 26,
-      "d_plus": 89.0,
-      "d_moins": 63.0
+      "d_plus": 126.9,
+      "d_moins": 178.4,
+      "start_acces": {
+        "jalon": 149,
+        "km_cross": 372.83062815918424,
+        "lat": 47.72132214270569,
+        "lon": 7.039193484586686,
+        "delta_km": 0.3306281591842435,
+        "acces": "cross",
+        "road_type": "primary",
+        "road_name": "D 483"
+      },
+      "end_acces": {
+        "jalon": 153,
+        "km_cross": 383.2121571032726,
+        "lat": 47.760844948015944,
+        "lon": 7.114734587159941,
+        "delta_km": 0.7121571032726024,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Rue Principale"
+      }
     },
     {
-      "runner": "Gaelle",
+      "runner": "Vincent",
       "k": 1,
-      "start": 158,
-      "end": 163,
+      "start": 160,
+      "end": 165,
       "size": 5,
       "size_decl": 5,
-      "km": 12.5,
+      "km": 11.7878,
       "flex": false,
       "solo": true,
       "night": false,
       "partner": null,
       "pinned": null,
       "rest_h": null,
-      "rest_min_segs": 26,
-      "d_plus": 136.0,
-      "d_moins": 180.0
+      "rest_min_segs": 22,
+      "d_plus": 18.15,
+      "d_moins": 101.1,
+      "start_acces": {
+        "jalon": 153,
+        "km_cross": 383.2121571032726,
+        "lat": 47.760844948015944,
+        "lon": 7.114734587159941,
+        "delta_km": 0.7121571032726024,
+        "acces": "cross",
+        "road_type": "tertiary",
+        "road_name": "Rue Principale"
+      },
+      "end_acces": {
+        "jalon": 158,
+        "km_cross": 395.0,
+        "lat": 47.8146931157616,
+        "lon": 7.229808152066647,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
       "runner": "Alexis",
       "k": 4,
-      "start": 163,
-      "end": 167,
-      "size": 4,
-      "size_decl": 4,
-      "km": 10.0,
-      "flex": false,
-      "solo": true,
-      "night": false,
-      "partner": null,
-      "pinned": null,
-      "rest_h": null,
-      "rest_min_segs": 26,
-      "d_plus": 46.0,
-      "d_moins": 86.0
-    },
-    {
-      "runner": "Antoine",
-      "k": 2,
-      "start": 167,
-      "end": 173,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Matthieu",
-      "pinned": null,
-      "rest_h": null,
-      "rest_min_segs": 26,
-      "d_plus": 9.0,
-      "d_moins": 82.0
-    },
-    {
-      "runner": "Matthieu",
-      "k": 3,
-      "start": 167,
-      "end": 173,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
-      "flex": false,
-      "solo": false,
-      "night": false,
-      "partner": "Antoine",
-      "pinned": null,
-      "rest_h": null,
-      "rest_min_segs": 26,
-      "d_plus": 9.0,
-      "d_moins": 82.0
-    },
-    {
-      "runner": "Leo",
-      "k": 3,
-      "start": 173,
-      "end": 177,
+      "start": 165,
+      "end": 169,
       "size": 4,
       "size_decl": 4,
       "km": 10.0,
@@ -1808,35 +2825,113 @@
       "pinned": null,
       "rest_h": null,
       "rest_min_segs": 26,
-      "d_plus": 20.0,
-      "d_moins": 25.0
+      "d_plus": 24.5,
+      "d_moins": 58.9,
+      "start_acces": {
+        "jalon": 158,
+        "km_cross": 395.0,
+        "lat": 47.8146931157616,
+        "lon": 7.229808152066647,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 162,
+        "km_cross": 405.0,
+        "lat": 47.8589829538496,
+        "lon": 7.3228836939216135,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
       "runner": "Olivier",
       "k": 4,
-      "start": 173,
-      "end": 177,
+      "start": 165,
+      "end": 169,
       "size": 4,
       "size_decl": 4,
       "km": 10.0,
       "flex": false,
       "solo": false,
       "night": false,
-      "partner": "Leo",
+      "partner": "Alexis",
       "pinned": null,
       "rest_h": null,
       "rest_min_segs": 26,
-      "d_plus": 20.0,
-      "d_moins": 25.0
+      "d_plus": 24.5,
+      "d_moins": 58.9,
+      "start_acces": {
+        "jalon": 158,
+        "km_cross": 395.0,
+        "lat": 47.8146931157616,
+        "lon": 7.229808152066647,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 162,
+        "km_cross": 405.0,
+        "lat": 47.8589829538496,
+        "lon": 7.3228836939216135,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      }
     },
     {
-      "runner": "Alexandre",
+      "runner": "Ludovic",
       "k": 3,
-      "start": 177,
-      "end": 183,
+      "start": 169,
+      "end": 175,
       "size": 6,
       "size_decl": 6,
-      "km": 15.0,
+      "km": 15.1657,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Matthieu",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 29.4,
+      "d_moins": 39.2,
+      "start_acces": {
+        "jalon": 162,
+        "km_cross": 405.0,
+        "lat": 47.8589829538496,
+        "lon": 7.3228836939216135,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 168,
+        "km_cross": 420.16571331182416,
+        "lat": 47.88725894714099,
+        "lon": 7.463824548699479,
+        "delta_km": 0.16571331182416316,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Matthieu",
+      "k": 3,
+      "start": 169,
+      "end": 175,
+      "size": 6,
+      "size_decl": 6,
+      "km": 15.1657,
       "flex": false,
       "solo": false,
       "night": false,
@@ -1844,26 +2939,104 @@
       "pinned": null,
       "rest_h": null,
       "rest_min_segs": 26,
-      "d_plus": 17.0,
-      "d_moins": 26.0
+      "d_plus": 29.4,
+      "d_moins": 39.2,
+      "start_acces": {
+        "jalon": 162,
+        "km_cross": 405.0,
+        "lat": 47.8589829538496,
+        "lon": 7.3228836939216135,
+        "delta_km": 0.0,
+        "acces": null,
+        "road_type": null,
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 168,
+        "km_cross": 420.16571331182416,
+        "lat": 47.88725894714099,
+        "lon": 7.463824548699479,
+        "delta_km": 0.16571331182416316,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      }
     },
     {
-      "runner": "Ludovic",
+      "runner": "Leo",
       "k": 3,
-      "start": 177,
-      "end": 183,
-      "size": 6,
-      "size_decl": 6,
-      "km": 15.0,
+      "start": 175,
+      "end": 179,
+      "size": 4,
+      "size_decl": 4,
+      "km": 9.8075,
       "flex": false,
       "solo": false,
       "night": false,
-      "partner": "Alexandre",
+      "partner": "Nelly",
       "pinned": null,
       "rest_h": null,
       "rest_min_segs": 26,
-      "d_plus": 17.0,
-      "d_moins": 26.0
+      "d_plus": 10.5,
+      "d_moins": 19.5,
+      "start_acces": {
+        "jalon": 168,
+        "km_cross": 420.16571331182416,
+        "lat": 47.88725894714099,
+        "lon": 7.463824548699479,
+        "delta_km": 0.16571331182416316,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 172,
+        "km_cross": 429.9731775816907,
+        "lat": 47.90858117162367,
+        "lon": 7.558489832625189,
+        "delta_km": -0.026822418309279783,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      }
+    },
+    {
+      "runner": "Nelly",
+      "k": 3,
+      "start": 175,
+      "end": 179,
+      "size": 4,
+      "size_decl": 4,
+      "km": 9.8075,
+      "flex": false,
+      "solo": false,
+      "night": false,
+      "partner": "Leo",
+      "pinned": null,
+      "rest_h": null,
+      "rest_min_segs": 26,
+      "d_plus": 10.5,
+      "d_moins": 19.5,
+      "start_acces": {
+        "jalon": 168,
+        "km_cross": 420.16571331182416,
+        "lat": 47.88725894714099,
+        "lon": 7.463824548699479,
+        "delta_km": 0.16571331182416316,
+        "acces": "cross",
+        "road_type": "unclassified",
+        "road_name": null
+      },
+      "end_acces": {
+        "jalon": 172,
+        "km_cross": 429.9731775816907,
+        "lat": 47.90858117162367,
+        "lon": 7.558489832625189,
+        "delta_km": -0.026822418309279783,
+        "acces": "cross",
+        "road_type": "service",
+        "road_name": null
+      }
     }
   ]
 }

@@ -55,6 +55,8 @@ class Model:
         self._add_forced_pairings(constraints)
         self._add_once_max(constraints)
         self._add_max_same_partenaire(constraints)
+        self._add_dplus_max_constraints(constraints)
+        self._add_inaccessible_constraints(constraints)
         return self
 
     def _add_symmetry_breaking(self, constraints):
@@ -521,6 +523,81 @@ class Model:
             if len(pair_vars) > max_same:
                 model.add(sum(pair_vars) <= max_same)
 
+    def _add_dplus_max_constraints(self, constraints):
+        """Limite D+ + D- sur les relais dont dplus_max est déclaré dans RelaySpec.
+
+        Requiert un profil altimétrique (constraints.profil != None) si au moins
+        un relais porte un dplus_max.  Utilise la même table cumulatif que
+        add_optimise_dplus() : cumul[i] = (D+_cumulé, D-_cumulé) jusqu'au début
+        du segment actif i.
+        """
+        c = constraints
+        has_constraint = any(
+            spec.dplus_max is not None
+            for coureur in c.runners_data.values()
+            for spec in coureur.relais
+        )
+        if not has_constraint:
+            return
+
+        profil = c.profil
+        if profil is None:
+            raise RuntimeError(
+                "dplus_max requiert un profil altimétrique (profil_csv=) dans Constraints"
+            )
+
+        model = self.model
+        n = c.nb_active_segments
+        seg_km = c.segment_km
+
+        cumul = profil.cumul_denivele(n, seg_km)
+        cumul_dp = [round(v[0]) for v in cumul]  # longueur n+1
+        cumul_dm = [round(v[1]) for v in cumul]  # longueur n+1
+
+        # Table de correspondance time_seg → active_seg (calculée une seule fois)
+        ts_to_active = [c.time_seg_to_active(t) for t in range(c.nb_segments + 1)]
+
+        for r, coureur in c.runners_data.items():
+            for k, spec in enumerate(coureur.relais):
+                if spec.dplus_max is None:
+                    continue
+
+                s_var = self.start[r][k]
+                e_var = self.end[r][k]
+
+                as_var = model.new_int_var(0, n, f"dpas_{r}_{k}")
+                ae_var = model.new_int_var(0, n, f"dpae_{r}_{k}")
+                model.add_element(s_var, ts_to_active, as_var)
+                model.add_element(e_var, ts_to_active, ae_var)
+
+                dp_start = model.new_int_var(0, cumul_dp[-1] + 1, f"dpps_{r}_{k}")
+                dp_end   = model.new_int_var(0, cumul_dp[-1] + 1, f"dppe_{r}_{k}")
+                dm_start = model.new_int_var(0, cumul_dm[-1] + 1, f"dpms_{r}_{k}")
+                dm_end   = model.new_int_var(0, cumul_dm[-1] + 1, f"dpme_{r}_{k}")
+                model.add_element(as_var, cumul_dp, dp_start)
+                model.add_element(ae_var, cumul_dp, dp_end)
+                model.add_element(as_var, cumul_dm, dm_start)
+                model.add_element(ae_var, cumul_dm, dm_end)
+
+                model.add((dp_end - dp_start) + (dm_end - dm_start) <= spec.dplus_max)
+
+    def _add_inaccessible_constraints(self, constraints):
+        """Interdit tout point de relais (départ ou arrivée) sur un point km inaccessible.
+
+        Un passage de relais se situe au point s si start[r][k] == s (coureur entrant)
+        ou end[r][k] == s (coureur sortant, end est exclusif donc = premier segment non couvert).
+        Pour chaque segment inaccessible s : start[r][k] != s  ET  end[r][k] != s.
+        """
+        c = constraints
+        if not c.inaccessible_segments:
+            return
+        model = self.model
+        for r in c.runners:
+            for k in range(len(c.runners_data[r].relais)):
+                for s in c.inaccessible_segments:
+                    model.add(self.start[r][k] != s)
+                    model.add(self.end[r][k] != s)
+
     # ------------------------------------------------------------------
     # Fonctions d'évaluation des solutions
     # ------------------------------------------------------------------
@@ -561,6 +638,82 @@ class Model:
     def add_min_score(self, constraints, score):
         """Contraint le score à être >= score."""
         self.model.add(self._objective_expr(constraints) >= score)
+        return self
+
+    def add_optimise_dplus(self, constraints):
+        """Maximise sum(lvl[r] * (D+[r][k] + D-[r][k])) sur tous les relais.
+
+        Le profil altimétrique doit être disponible (constraints.profil != None).
+        Les coureurs sans lvl déclaré sont ignorés (contribution nulle).
+
+        D+/D- sont linéarisés via un tableau cumulatif pré-calculé par segment actif
+        et deux lookups AddElement par relais (start et end).
+
+        Format du tableau interne :
+            cumul[i] = (cumul_d_plus_m, cumul_d_moins_m) jusqu'au début du segment i
+            longueur : nb_active_segments + 1
+        Ainsi D+[r][k] = cumul[end_active][0] - cumul[start_active][0]
+        où end_active = time_seg_to_active(end[r][k]).
+        """
+        profil = constraints.profil
+        if profil is None:
+            raise RuntimeError(
+                "add_optimise_dplus() requiert un profil altimétrique (profil_csv=)"
+            )
+
+        c = constraints
+        model = self.model
+        n = c.nb_active_segments
+        seg_km = c.segment_km
+
+        # Tableau cumulatif (en mètres, arrondi à l'entier pour CP-SAT)
+        cumul = profil.cumul_denivele(n, seg_km)
+        cumul_dp = [round(v[0]) for v in cumul]  # longueur n+1
+        cumul_dm = [round(v[1]) for v in cumul]  # longueur n+1
+
+        terms = []
+        for r, coureur in c.runners_data.items():
+            lvl = coureur.options.lvl
+            if not lvl:
+                continue
+            for k in range(len(coureur.relais)):
+                # start et end sont des indices espace-temps ; convertir en actifs
+                # via une variable auxiliaire : active = time - nb_inactifs_avant
+                # On exploite le fait que active_to_time_seg est affine par morceaux,
+                # mais AddElement travaille directement en espace actif.
+                # On crée des variables active_start/active_end bornées [0, n].
+                s_var = self.start[r][k]
+                e_var = self.end[r][k]
+
+                # Variables actives (même domaine borné que les vars temps, majoré par n)
+                as_var = model.new_int_var(0, n, f"as_{r}_{k}")
+                ae_var = model.new_int_var(0, n, f"ae_{r}_{k}")
+
+                # Construire la table de correspondance time_seg → active_seg
+                # pour tous les indices temps possibles [0, nb_segments]
+                ts_to_active = [c.time_seg_to_active(t) for t in range(c.nb_segments + 1)]
+                model.add_element(s_var, ts_to_active, as_var)
+                model.add_element(e_var, ts_to_active, ae_var)
+
+                # Lookup dans le tableau cumulatif
+                dp_start = model.new_int_var(0, cumul_dp[-1] + 1, f"dps_{r}_{k}")
+                dp_end   = model.new_int_var(0, cumul_dp[-1] + 1, f"dpe_{r}_{k}")
+                dm_start = model.new_int_var(0, cumul_dm[-1] + 1, f"dms_{r}_{k}")
+                dm_end   = model.new_int_var(0, cumul_dm[-1] + 1, f"dme_{r}_{k}")
+                model.add_element(as_var, cumul_dp, dp_start)
+                model.add_element(ae_var, cumul_dp, dp_end)
+                model.add_element(as_var, cumul_dm, dm_start)
+                model.add_element(ae_var, cumul_dm, dm_end)
+
+                dp_relay = dp_end - dp_start
+                dm_relay = dm_end - dm_start
+                terms.append(lvl * (dp_relay + dm_relay))
+
+        if not terms:
+            raise RuntimeError(
+                "add_optimise_dplus() : aucun coureur avec lvl déclaré"
+            )
+        model.maximize(cp_model.LinearExpr.sum(terms))
         return self
 
     def add_minimise_differences_with(self, solution):

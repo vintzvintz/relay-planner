@@ -57,6 +57,11 @@ _TAG_CONFIG = [
 ]
 
 
+def _km(rel):
+    """Distance réelle du relais : km_reel si présent, sinon km."""
+    return rel.get("km_reel", rel["km"])
+
+
 # ------------------------------------------------------------------
 # Structures de données intermédiaires communes au HTML et au texte
 # ------------------------------------------------------------------
@@ -158,6 +163,20 @@ def _fmt_seg_short(constraints, seg):
     return DAY_SHORT[min(day, 2)], hh, mm
 
 
+def _seg_link_html(seg: int, rel: dict) -> str:
+    """Retourne un lien Google Maps si le relay a un access point connu, sinon le numéro seul."""
+    ap = rel.get("start_acces")
+    if ap is None:
+        return str(seg)
+    lat, lon = ap.get("lat"), ap.get("lon")
+    if lat is None or lon is None:
+        return str(seg)
+    url = f"https://www.google.com/maps?q={lat},{lon}(Seg+{seg})&t=h&z=16"
+    if not ap.get("acces"):
+        return f'<a href="{url}" target="_blank" style="color:red;font-weight:bold">{seg}</a>'
+    return f'<a href="{url}" target="_blank">{seg}</a>'
+
+
 def _max_label_width(relays, label_fn) -> int:
     return max((len(label_fn(r)) for r in relays), default=0)
 
@@ -208,7 +227,7 @@ def _csv_row(rel, constraints):
         "fin_heure": r3(c.segment_start_hour(rel["end"])),
         "debut_km": r3(c.time_seg_to_active(rel["start"]) * c.segment_km),
         "fin_km": r3(c.time_seg_to_active(rel["end"]) * c.segment_km),
-        "distance_km": r3(rel["km"]),
+        "distance_km": r3(_km(rel)),
         "k": rel["k"],
         "solo": rel["solo"],
         "nuit": rel["night"],
@@ -256,7 +275,7 @@ def build_chrono_entries(relays, constraints) -> list:
             seg_start=c.time_seg_to_active(rel["start"]),
             time_seg_start=rel["start"],
             km_start=c.time_seg_to_active(rel["start"]) * c.segment_km,
-            km_dist=rel["km"],
+            km_dist=_km(rel),
             coureurs=coureurs,
             d_plus=rel.get("d_plus"),
             d_moins=rel.get("d_moins"),
@@ -280,7 +299,7 @@ def build_runner_recaps(relays, constraints) -> list:
         r_rels = sorted(
             [x for x in relays if x["runner"] == r], key=lambda x: x["start"]
         )
-        total = sum(x["km"] for x in r_rels)
+        total = sum(_km(x) for x in r_rels)
         n_solo = sum(1 for x in r_rels if x["solo"])
         n_nuit = sum(1 for x in r_rels if x["night"])
 
@@ -299,7 +318,7 @@ def build_runner_recaps(relays, constraints) -> list:
                 day_s=day_s, hh=hh, mm=mm, hh_e=hh_e, mm_e=mm_e,
                 seg_start=c.time_seg_to_active(rel["start"]),
                 km_start=c.time_seg_to_active(rel["start"]) * c.segment_km,
-                km_dist=rel["km"],
+                km_dist=_km(rel),
                 d_plus=rel.get("d_plus"),
                 d_moins=rel.get("d_moins"),
                 partenaire=p,
@@ -620,7 +639,7 @@ def _build_html_chrono(solution) -> str:
             chrono_rows.append(
                 f'<tr{_row_class(e.rel)}>'
                 f'<td class="td-time td-nowrap">{e.day_s} {e.hh:02d}h{e.mm:02d} → {e.hh_end:02d}h{e.mm_end:02d}</td>'
-                f'<td class="td-time td-right">{e.seg_start}</td>'
+                f'<td class="td-time td-right">{_seg_link_html(e.seg_start, e.rel)}</td>'
                 f'<td class="td-time td-right">{e.km_start:.1f} km</td>'
                 f'<td class="td-time td-right">{e.km_dist:.1f} km</td>'
                 f'<td class="td-time td-right">{_fmt_deniv(e.d_plus, "+")}</td>'
@@ -673,7 +692,7 @@ def _build_html_recap(solution) -> str:
             detail_rows.append(
                 f'<tr{_row_class(rl.rel)}>'
                 f'<td class="td-recap td-nowrap">{rl.day_s} {rl.hh:02d}h{rl.mm:02d} → {rl.hh_e:02d}h{rl.mm_e:02d}</td>'
-                f'<td class="td-recap td-right">{rl.seg_start}</td>'
+                f'<td class="td-recap td-right">{_seg_link_html(rl.seg_start, rl.rel)}</td>'
                 f'<td class="td-recap td-right">{rl.km_start:.1f} km</td>'
                 f'<td class="td-recap td-right">{rl.km_dist:.1f} km</td>'
                 f'<td class="td-recap">{rl.partenaire}</td>'

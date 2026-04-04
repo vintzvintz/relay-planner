@@ -15,7 +15,7 @@ from relay import Constraints, Intervals, R20, R15
 
 c = Constraints(total_km=440, nb_segments=176, ...)
 
-pierre = c.new_runner("Pierre")
+pierre = c.new_runner("Pierre", lvl=3)
 pierre.add_relay(R20).add_relay(R15, nb=3)
 ```
 
@@ -29,7 +29,7 @@ c = Constraints(
     nb_segments=176,        # nombre de segments (0-indexés) — valeurs courantes : 440=1k, 290=1k5, 220=2k, 176=2k5, 135=3k3
     speed_kmh=9.0,          # vitesse de course en km/h
     start_hour=15.0,        # heure de départ (h depuis minuit, jour 0)
-    compat_matrix=COMPAT_MATRIX,  # dict[tuple[str,str], int] — scores 0/1/2 (triangle inférieur)
+    compat_matrix=COMPAT_MATRIX,  # dict[tuple[str,str], int] — scores 0/1/2 explicites (triangle inférieur)
     solo_max_km=17,         # taille max d'un relais solo en km
     solo_max_default=1,     # nb max de solos par coureur (défaut)
     nuit_max_default=1,     # nb max de relais de nuit par coureur (défaut)
@@ -43,6 +43,8 @@ c = Constraints(
     enable_flex=True,       # si False, les types flex (R13_F, R15_F) sont traités comme fixes
     allow_flex_flex=True,   # si False, deux coureurs flex en binôme sont chacun forcés à leur taille nominale (pas de réduction double-flex)
     profil_csv=None,        # str | None — chemin vers gpx/altitude.csv pour les D+/D− (chargé en lazy)
+    acces_csv=None,         # str | None — chemin vers gpx/access_points.csv pour l'enrichissement GPS (chargé en lazy)
+    lvl_max=5,              # int — niveau maximum autorisé (défaut : 5)
 )
 ```
 
@@ -70,10 +72,26 @@ La durée de la pause est opaque pour le reste de la déclaration : `hour_to_seg
 
 ---
 
+## `c.add_inaccessible()` — déclarer des points inaccessibles
+
+```python
+c.add_inaccessible(*kms)   # une ou plusieurs distances en km depuis le départ
+```
+
+Interdit tout passage de relais (départ ou arrivée) à ces points kilométriques. Le modèle CP-SAT ajoute `start[r][k] != s` et `end[r][k] != s` pour chaque segment inaccessible `s`.
+
+```python
+c.add_inaccessible(262.5, 267.5, 272.5)   # points kilométriques inaccessibles
+```
+
+---
+
 ## `c.new_runner()` — créer un coureur
 
 ```python
-runner = c.new_runner(name)   # str — identifiant unique du coureur (doit exister dans la matrice de compat)
+runner = c.new_runner(name, lvl)
+# name : str — identifiant unique du coureur (doit exister dans la matrice de compat)
+# lvl  : int (1..lvl_max) — niveau du coureur, poids dans l'objectif D+/D- (--dplus)
 ```
 
 Retourne un `RunnerBuilder`. Les options individuelles du coureur sont définies via `set_options()` (voir ci-dessous).
@@ -95,9 +113,9 @@ Retourne `self` pour le chaînage.
 
 **Exemples :**
 ```python
-alexis   = c.new_runner("Alexis").set_options(nuit_max=5)
-vincent  = c.new_runner("Vincent").set_options(repos_jour=6, repos_nuit=8)
-leo      = c.new_runner("Leo").set_options(solo_max=0)   # interdit de solo
+alexis   = c.new_runner("Alexis", lvl=5).set_options(nuit_max=5)
+vincent  = c.new_runner("Vincent", lvl=3).set_options(repos_jour=6, repos_nuit=8)
+leo      = c.new_runner("Leo", lvl=4).set_options(solo_max=0)   # interdit de solo
 alexis.set_options(max_same_partenaire=2)   # alexis court au max 2 fois avec le même partenaire
 ```
 
@@ -112,6 +130,7 @@ runner.add_relay(
     nb=1,           # int — nombre de relais identiques à ajouter (ignoré pour SharedLeg)
     window=None,    # Intervals | tuple[int,int] | None — fenêtre de placement
     pinned=None,    # int | None — segment de départ fixé
+    dplus_max=None, # int | None — limite en mètres sur D+ + D- du relais (requiert profil_csv=)
 )
 ```
 
@@ -168,6 +187,18 @@ pierre.add_relay(R20, pinned=c.size_of(R10))                          # juste ap
 
 Incompatible avec un `size` flexible (`len(size) > 1`).
 
+### Paramètre `dplus_max`
+
+Limite la somme D+ + D− (en mètres) sur ce relais :
+
+```python
+runner.add_relay(R20, dplus_max=500)   # D+ + D- ≤ 500 m
+```
+
+Requiert que `Constraints` ait été créé avec `profil_csv=` pointant vers le fichier d'altitude. Le modèle CP-SAT interdit toute position de départ pour laquelle la somme D+ + D− du relais dépasserait la limite.
+
+Le paramètre s'applique à chaque relais indépendamment — avec `nb=2`, chacun des deux relais est contraint séparément.
+
 ---
 
 ## `c.add_max_binomes()` — limiter les binômes entre deux coureurs
@@ -180,8 +211,8 @@ Limite à au plus `nb` binômes entre `runner1` et `runner2` sur l'ensemble du p
 Stocké dans `c.once_max` comme `(name1, name2, nb)` et pris en compte par le modèle CP-SAT.
 
 ```python
-alexis  = c.new_runner("Alexis")
-olivier = c.new_runner("Olivier")
+alexis  = c.new_runner("Alexis", lvl=5)
+olivier = c.new_runner("Olivier", lvl=3)
 c.add_max_binomes(alexis, olivier, 1)   # au plus 1 binôme ensemble
 ```
 
@@ -322,6 +353,7 @@ class RelaySpec:
     paired_with: tuple[str, int] | None     # (runner_name, relay_index) si binôme forcé
     window: list[tuple[int, int]] | None    # intervalles de placement autorisés
     pinned: int | None                      # segment de départ fixé
+    dplus_max: int | None                   # limite D+ + D- en mètres (None = pas de limite)
 ```
 
 Supporte `to_dict()` / `from_dict()`.
@@ -338,6 +370,7 @@ class RunnerOptions:
     repos_jour: int | None = None    # en segments
     repos_nuit: int | None = None    # en segments
     max_same_partenaire: int | None = None
+    lvl: int | None = None           # niveau coureur (1..lvl_max) — initialisé par new_runner(name, lvl)
 ```
 
 Supporte `to_dict()` / `from_dict()`.
@@ -381,13 +414,13 @@ nuit     = c.night_windows()
 relay_nuit = c.new_relay(R30)
 
 # Coureurs
-alice = c.new_runner("Alice").set_options(nuit_max=2)
+alice = c.new_runner("Alice", lvl=4).set_options(nuit_max=2)
 alice.add_relay(R20, nb=2).add_relay(R15_F, window=j1)
 
-bob = c.new_runner("Bob").set_options(solo_max=0)
+bob = c.new_runner("Bob", lvl=3).set_options(solo_max=0)
 bob.add_relay(relay_nuit, window=nuit).add_relay(R15, nb=3)
 
-carol = c.new_runner("Carol")
+carol = c.new_runner("Carol", lvl=2)
 carol.add_relay(relay_nuit, window=nuit).add_relay(R15, pinned=0)
 
 solve(c)

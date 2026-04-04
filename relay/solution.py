@@ -32,9 +32,9 @@ class Solution:
     """Encapsule une solution CP-SAT avec contraintes, vérification et formatage."""
 
     def __init__(self, relays: list, constraints, solver_score=None, skip_validation=False):
-        self.relays = relays
         self.constraints = constraints
         self.solver_score = solver_score
+        self.relays = relays
         if constraints is None or skip_validation:
             self.valid = None
         else:

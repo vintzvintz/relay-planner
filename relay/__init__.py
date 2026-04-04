@@ -76,11 +76,32 @@ def replanif(constraints, *, reference, min_score=None, timeout_sec=0):
     for sol in solver.solve(timeout_sec=timeout_sec):
         sol.save()
 
-
-def solve(constraints, *, timeout_sec=0):
+def solve(constraints, *, min_score=None, timeout_sec=0):
     """Build model, set objective, solve, and save each solution found."""
     m = model(constraints)
     m.add_optimisation_func(constraints)
+    if min_score is not None:
+        m.add_min_score(constraints, min_score)
+        print(f"Score minimal fixé à {min_score}")
+    solver = Solver(m, constraints)
+    for sol in solver.solve(timeout_sec=timeout_sec):
+        sol.save()
+
+
+def optimise_dplus(constraints, *, min_score=None, timeout_sec=0):
+    """Maximise sum(lvl[r] * (D+ + D-)) sous contrainte de score minimal.
+
+    Parameters
+    ----------
+    min_score : int | None
+        Score binôme minimal à respecter. Si None, aucune contrainte de score.
+        Passer le score optimal issu d'un premier appel à solve() pour obtenir
+        un planning maximisant le dénivelé tout en préservant la qualité des binômes.
+    """
+    m = model(constraints)
+    if min_score is not None:
+        m.add_min_score(constraints, min_score)
+    m.add_optimise_dplus(constraints)
     solver = Solver(m, constraints)
     for sol in solver.solve(timeout_sec=timeout_sec):
         sol.save()
@@ -107,17 +128,26 @@ def _parse_replanif(argv):
 
 
 def entry_point(constraints):
-    """CLI entry point: dispatch --summary, --diag, --model, --replanif, or default solve."""
+    """CLI entry point: dispatch --summary, --diag, --model, --replanif, --dplus, or default solve."""
     import sys
-    if "--summary" in sys.argv:
+    argv = sys.argv
+    if "--summary" in argv:
         constraints.print_summary()
-    elif "--diag" in sys.argv:
+    elif "--diag" in argv:
         diagnose(constraints)
-    elif "--model" in sys.argv:
+    elif "--model" in argv:
         model(constraints)
-    elif "--replanif" in sys.argv:
-        reference, min_score = _parse_replanif(sys.argv)
+    elif "--replanif" in argv:
+        reference, min_score = _parse_replanif(argv)
         replanif(constraints, reference=reference, min_score=min_score)
+    elif "--dplus" in argv:
+        min_score = None
+        if "--min-score" in argv:
+            idx = argv.index("--min-score")
+            if idx + 1 >= len(argv):
+                raise ValueError("--min-score nécessite une valeur numérique")
+            min_score = int(argv[idx + 1])
+        optimise_dplus(constraints, min_score=min_score)
     else:
         solve(constraints)
 
@@ -128,5 +158,5 @@ __all__ = [
     "model",
     "Solver",
     "Solution",
-    "replanif", "solve", "entry_point",
+    "replanif", "solve", "optimise_dplus", "entry_point",
 ]

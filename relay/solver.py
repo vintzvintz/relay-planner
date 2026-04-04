@@ -14,7 +14,7 @@ from .solution import Solution
 
 # Paramètres solveur
 SOLVER_TIME_LIMIT = 0        # secondes
-SOLVER_NUM_WORKERS = 8
+SOLVER_NUM_WORKERS = 10
 
 _SENTINEL = object()
 
@@ -57,13 +57,14 @@ class Solver:
         - timeout_sec : limite de temps en secondes (0 = illimité)
         """
         solver = cp_model.CpSolver()
+        c = self.constraints
         if timeout_sec:
             solver.parameters.max_time_in_seconds = float(timeout_sec)
         solver.parameters.log_search_progress = log_progress
         solver.parameters.num_workers = SOLVER_NUM_WORKERS
 
         q = queue.Queue()
-        callback = _SolveCallback(self.model, self.constraints, target_score, max_count, q)
+        callback = _SolveCallback(self.model, c, target_score, max_count, q)
 
         def _run():
             solver.solve(self.model.model, callback)
@@ -80,6 +81,9 @@ class Solver:
             if not solu.valid:
                 # remplacer l'exception par "continue' pour poursuivre la résolution malgré l'erreur
                 raise ValueError("solution invalide")
+            
+            if c.acces is not None:
+                solu.relays = c.acces.enrich(solu.relays, c.segment_km, profil=c.profil, time_seg_to_active=c.time_seg_to_active)
             yield solu
 
         thread.join()
