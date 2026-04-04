@@ -33,6 +33,15 @@ def main():
     sol.to_html(html_path)
     print(f"HTML généré : {html_path}")
 
+    if sol.constraints.parcours_gpx:
+        from relay.gpx import solution_to_gpx, solution_to_kml
+        gpx_path = "plannings/tmp.gpx"
+        solution_to_gpx(sol, sol.constraints.parcours_gpx, gpx_path)
+        print(f"GPX généré  : {gpx_path}")
+        # kml_path = "plannings/tmp.kml"
+        # solution_to_kml(sol, sol.constraints.parcours_gpx, kml_path)
+        # print(f"KML généré  : {kml_path}")
+
 
 if __name__ == "__main__":
     main()

@@ -285,6 +285,7 @@ class Constraints:
         allow_flex_flex: bool = True,
         profil_csv: str | None = None,
         acces_csv: str | None = None,
+        parcours_gpx: str | None = None,
         lvl_max: int = 5,
     ):
         self.total_km = total_km
@@ -329,6 +330,7 @@ class Constraints:
         self._profil = None  # lazy-init
         self.acces_csv = acces_csv
         self._acces = None  # lazy-init
+        self.parcours_gpx = parcours_gpx
         self.lvl_max: int = lvl_max
         #self.duo_score = duo_score
 
@@ -635,6 +637,7 @@ class Constraints:
             #"relay_types": {k: sorted(v) for k, v in self.relay_types.items()},
             "profil_csv": self.profil_csv,
             "acces_csv": self.acces_csv,
+            "parcours_gpx": self.parcours_gpx,
             # compat_matrix: clés tuple → "r1|r2" (triangle inférieur reconstruit à l'init)
             "compat_matrix": {
                 f"{a}|{b}": v
@@ -698,6 +701,7 @@ class Constraints:
             allow_flex_flex=data["allow_flex_flex"],
             profil_csv=data["profil_csv"],
             acces_csv=data["acces_csv"],
+            parcours_gpx=data.get("parcours_gpx"),
         )
         # Corrige les valeurs déjà converties en segments (évite une double conversion)
         c.solo_max_size = data["solo_max_size"]

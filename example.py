@@ -26,6 +26,7 @@ c = Constraints(
     allow_flex_flex=True,  # autorise un relais plus court que le max commun de deux flexibles (trouve plus vite une 1ere solution moins optimale)
     profil_csv="gpx/altitude.csv",
     acces_csv="gpx/access_points.csv",
+    parcours_gpx="gpx/parcours.gpx",
     lvl_max=5,
     # duo_score={    # dictionnaire différences de niveau -> compatibilité
     #     0:2, 1:2,  # 0 ou 1 niveau d'écart -> priorisé

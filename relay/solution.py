@@ -202,6 +202,13 @@ class Solution:
         html_fname = os.path.join(outdir, f"planning_{ts}.html")
         self.to_html(html_fname)
 
+        if self.constraints.parcours_gpx:
+            from relay.gpx import solution_to_gpx, solution_to_kml
+            gpx_fname = os.path.join(outdir, f"planning_{ts}.gpx")
+            solution_to_gpx(self, self.constraints.parcours_gpx, gpx_fname)
+            # kml_fname = os.path.join(outdir, f"planning_{ts}.kml")
+            # solution_to_kml(self, self.constraints.parcours_gpx, kml_fname)
+
         score, n_binomes, n_solo, km_solo, n_flex, n_pinned, km_flex = self.stats()
         km_flex_str = f" ({km_flex:.1f} km)" if km_flex else ""
         print(f"score:{score} binomes:{n_binomes} solos:{n_solo} ({km_solo:.1f} km) flex:{n_flex}{km_flex_str} pinned:{n_pinned}  --> planning_{ts}")

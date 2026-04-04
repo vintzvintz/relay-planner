@@ -55,6 +55,9 @@ from relay.solution import Solution
 # -- feasibility (internal use via entry_point) ---------------------------
 from relay.feasibility import analyse as diagnose
 
+# -- gpx export -----------------------------------------------------------
+from relay.gpx import solution_to_gpx, solution_to_kml
+
 def replanif(constraints, *, reference, min_score=None, timeout_sec=0):
     """Solve by minimising differences with a reference solution.
 
