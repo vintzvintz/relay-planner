@@ -44,6 +44,7 @@ c = Constraints(
     allow_flex_flex=True,   # si False, deux coureurs flex en binôme sont chacun forcés à leur taille nominale (pas de réduction double-flex)
     profil_csv=None,        # str | None — chemin vers gpx/altitude.csv pour les D+/D− (chargé en lazy)
     acces_csv=None,         # str | None — chemin vers gpx/access_points.csv pour l'enrichissement GPS (chargé en lazy)
+    parcours_gpx=None,      # str | None — chemin vers le fichier GPX source du parcours ; active l'export .gpx dans solution.save()
     lvl_max=5,              # int — niveau maximum autorisé (défaut : 5)
 )
 ```

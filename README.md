@@ -44,8 +44,10 @@ python example.py              # résoudre (défaut)
 python example.py --summary    # résumé des données et borne LP
 python example.py --diag       # diagnostic de faisabilité
 python example.py --model      # construction du modèle uniquement
-python example.py --replanif ref.json              # replanifier en minimisant la distance à une référence
-python example.py --replanif ref.json --min-score 88  # idem avec score minimal
+python example.py --dplus                              # résoudre en maximisant le D+/D- pondéré par lvl
+python example.py --dplus --min-score 88               # idem avec score minimal garanti
+python example.py --replanif ref.json                  # replanifier en minimisant la distance à une référence
+python example.py --replanif ref.json --min-score 88   # idem avec score minimal
 ```
 
 Toutes les options CLI passent par `relay.entry_point()`.
@@ -60,9 +62,10 @@ Toutes les options CLI passent par `relay.entry_point()`.
 
 ## Sorties
 
-| Dossier / fichier  | Contenu                                                                      |
-|--------------------|------------------------------------------------------------------------------|
-| `plannings/`       | Plannings `.txt`, `.csv`, `.json` et `.html` produits par `relay.solve()`    |
+| Dossier / fichier  | Contenu                                                                                          |
+|--------------------|--------------------------------------------------------------------------------------------------|
+| `plannings/`       | Plannings `.txt`, `.csv`, `.json`, `.html` et `.gpx` produits par `relay.solve()`                |
+|                    | Le `.gpx` est généré si `parcours_gpx=` est renseigné dans `Constraints` (export GPX + KML dispo) |
 
 ## Documentation
 

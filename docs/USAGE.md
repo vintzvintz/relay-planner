@@ -45,7 +45,7 @@ python example.py --replanif ref.json                  # replanifier (minimiser 
 python example.py --replanif ref.json --min-score 88   # idem avec score minimal garanti
 ```
 
-Les plannings produits (`.txt`, `.csv`, `.json`, `.html`) sont écrits dans `plannings/` avec un horodatage.
+Les plannings produits (`.txt`, `.csv`, `.json`, `.html`) sont écrits dans `plannings/` avec un horodatage. Si `parcours_gpx=` est renseigné dans les contraintes, un fichier `.gpx` est également produit (voir ci-dessous).
 
 ### Mode `--dplus` — maximiser le dénivelé des coureurs forts
 
@@ -53,7 +53,7 @@ Ce mode remplace l'objectif par défaut (maximiser les binômes compatibles) par
 
 **Prérequis :**
 1. `Constraints` créé avec `profil_csv="gpx/altitude.csv"` (ou tout chemin vers un CSV d'altitude)
-2. Au moins un coureur avec `set_options(lvl=...)` — les coureurs sans `lvl` ont un poids nul
+2. Au moins un coureur déclaré avec un `lvl` non nul — les coureurs sans `lvl` ont un poids nul
 
 ```python
 c = Constraints(
@@ -61,9 +61,9 @@ c = Constraints(
     profil_csv="gpx/altitude.csv",
 )
 
-alice = c.new_runner("Alice").set_options(lvl=5)   # coureur fort → poids 5
-bob   = c.new_runner("Bob").set_options(lvl=1)     # coureur plus léger → poids 1
-carol = c.new_runner("Carol")                      # pas de lvl → ignoré dans l'objectif
+alice = c.new_runner("Alice", lvl=5)   # coureur fort → poids 5
+bob   = c.new_runner("Bob",   lvl=1)   # coureur plus léger → poids 1
+carol = c.new_runner("Carol")          # pas de lvl → ignoré dans l'objectif
 ```
 
 ```bash
@@ -78,6 +78,33 @@ runner.add_relay(R20, dplus_max=500)   # D+ + D- ≤ 500 m pour ce relais
 ```
 
 Cette contrainte est active dans tous les modes (solve, --dplus, --replanif). Voir [CONSTRAINTS.md](CONSTRAINTS.md#paramètre-dplus_max) pour les détails.
+
+### Export GPX / KML
+
+Si `parcours_gpx=` est renseigné dans `Constraints`, `solution.save()` génère automatiquement un fichier `.gpx` en plus des sorties habituelles. Un fichier `.kml` peut être produit séparément via `solution_to_kml()`.
+
+```python
+c = Constraints(
+    ...,
+    parcours_gpx="gpx/parcours.gpx",   # trace GPX source (une seule trk/trkseg)
+)
+```
+
+Le fichier GPX contient :
+- un `<trk>` par relais (découpe de la trace source entre `start_km` et `end_km`)
+- un `<wpt>` par borne de relais unique (km, numéro de segment actif, coureurs arrivants/partants)
+
+Le fichier KML (Google Maps / Google Earth) contient :
+- une `<Folder>` par coureur avec ses lignes de parcours, colorées par coureur
+- une `<Folder>` "Points de passage" avec des marqueurs colorés selon le type d'accès : vert = `cross`, orange = `near`, rouge = aucun accès
+
+```python
+from relay import solution_to_kml
+
+solution_to_kml(sol, "gpx/parcours.gpx", "plannings/mon_planning.kml")
+```
+
+Pour importer dans **Google Mes Cartes** : [mymaps.google.com](https://mymaps.google.com) → Importer → choisir le `.kml`.
 
 ### Avantages / inconvénients
 
