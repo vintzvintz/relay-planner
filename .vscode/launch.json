@@ -1,0 +1,61 @@
+{
+    // Utilisez IntelliSense pour en savoir plus sur les attributs possibles.
+    // Pointez pour afficher la description des attributs existants.
+    // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+
+        {
+            "name": "Données d'entrée",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "exemple.py",
+            "args": ["data"],
+            "console": "integratedTerminal",
+            "python": "${command:python.interpreterPath}"
+        },
+        {
+            "name": "Résolution",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "exemple.py",
+            "console": "integratedTerminal",
+            "python": "${command:python.interpreterPath}"
+        },
+        {
+            "name": "Optimisation D+/D-",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "exemple.py",
+            "args": ["dplus", "--ref", "replanif/reference.json", "--min-score", "56"],
+            "console": "integratedTerminal",
+            "python": "${command:python.interpreterPath}"
+        },
+        {
+            "name": "Replanification",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "replanif.py",
+            "args": ["replanif", "--ref", "replanif/reference.json", "--min-score", "54"],
+            "console": "integratedTerminal",
+            "python": "${command:python.interpreterPath}"
+        },
+        {
+            "name": "Faisabilité",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "exemple.py",
+            "args": ["diag"],
+            "console": "integratedTerminal",
+            "python": "${command:python.interpreterPath}"
+        },
+        {
+            "name": "Reformater derniere solution",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "utils/reformat.py",
+            "console": "integratedTerminal",
+            "python": "${command:python.interpreterPath}"
+        },
+    ]
+}
