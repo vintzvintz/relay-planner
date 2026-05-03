@@ -34,7 +34,11 @@ def latest_solution_path() -> str:
     if not planning_path.exists():
         raise FileNotFoundError(f"Planning directory not found: {PLANNING_DIR}")
 
-    json_files = sorted(planning_path.glob("????????_??????_*/planning.json"), reverse=True)
+    json_files = sorted(
+        (p for p in planning_path.glob("????????_??????_*/planning.json")
+         if not p.parent.name.endswith("_reformat")),
+        reverse=True,
+    )
     if not json_files:
         raise FileNotFoundError(f"No solution files found in {PLANNING_DIR}")
 
