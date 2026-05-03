@@ -204,10 +204,26 @@ def summary_data(solution):
     }
 
 
+def _pause_by_internal_point(constraints) -> dict[int, tuple[int, float]]:
+    """Retourne {internal_point: (user_wp, dur_h)} pour chaque pause réelle.
+
+    L'arc de pause k (trié par after_point utilisateur) commence au point interne
+    after_point_user + k (chaque pause précédente insère un point fictif).
+    """
+    mapping: dict[int, tuple[int, float]] = {}
+    i2u = _internal_to_user_map(constraints)
+    for k, (user_pt, dur_h) in enumerate(sorted(constraints._pauses, key=lambda p: p[0])):
+        internal_pt = user_pt + k
+        mapping[internal_pt] = (i2u[internal_pt], dur_h)
+    return mapping
+
+
 def build_chrono_entries(relays, constraints) -> list:
     """Retourne la liste plate de ChronoEntry du planning chronologique."""
     c = constraints
-    i2u = _internal_to_user_map(c)
+    # Mapping internal_point → (user_wp, dur_h) pour déclencher l'entrée pause
+    # après le relais qui se termine exactement à ce point interne.
+    pause_at_internal = _pause_by_internal_point(c)
     entries = []
     seen = set()
     pause_inserted = set()
@@ -235,10 +251,12 @@ def build_chrono_entries(relays, constraints) -> list:
             rel=rel,
         ))
 
-        for after_point, duree_heures in c._pauses:
-            if duree_heures > 0 and rel["end"] == after_point and after_point not in pause_inserted:
-                pause_inserted.add(after_point)
-                entries.append(_build_pause_entry(c, after_point, i2u[after_point], duree_heures))
+        internal_end = rel["end"]
+        if internal_end in pause_at_internal and internal_end not in pause_inserted:
+            pause_inserted.add(internal_end)
+            user_wp, dur_h = pause_at_internal[internal_end]
+            if dur_h > 0:
+                entries.append(_build_pause_entry(c, internal_end, user_wp, dur_h))
 
     return entries
 

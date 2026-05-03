@@ -76,6 +76,26 @@ def _x(t_min: int | float, total_min: int) -> float:
     return t_min / total_min * 1000.0
 
 
+def _pause_time_intervals(c) -> list[tuple[int, int]]:
+    """Retourne les intervalles (t_start_min, t_end_min) de chaque pause.
+
+    Utilise les indices internes (pause_arcs) pour accéder à cumul_temps,
+    ce qui est correct même avec plusieurs pauses (les indices utilisateur
+    stockés dans _pauses ne correspondent plus aux indices internes après
+    insertion des points fictifs).
+    """
+    # _pauses est trié par after_point utilisateur ; l'indice interne de l'arc
+    # de pause numéro k (0-indexé) est after_point_user + k.
+    result = []
+    for k, (user_pt, dur_h) in enumerate(sorted(c._pauses, key=lambda p: p[0])):
+        if dur_h <= 0:
+            continue
+        internal_arc = user_pt + k
+        t_s = c.cumul_temps[internal_arc]
+        result.append((t_s, t_s + round(dur_h * 60)))
+    return result
+
+
 def _ticks(c) -> list[tuple[int, str, str | None]]:
     """Calcule les ticks horaires alignés sur les heures 0/6/12/18.
 
@@ -83,10 +103,7 @@ def _ticks(c) -> list[tuple[int, str, str | None]]:
     label_km est None si le tick tombe pendant une pause.
     """
     total_min = _total_minutes(c)
-    pause_intervals = [
-        (c.cumul_temps[after_pt], c.cumul_temps[after_pt] + round(dur_h * 60))
-        for after_pt, dur_h in c._pauses if dur_h > 0
-    ]
+    pause_intervals = _pause_time_intervals(c)
     step_min = round(TICK_STEP_H * 60)
 
     # Premier tick : prochaine heure multiple de TICK_STEP_H après le départ
@@ -133,23 +150,31 @@ def _unavail_time_ranges(c, runner: str) -> list[tuple[int, int]]:
     # Les points fictifs de pause ne sont ni disponibles ni indisponibles —
     # on les ignore pour ne pas créer de fausses zones d'indisponibilité.
     pause_point_indices = {arc + 1 for arc in c.pause_arcs}
+    # Calcule la borne temporelle minimale de disponibilité pour ce coureur.
+    # On utilise directement cumul_temps[lo] — même si lo est un point fictif,
+    # son timestamp est correct (il correspond à l'heure réelle de la pause).
     avail_pts: set[int] = set()
+    avail_t_start: int = c.cumul_temps[-1]  # borne temporelle de début de dispo
     for spec in specs:
         for pt_lo, pt_hi in (spec.window or []):
             avail_pts.update(range(pt_lo, pt_hi + 1))
+            avail_t_start = min(avail_t_start, c.cumul_temps[pt_lo])
     unavail = []
     in_u = False
     start_pt = 0
     for pt in range(c.nb_points):
         if pt in pause_point_indices:
             continue
+        t = c.cumul_temps[pt]
         if pt not in avail_pts:
             if not in_u:
                 in_u = True
                 start_pt = pt
         else:
             if in_u:
-                unavail.append((c.cumul_temps[start_pt], c.cumul_temps[pt]))
+                # Ferme la bande à avail_t_start (borne temporelle réelle de la window,
+                # potentiellement issue d'un point fictif) plutôt qu'à cumul_temps[pt].
+                unavail.append((c.cumul_temps[start_pt], avail_t_start))
                 in_u = False
     if in_u:
         unavail.append((c.cumul_temps[start_pt], c.cumul_temps[c.nb_points - 1]))
@@ -206,11 +231,7 @@ def _overlay_svg(c, ticks: list) -> str:
         parts.append(f'<rect x="{x1:.1f}" y="0" width="{x2 - x1:.1f}" height="{h}" fill="#c5cae9" opacity="0.7"/>')
 
     # Bandeaux pauses
-    for after_point, duree_h in c._pauses:
-        if duree_h <= 0:
-            continue
-        t_s = c.cumul_temps[after_point]
-        t_e = t_s + round(duree_h * 60)
+    for t_s, t_e in _pause_time_intervals(c):
         x1, x2 = _x(t_s, total_min), _x(t_e, total_min)
         parts.append(f'<rect x="{x1:.1f}" y="0" width="{x2 - x1:.1f}" height="{h}" fill="#ff9800" opacity="0.85"/>')
         parts.append(f'<text x="{(x1 + x2) / 2:.1f}" y="{h - 4}" font-size="8" fill="#7f3000" text-anchor="middle">pause</text>')
@@ -287,7 +308,7 @@ def _profil_svg_row(solution) -> str:
     c = solution.constraints
     if not c.parcours.has_profile:
         return ""
-    pauses = [(c.waypoints_km[after_pt], dur_h) for after_pt, dur_h in c._pauses if dur_h > 0]
+    pauses = [(c._base_waypoints[after_pt]["km"], dur_h) for after_pt, dur_h in c._pauses if dur_h > 0]
 
     # Indices de waypoints (numérotation interne avec pauses) utilisés dans la solution
     used_indices: set[int] = set()
